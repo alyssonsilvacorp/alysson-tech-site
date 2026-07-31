@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -13,36 +17,20 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "baseUrl": ".",
-    "types": ["@cloudflare/workers-types"],
     "plugins": [
       {
         "name": "next"
       }
-    ],
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    ]
   },
   "include": [
     "next-env.d.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "worker/**/*.ts",
-    "build/**/*.ts",
-    "vite.config.ts",
-    "worker-configuration.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "dist",
-    ".sites-runtime",
-    ".wrangler",
-    "examples",
-    "db",
-    "drizzle.config.ts"
+    "node_modules"
   ]
 }
