@@ -1,5 +1,8 @@
 import Image from "next/image";
 
+const whatsappAnalysisUrl =
+  "https://wa.me/5582999926146?text=Ol%C3%A1%2C%20Alysson%21%20Vim%20pelo%20site%20da%20Alysson%20Tech%20e%20gostaria%20de%20solicitar%20uma%20an%C3%A1lise%20inicial.";
+
 const projects = [
   {
     name: "IZALY Food",
@@ -56,6 +59,39 @@ const capabilities = [
     number: "03",
     title: "Produtos digitais",
     text: "Ideias transformadas em experiências testáveis, evoluindo com uso real, aprendizado contínuo e visão de longo prazo.",
+  },
+];
+
+const businessProblems = [
+  {
+    number: "01",
+    title: "Quero vender melhor pela internet",
+    text: "Site, catálogo, presença digital e uma jornada mais clara até o contato ou a compra.",
+  },
+  {
+    number: "02",
+    title: "Meu atendimento está desorganizado",
+    text: "Organização dos canais, informações e fluxos para tornar o atendimento mais simples e acompanhável.",
+  },
+  {
+    number: "03",
+    title: "Perco tempo com tarefas repetitivas",
+    text: "Automação de processos que hoje consomem tempo e dependem de trabalho manual.",
+  },
+  {
+    number: "04",
+    title: "Preciso organizar clientes, pedidos ou operação",
+    text: "Sistemas, painéis, CRM e ferramentas pensadas a partir da rotina real do negócio.",
+  },
+  {
+    number: "05",
+    title: "Tenho uma ideia de sistema",
+    text: "Analisamos a ideia, definimos o que realmente precisa existir e começamos por uma versão viável.",
+  },
+  {
+    number: "06",
+    title: "Estou começando do zero",
+    text: "Presença digital e tecnologia também para quem ainda está estruturando o negócio, sem exigir uma grande operação.",
   },
 ];
 
@@ -207,11 +243,11 @@ export default function Home() {
 
         <a
           className="header-cta"
-          href="https://instagram.com/alysson.tech"
+          href={whatsappAnalysisUrl}
           target="_blank"
           rel="noreferrer"
         >
-          Fale comigo
+          Análise gratuita
           <ArrowIcon />
         </a>
       </header>
@@ -220,36 +256,36 @@ export default function Home() {
         <div className="hero__copy">
           <p className="eyebrow">
             <span />
-            Tecnologia, produto e presença digital
+            Tecnologia começa entendendo o problema
           </p>
           <h1>
-            Ideias ganham forma.
-            <em> Negócios ganham presença.</em>
+            O que seu negócio precisa <em>resolver hoje?</em>
           </h1>
           <p className="hero__lead">
-            Sites, sistemas e produtos digitais pensados para organizar,
-            apresentar e aproximar pequenos negócios dos seus clientes.
+            Você não precisa saber qual sistema, site ou tecnologia utilizar.
+            Conte o que está acontecendo no seu negócio e vamos encontrar uma
+            solução simples, viável e adequada ao momento da sua operação.
           </p>
 
           <div className="hero__actions">
-            <a className="button button--primary" href="#projetos">
-              Conhecer projetos
-              <ArrowIcon />
-            </a>
             <a
-              className="button button--ghost"
-              href="https://instagram.com/alysson.tech"
+              className="button button--primary"
+              href={whatsappAnalysisUrl}
               target="_blank"
               rel="noreferrer"
             >
-              Conversar sobre uma ideia
+              Solicitar análise gratuita
+              <ArrowIcon />
+            </a>
+            <a className="button button--ghost" href="#projetos">
+              Conhecer projetos
             </a>
           </div>
 
           <div className="hero__facts" aria-label="Informações da Alysson Tech">
             <span>Maceió · AL</span>
-            <span>Atendimento próximo</span>
-            <span>Construção sob medida</span>
+            <span>Atendimento humano</span>
+            <span>Soluções por etapas</span>
           </div>
         </div>
 
@@ -289,6 +325,55 @@ export default function Home() {
           <span>Identidade própria</span>
           <i />
           <span>Evolução contínua</span>
+        </div>
+      </section>
+
+      <section
+        className="section section--problems"
+        aria-labelledby="problems-title"
+      >
+        <div className="shell">
+          <div className="section-heading problems-heading">
+            <div>
+              <p className="eyebrow">
+                <span />
+                Comece pelo problema
+              </p>
+              <h2 id="problems-title">
+                O que está dificultando seu negócio hoje?
+              </h2>
+            </div>
+            <p>
+              Nem sempre a solução começa com um sistema completo. Primeiro
+              entendemos o que está acontecendo para depois escolher a
+              tecnologia que realmente faz sentido.
+            </p>
+          </div>
+
+          <div className="problems-grid">
+            {businessProblems.map((problem) => (
+              <article className="problem-card" key={problem.number}>
+                <span className="problem-card__number">{problem.number}</span>
+                <div>
+                  <h3>{problem.title}</h3>
+                  <p>{problem.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="problems-cta">
+            <p>Não encontrou seu caso? Conte o que está acontecendo.</p>
+            <a
+              className="button button--primary"
+              href={whatsappAnalysisUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Solicitar análise inicial
+              <ArrowIcon />
+            </a>
+          </div>
         </div>
       </section>
 
@@ -499,18 +584,18 @@ export default function Home() {
             <span />
             Vamos construir
           </p>
-          <h2>Tem uma ideia ou um negócio que precisa ganhar presença?</h2>
+          <h2>Tem algo no seu negócio que precisa funcionar melhor?</h2>
           <p>
-            Conte o que você quer organizar, apresentar ou transformar. A
-            conversa começa pelo problema real.
+            Conte o que está acontecendo. A análise inicial é gratuita e começa
+            entendendo o problema antes de escolher a solução.
           </p>
           <a
             className="button button--primary button--large"
-            href="https://instagram.com/alysson.tech"
+            href={whatsappAnalysisUrl}
             target="_blank"
             rel="noreferrer"
           >
-            Falar com Alysson
+            Solicitar análise inicial
             <ArrowIcon />
           </a>
         </div>
