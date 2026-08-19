@@ -1,48 +1,14 @@
 import Image from "next/image";
+import {
+  clientProjects,
+  izalyPlatform,
+  ownProjects,
+  type ProjectTone,
+  vitalyonProject,
+} from "../data/projects";
 
 const whatsappAnalysisUrl =
   "https://wa.me/5582999926146?text=Ol%C3%A1%2C%20Alysson%21%20Vim%20pelo%20site%20da%20Alysson%20Tech%20e%20gostaria%20de%20solicitar%20uma%20an%C3%A1lise%20inicial.";
-
-const projects = [
-  {
-    name: "IZALY Food",
-    eyebrow: "Gestão para alimentação",
-    description:
-      "O primeiro módulo lançado da IZALY Platform, criado para apoiar cardápio, pedidos e a rotina de pequenos estabelecimentos.",
-    status: "Implantação piloto",
-    tone: "food",
-    href: "https://izaly-platform.vercel.app/",
-    linkLabel: "Conhecer a plataforma",
-  },
-  {
-    name: "IZALY CRM",
-    eyebrow: "Relacionamento comercial",
-    description:
-      "Uma solução para organizar clientes, oportunidades e negociações em um fluxo mais simples, claro e acompanhável.",
-    status: "Beta em desenvolvimento",
-    tone: "crm",
-  },
-  {
-    name: "IZALY Tech",
-    eyebrow: "Site-vitrine",
-    description:
-      "Presença digital para apresentar tecnologia e eletrônicos com uma comunicação direta e orientada ao contato.",
-    status: "Publicado",
-    tone: "tech",
-    href: "https://izalytech.netlify.app/",
-    linkLabel: "Visitar projeto",
-  },
-  {
-    name: "IZALY Joias",
-    eyebrow: "Experiência de marca",
-    description:
-      "Uma vitrine digital que valoriza produtos, identidade visual e o caminho entre descoberta e atendimento.",
-    status: "Publicado",
-    tone: "joias",
-    href: "https://izalyjoias.netlify.app/",
-    linkLabel: "Visitar projeto",
-  },
-];
 
 const capabilities = [
   {
@@ -137,7 +103,7 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function ProjectVisual({ tone }: { tone: string }) {
+function ProjectVisual({ tone }: { tone: ProjectTone }) {
   if (tone === "food") {
     return (
       <div className="mini-product mini-product--food" aria-hidden="true">
@@ -382,49 +348,144 @@ export default function Home() {
           <div>
             <p className="eyebrow">
               <span />
-              Portfólio em movimento
+              Projetos e tecnologia
             </p>
-            <h2>Projetos que mostram o que estamos construindo.</h2>
+            <h2>
+              Soluções construídas para diferentes momentos de um negócio.
+            </h2>
           </div>
           <p>
-            Produtos próprios e experiências digitais criadas para resolver
-            necessidades reais, do primeiro contato à rotina de gestão.
+            Produtos próprios, plataformas em evolução e projetos desenvolvidos
+            a partir de necessidades reais.
           </p>
         </div>
 
-        <div className="featured-grid">
-          <article className="featured-project featured-project--izaly">
-            <div className="featured-project__media">
-              <div className="media-glow" />
-              <Image
-                src="/brand/izaly-platform.jpeg"
-                alt="Logo IZALY Plataform"
-                fill
-                unoptimized
-                sizes="(max-width: 900px) 100vw, 50vw"
-                className="featured-project__image featured-project__image--platform"
-              />
-              <div className="project-status">Plataforma em evolução</div>
+        <article className="technology-feature">
+          <div className="technology-feature__content">
+            <div className="technology-feature__topline">
+              <p>{izalyPlatform.eyebrow}</p>
+              <span>{izalyPlatform.status}</span>
             </div>
-            <div className="featured-project__content">
-              <p>Ecossistema de gestão</p>
-              <h3>IZALY Plataform</h3>
-              <span>
-                Uma plataforma criada para reunir módulos de gestão e apoiar
-                pequenos negócios em diferentes segmentos.
-              </span>
-              <a
-                href="https://izaly-platform.vercel.app/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Ver projeto
-                <ExternalIcon />
-              </a>
+            <h3>{izalyPlatform.name}</h3>
+            <p className="technology-feature__description">
+              {izalyPlatform.description}
+            </p>
+            <div
+              className="technology-modules"
+              aria-label="Módulos atuais da IZALY Platform"
+            >
+              {izalyPlatform.modules.map((module) => (
+                <div className="technology-module" key={module.name}>
+                  <span>{module.name}</span>
+                  <small>{module.status}</small>
+                </div>
+              ))}
             </div>
-          </article>
+            <a
+              className="technology-feature__link"
+              href={izalyPlatform.href}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {izalyPlatform.linkLabel}
+              <ExternalIcon />
+            </a>
+          </div>
+          <div className="technology-feature__media">
+            <div className="media-glow" />
+            <Image
+              src="/brand/izaly-platform.jpeg"
+              alt="Identidade visual da IZALY Platform"
+              fill
+              unoptimized
+              sizes="(max-width: 900px) 100vw, 46vw"
+              className="technology-feature__image"
+            />
+            <div className="technology-feature__signature">
+              <span>AT / TECNOLOGIA</span>
+              <i />
+              <strong>Ecossistema modular</strong>
+            </div>
+          </div>
+        </article>
 
-          <article className="featured-project featured-project--vitalyon">
+        <div className="portfolio-group portfolio-group--clients">
+          <div className="portfolio-group__heading">
+            <div>
+              <p className="portfolio-group__eyebrow">Projetos para clientes</p>
+              <h3>Soluções construídas para operações reais.</h3>
+            </div>
+            <p>
+              Soluções desenvolvidas a partir da rotina, das necessidades e dos
+              objetivos específicos de cada operação.
+            </p>
+          </div>
+
+          {clientProjects.map((project) => (
+            <article className="client-project" key={project.client}>
+              <div className="client-project__content">
+                <div className="client-project__topline">
+                  <p>{project.client}</p>
+                  <span>{project.status}</span>
+                </div>
+                <small>{project.category}</small>
+                <h3>{project.title}</h3>
+                <p className="client-project__description">
+                  {project.description}
+                </p>
+                <p className="client-project__note">{project.note}</p>
+              </div>
+              <div className="client-project__visual" aria-hidden="true">
+                <div className="client-visual__label">Visual abstrato</div>
+                <div className="client-visual__panel">
+                  <div className="client-visual__bar">
+                    <i />
+                    <i />
+                    <i />
+                    <span>LS / OPERAÇÃO</span>
+                  </div>
+                  <div className="client-visual__layout">
+                    <div className="client-visual__nav">
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+                    <div className="client-visual__workspace">
+                      <div className="client-visual__line" />
+                      <div className="client-visual__cards">
+                        <i />
+                        <i />
+                        <i />
+                      </div>
+                      <div className="client-visual__rows">
+                        <span />
+                        <span />
+                        <span />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="portfolio-group portfolio-group--own">
+          <div className="portfolio-group__heading">
+            <div>
+              <p className="portfolio-group__eyebrow">
+                Produtos e projetos próprios
+              </p>
+              <h3>Ideias que evoluem com uso e aprendizado.</h3>
+            </div>
+            <p>
+              Experimentos, produtos digitais e soluções desenvolvidas pela
+              Alysson Tech e pelo ecossistema IZALY.
+            </p>
+          </div>
+
+          <article className="featured-project featured-project--vitalyon featured-project--standalone">
             <div className="featured-project__media">
               <div className="pulse-ring pulse-ring--one" />
               <div className="pulse-ring pulse-ring--two" />
@@ -436,52 +497,54 @@ export default function Home() {
                 sizes="(max-width: 900px) 100vw, 50vw"
                 className="featured-project__image featured-project__image--vitalyon"
               />
-              <div className="project-status">Publicado e funcional</div>
+              <div className="project-status">{vitalyonProject.status}</div>
             </div>
             <div className="featured-project__content">
-              <p>Produto digital</p>
-              <h3>VITALYON</h3>
-              <span>
-                Uma experiência digital voltada ao bem-estar e ao treino, com
-                acesso online e uma jornada simples para o usuário.
-              </span>
+              <p>{vitalyonProject.eyebrow}</p>
+              <h3>{vitalyonProject.name}</h3>
+              <span>{vitalyonProject.description}</span>
               <a
-                href="https://vitalyon-app.vercel.app/"
+                href={vitalyonProject.href}
                 target="_blank"
                 rel="noreferrer"
               >
-                Ver projeto
+                {vitalyonProject.linkLabel}
                 <ExternalIcon />
               </a>
             </div>
           </article>
-        </div>
 
-        <div className="projects-grid">
-          {projects.map((project) => (
-            <article className={`project-card project-card--${project.tone}`} key={project.name}>
-              <ProjectVisual tone={project.tone} />
-              <div className="project-card__body">
-                <div className="project-card__meta">
-                  <p>{project.eyebrow}</p>
-                  <span>{project.status}</span>
+          <div className="projects-grid">
+            {ownProjects.map((project) => (
+              <article
+                className={`project-card project-card--${project.tone}`}
+                key={project.name}
+              >
+                <ProjectVisual tone={project.tone} />
+                <div className="project-card__body">
+                  <div className="project-card__meta">
+                    <p>{project.eyebrow}</p>
+                    <span>{project.status}</span>
+                  </div>
+                  <h3>{project.name}</h3>
+                  <p className="project-card__description">
+                    {project.description}
+                  </p>
+                  {project.href ? (
+                    <a href={project.href} target="_blank" rel="noreferrer">
+                      {project.linkLabel}
+                      <ExternalIcon />
+                    </a>
+                  ) : (
+                    <span className="project-card__coming">
+                      Em construção
+                      <i />
+                    </span>
+                  )}
                 </div>
-                <h3>{project.name}</h3>
-                <p className="project-card__description">{project.description}</p>
-                {project.href ? (
-                  <a href={project.href} target="_blank" rel="noreferrer">
-                    {project.linkLabel}
-                    <ExternalIcon />
-                  </a>
-                ) : (
-                  <span className="project-card__coming">
-                    Em construção
-                    <i />
-                  </span>
-                )}
-              </div>
-            </article>
-          ))}
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
