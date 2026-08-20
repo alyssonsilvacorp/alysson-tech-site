@@ -1,4 +1,5 @@
 import Image from "next/image";
+import DiagnosisForm from "../components/DiagnosisForm";
 import {
   clientProjects,
   izalyPlatform,
@@ -6,9 +7,6 @@ import {
   type ProjectTone,
   vitalyonProject,
 } from "../data/projects";
-
-const whatsappAnalysisUrl =
-  "https://wa.me/5582999926146?text=Ol%C3%A1%2C%20Alysson%21%20Vim%20pelo%20site%20da%20Alysson%20Tech%20e%20gostaria%20de%20solicitar%20uma%20an%C3%A1lise%20inicial.";
 
 const capabilities = [
   {
@@ -58,6 +56,34 @@ const businessProblems = [
     number: "06",
     title: "Estou começando do zero",
     text: "Presença digital e tecnologia também para quem ainda está estruturando o negócio, sem exigir uma grande operação.",
+  },
+];
+
+const methodSteps = [
+  {
+    number: "01",
+    title: "Conte o problema",
+    text: "Você explica o que está acontecendo, o que precisa melhorar ou a ideia que deseja tirar do papel.",
+  },
+  {
+    number: "02",
+    title: "Entendemos a operação",
+    text: "Analisamos como o negócio funciona hoje, onde estão as dificuldades e o que realmente precisa ser resolvido.",
+  },
+  {
+    number: "03",
+    title: "Apresentamos um caminho",
+    text: "Definimos uma solução possível: site, automação, sistema, organização digital ou uma combinação dessas alternativas.",
+  },
+  {
+    number: "04",
+    title: "Definimos escopo e investimento",
+    text: "A solução é organizada em etapas, prioridades e investimento de acordo com a necessidade e o momento do projeto.",
+  },
+  {
+    number: "05",
+    title: "Construímos e evoluímos",
+    text: "Depois da validação, desenvolvemos a solução e continuamos evoluindo conforme o uso e novas necessidades aparecem.",
   },
 ];
 
@@ -207,12 +233,7 @@ export default function Home() {
           <a href="#sobre">Sobre</a>
         </nav>
 
-        <a
-          className="header-cta"
-          href={whatsappAnalysisUrl}
-          target="_blank"
-          rel="noreferrer"
-        >
+        <a className="header-cta" href="#analise">
           Análise gratuita
           <ArrowIcon />
         </a>
@@ -236,9 +257,7 @@ export default function Home() {
           <div className="hero__actions">
             <a
               className="button button--primary"
-              href={whatsappAnalysisUrl}
-              target="_blank"
-              rel="noreferrer"
+              href="#analise"
             >
               Solicitar análise gratuita
               <ArrowIcon />
@@ -332,9 +351,7 @@ export default function Home() {
             <p>Não encontrou seu caso? Conte o que está acontecendo.</p>
             <a
               className="button button--primary"
-              href={whatsappAnalysisUrl}
-              target="_blank"
-              rel="noreferrer"
+              href="#analise"
             >
               Solicitar análise inicial
               <ArrowIcon />
@@ -573,18 +590,68 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="method">
-            <p>Do problema à solução</p>
-            <div className="method__flow">
-              <span>Entender</span>
-              <i />
-              <span>Organizar</span>
-              <i />
-              <span>Construir</span>
-              <i />
-              <span>Evoluir</span>
+        </div>
+      </section>
+
+      <section
+        className="section section--method"
+        aria-labelledby="method-title"
+      >
+        <div className="shell">
+          <div className="section-heading method-heading">
+            <div>
+              <p className="eyebrow">
+                <span />
+                Como trabalhamos
+              </p>
+              <h2 id="method-title">
+                Antes de escolher a tecnologia, entendemos o negócio.
+              </h2>
             </div>
+            <p>
+              Nem todo problema precisa de um sistema completo. O processo
+              começa entendendo a operação para definir a solução mais simples
+              e adequada ao momento do negócio.
+            </p>
           </div>
+
+          <div className="method-steps">
+            {methodSteps.map((step) => (
+              <article className="method-step" key={step.number}>
+                <div className="method-step__marker">
+                  <span>{step.number}</span>
+                  <i />
+                </div>
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="section section--diagnosis"
+        id="analise"
+        aria-labelledby="diagnosis-title"
+      >
+        <div className="shell diagnosis-layout">
+          <div className="diagnosis-copy">
+            <p className="eyebrow">
+              <span />
+              Análise inicial gratuita
+            </p>
+            <h2 id="diagnosis-title">
+              Conte o que está acontecendo no seu negócio.
+            </h2>
+            <p>
+              Você não precisa saber qual tecnologia utilizar. Responda algumas
+              perguntas rápidas e envie as informações diretamente para a
+              Alysson Tech pelo WhatsApp.
+            </p>
+          </div>
+
+          <DiagnosisForm />
         </div>
       </section>
 
@@ -645,20 +712,18 @@ export default function Home() {
         <div className="shell closing__content">
           <p className="eyebrow">
             <span />
-            Vamos construir
+            Vamos entender primeiro
           </p>
           <h2>Tem algo no seu negócio que precisa funcionar melhor?</h2>
           <p>
-            Conte o que está acontecendo. A análise inicial é gratuita e começa
-            entendendo o problema antes de escolher a solução.
+            Conte o cenário e vamos começar entendendo o problema antes de
+            decidir qual tecnologia faz sentido.
           </p>
           <a
             className="button button--primary button--large"
-            href={whatsappAnalysisUrl}
-            target="_blank"
-            rel="noreferrer"
+            href="#analise"
           >
-            Solicitar análise inicial
+            Começar análise gratuita
             <ArrowIcon />
           </a>
         </div>
