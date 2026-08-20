@@ -120,7 +120,6 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
         src="/brand/alysson-tech.png"
         alt=""
         fill
-        priority
         unoptimized
         sizes={compact ? "44px" : "72px"}
         className="brand-mark__image"
@@ -215,8 +214,8 @@ function ProjectVisual({ tone }: { tone: ProjectTone }) {
 export default function Home() {
   return (
     <main>
-      <div className="ambient ambient--one" />
-      <div className="ambient ambient--two" />
+      <div className="ambient ambient--one" aria-hidden="true" />
+      <div className="ambient ambient--two" aria-hidden="true" />
 
       <header className="site-header">
         <a className="brand-lockup" href="#inicio" aria-label="Alysson Tech — início">
@@ -231,6 +230,7 @@ export default function Home() {
           <a href="#projetos">Projetos</a>
           <a href="#solucoes">Soluções</a>
           <a href="#sobre">Sobre</a>
+          <a href="#analise">Análise</a>
         </nav>
 
         <a className="header-cta" href="#analise">
@@ -662,7 +662,6 @@ export default function Home() {
               src="/profile/alysson-silva.jpeg"
               alt="Alysson Silva, fundador da Alysson Tech"
               fill
-              priority
               unoptimized
               sizes="(max-width: 900px) 90vw, 38vw"
               className="portrait-image"
@@ -708,7 +707,7 @@ export default function Home() {
       </section>
 
       <section className="closing">
-        <div className="closing__grid" />
+        <div className="closing__grid" aria-hidden="true" />
         <div className="shell closing__content">
           <p className="eyebrow">
             <span />

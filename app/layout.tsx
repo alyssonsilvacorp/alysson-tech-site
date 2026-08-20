@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+const siteUrl = "https://alyssontech.com.br";
+const siteTitle = "Alysson Tech — Sites, sistemas e soluções digitais";
+const siteDescription =
+  "A Alysson Tech cria sites, sistemas, automações e soluções digitais a partir das necessidades reais de cada negócio. Atendimento em Maceió e online.";
+const socialDescription =
+  "Sites, sistemas, automações e soluções digitais criadas a partir dos problemas reais de cada negócio.";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -13,21 +20,40 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "Alysson Tech — Tecnologia com identidade",
+    default: siteTitle,
     template: "%s | Alysson Tech",
   },
-  description:
-    "Sites, sistemas e produtos digitais criados para organizar, apresentar e aproximar pequenos negócios dos seus clientes.",
+  description: siteDescription,
+  alternates: {
+    canonical: siteUrl,
+  },
   openGraph: {
-    title: "Alysson Tech — Tecnologia com identidade",
-    description:
-      "Ideias ganham forma. Negócios ganham presença com sites, sistemas e produtos digitais.",
+    title: siteTitle,
+    description: socialDescription,
+    url: siteUrl,
+    siteName: "Alysson Tech",
     type: "website",
     locale: "pt_BR",
+    images: [
+      {
+        url: "/brand/alysson-tech.png",
+        width: 1254,
+        height: 1254,
+        alt: "Alysson Tech",
+      },
+    ],
   },
-  other: {
-    "codex-preview": "development",
+  twitter: {
+    card: "summary",
+    title: siteTitle,
+    description: socialDescription,
+    images: ["/brand/alysson-tech.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
   icons: {
     icon: "/brand/alysson-tech.png",
