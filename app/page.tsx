@@ -117,7 +117,7 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
   return (
     <span className={compact ? "brand-mark brand-mark--compact" : "brand-mark"}>
       <Image
-        src="/brand/alysson-tech.png"
+        src="/brand/alysson-tech-icon.png"
         alt=""
         fill
         unoptimized
@@ -275,22 +275,15 @@ export default function Home() {
         </div>
 
         <div className="hero__visual" aria-label="Identidade visual Alysson Tech">
-          <div className="visual-grid" />
-          <div className="visual-scanline" />
-          <div className="visual-chip visual-chip--one">SITES</div>
-          <div className="visual-chip visual-chip--two">SISTEMAS</div>
-          <div className="visual-chip visual-chip--three">SAAS</div>
-          <div className="hero-logo">
-            <Image
-              src="/brand/alysson-tech.png"
-              alt="Logo Alysson Tech"
-              fill
-              priority
-              unoptimized
-              sizes="(max-width: 900px) 88vw, 42vw"
-              className="hero-logo__image"
-            />
-          </div>
+          <Image
+            src="/brand/alysson-tech-hero-premium.png"
+            alt="Alysson Tech — sites, sistemas e SaaS"
+            fill
+            priority
+            unoptimized
+            sizes="(max-width: 900px) 88vw, 42vw"
+            className="hero-premium__image"
+          />
           <div className="visual-footer">
             <span>
               <i />
