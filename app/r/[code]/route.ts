@@ -11,7 +11,7 @@ type RouteContext = {
 
 export async function GET(_request: Request, { params }: RouteContext) {
   const { code } = await params;
-  const plate = getReviewPlate(code);
+  const plate = await getReviewPlate(code);
 
   if (!plate) {
     return new NextResponse(
@@ -76,3 +76,4 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
   return response;
 }
+
