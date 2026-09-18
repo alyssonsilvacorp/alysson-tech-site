@@ -1,4 +1,4 @@
-﻿create or replace function public.update_review_plate_destination(
+create or replace function public.update_review_plate_destination(
   p_code text,
   p_destination_url text
 )
