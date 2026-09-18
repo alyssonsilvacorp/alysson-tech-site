@@ -1,0 +1,460 @@
+﻿.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  padding-bottom: 34px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+
+.eyebrow,
+.panelHeader span,
+.metric span,
+.metricPrimary span,
+.quickActions > span {
+  color: #71ff41;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: .16em;
+}
+
+.header h1 {
+  margin: 14px 0 0;
+  font-size: clamp(38px, 5vw, 64px);
+  font-weight: 570;
+  letter-spacing: -.055em;
+}
+
+.header h1 span {
+  color: #71ff41;
+}
+
+.subtitle {
+  max-width: 600px;
+  margin: 15px 0 0;
+  color: #778177;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.headerMeta {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  padding-bottom: 7px;
+}
+
+.headerMeta span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #7b867b;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+.headerMeta i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #71ff41;
+  box-shadow: 0 0 12px rgba(113,255,65,.7);
+}
+
+.headerMeta strong {
+  color: #5c655c;
+  font-size: 9px;
+  letter-spacing: .13em;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: 1.2fr repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.metric,
+.metricPrimary {
+  position: relative;
+  overflow: hidden;
+  min-height: 177px;
+  padding: 21px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 17px;
+  background: rgba(7,11,7,.82);
+}
+
+.metricPrimary {
+  border-color: rgba(113,255,65,.19);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(113,255,65,.13), transparent 50%),
+    rgba(7,11,7,.88);
+}
+
+.metric strong,
+.metricPrimary strong {
+  display: block;
+  margin-top: 27px;
+  font-size: 42px;
+  font-weight: 560;
+  letter-spacing: -.05em;
+}
+
+.metricPrimary strong {
+  color: #71ff41;
+}
+
+.metric p,
+.metricPrimary p {
+  max-width: 190px;
+  margin: 7px 0 0;
+  color: #687268;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.metricPulse {
+  position: absolute;
+  right: -27px;
+  bottom: -34px;
+  width: 120px;
+  height: 120px;
+  border: 1px solid rgba(113,255,65,.23);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 20px rgba(113,255,65,.025),
+    0 0 0 40px rgba(113,255,65,.015);
+}
+
+.mainGrid,
+.bottomGrid {
+  display: grid;
+  grid-template-columns: 1.12fr .88fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.inventoryPanel,
+.routesPanel,
+.activity,
+.quickActions {
+  min-height: 330px;
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 18px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.025), transparent),
+    rgba(6,10,6,.86);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.panelHeader h2,
+.quickActions h2 {
+  margin: 7px 0 0;
+  font-size: 18px;
+  font-weight: 520;
+}
+
+.panelHeader a {
+  color: #889488;
+  font-size: 9px;
+  text-decoration: none;
+}
+
+.panelHeader a:hover {
+  color: #71ff41;
+}
+
+.inventoryVisual {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 38px;
+  align-items: center;
+  margin-top: 36px;
+}
+
+.ring {
+  display: grid;
+  width: 166px;
+  height: 166px;
+  place-items: center;
+  border: 1px solid rgba(113,255,65,.3);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(113,255,65,.09), transparent 56%);
+  box-shadow:
+    inset 0 0 40px rgba(113,255,65,.025),
+    0 0 40px rgba(113,255,65,.025);
+}
+
+.ring::before {
+  position: absolute;
+  content: "";
+  width: 124px;
+  height: 124px;
+  border: 1px dashed rgba(113,255,65,.16);
+  border-radius: 50%;
+}
+
+.ring div {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.ring strong {
+  display: block;
+  color: #71ff41;
+  font-size: 38px;
+  font-weight: 560;
+}
+
+.ring span {
+  color: #738073;
+  font-size: 8px;
+  letter-spacing: .16em;
+}
+
+.inventoryData {
+  display: grid;
+  gap: 5px;
+}
+
+.inventoryData div {
+  display: flex;
+  justify-content: space-between;
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.inventoryData span {
+  color: #737d73;
+  font-size: 10px;
+}
+
+.inventoryData strong {
+  font-size: 11px;
+  font-weight: 580;
+}
+
+.routeFlow {
+  display: grid;
+  grid-template-columns: 1fr 22px 1fr 22px 1fr;
+  align-items: center;
+  gap: 7px;
+  margin-top: 46px;
+}
+
+.routeFlow > div {
+  min-height: 116px;
+  padding: 15px;
+  border: 1px solid rgba(113,255,65,.12);
+  border-radius: 13px;
+  background: rgba(113,255,65,.025);
+}
+
+.routeFlow small {
+  color: #536053;
+  font-size: 8px;
+}
+
+.routeFlow strong,
+.routeFlow span {
+  display: block;
+}
+
+.routeFlow strong {
+  margin-top: 21px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.routeFlow span {
+  margin-top: 4px;
+  color: #687368;
+  font-size: 8px;
+}
+
+.routeFlow > i {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(113,255,65,.08),
+    rgba(113,255,65,.45),
+    rgba(113,255,65,.08)
+  );
+}
+
+.routeNote {
+  margin: 27px 0 0;
+  color: #6c766c;
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.bottomGrid {
+  grid-template-columns: 1fr 360px;
+}
+
+.activity {
+  min-height: 275px;
+}
+
+.activityList {
+  display: grid;
+  margin-top: 26px;
+}
+
+.activityRow {
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  min-height: 49px;
+  border-top: 1px solid rgba(255,255,255,.055);
+}
+
+.activityRow > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.activityRow i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #71ff41;
+}
+
+.activityRow span {
+  color: #71ff41;
+  font-size: 9px;
+}
+
+.activityRow strong {
+  font-size: 10px;
+  font-weight: 520;
+}
+
+.activityRow small {
+  color: #718071;
+  font-size: 8px;
+  letter-spacing: .1em;
+}
+
+.empty {
+  margin-top: 30px;
+  padding: 30px 0;
+  color: #657065;
+  font-size: 10px;
+}
+
+.quickActions {
+  min-height: 275px;
+}
+
+.quickActions > a {
+  position: relative;
+  display: block;
+  margin-top: 12px;
+  padding: 16px 42px 16px 16px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  background: rgba(255,255,255,.018);
+  color: white;
+  text-decoration: none;
+  transition: 180ms ease;
+}
+
+.quickActions > a:hover {
+  border-color: rgba(113,255,65,.24);
+  background: rgba(113,255,65,.035);
+}
+
+.quickActions strong,
+.quickActions small {
+  display: block;
+}
+
+.quickActions strong {
+  font-size: 10px;
+}
+
+.quickActions small {
+  margin-top: 5px;
+  color: #697469;
+  font-size: 8px;
+}
+
+.quickActions b {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  color: #71ff41;
+  font-size: 13px;
+  font-weight: 400;
+  transform: translateY(-50%);
+}
+
+@media (max-width: 1050px) {
+  .metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mainGrid,
+  .bottomGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .bottomGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .headerMeta {
+    display: none;
+  }
+
+  .metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .metric,
+  .metricPrimary {
+    min-height: 145px;
+  }
+
+  .metric strong,
+  .metricPrimary strong {
+    font-size: 34px;
+  }
+
+  .inventoryVisual {
+    grid-template-columns: 1fr;
+  }
+
+  .routeFlow {
+    grid-template-columns: 1fr;
+  }
+
+  .routeFlow > i {
+    width: 1px;
+    height: 20px;
+    margin: 0 auto;
+  }
+}
