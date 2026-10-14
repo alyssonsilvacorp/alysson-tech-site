@@ -1,26 +1,14 @@
 .page {
   --portal-accent: #d4af37;
-  position: relative;
   min-height: 100vh;
-  overflow: hidden;
   background:
-    radial-gradient(circle at 50% -10%, color-mix(in srgb, var(--portal-accent) 16%, transparent), transparent 36%),
+    radial-gradient(circle at 50% -10%, rgba(212, 175, 55, 0.12), transparent 36%),
     linear-gradient(180deg, #111318 0%, #090b10 55%, #07080b 100%);
   color: #f7f7f8;
   padding: 28px 16px 36px;
 }
 
-.glow {
-  pointer-events: none;
-  position: fixed;
-  inset: auto 0 -160px;
-  height: 320px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--portal-accent) 12%, transparent), transparent 68%);
-}
-
 .portal {
-  position: relative;
-  z-index: 1;
   width: min(100%, 520px);
   margin: 0 auto;
 }
@@ -38,7 +26,7 @@
   height: 72px;
   flex: 0 0 72px;
   border-radius: 22px;
-  border: 1px solid color-mix(in srgb, var(--portal-accent) 45%, #2b2f37);
+  border: 1px solid #343943;
   background: #14171d;
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
 }
@@ -111,7 +99,7 @@
 .action:hover,
 .action:focus-visible {
   transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--portal-accent) 58%, #313640);
+  border-color: var(--portal-accent);
   background: #171b22;
   outline: none;
 }
@@ -123,8 +111,9 @@
   flex: 0 0 40px;
   place-items: center;
   border-radius: 13px;
-  background: color-mix(in srgb, var(--portal-accent) 14%, #171a20);
+  background: #1b1f26;
   color: var(--portal-accent);
+  font-size: 1.05rem;
 }
 
 .emptyState {
@@ -199,11 +188,6 @@
   color: #aeb4bf;
   font-size: 0.86rem;
   line-height: 1.5;
-}
-
-.address svg {
-  flex: 0 0 auto;
-  color: var(--portal-accent);
 }
 
 .footer {
