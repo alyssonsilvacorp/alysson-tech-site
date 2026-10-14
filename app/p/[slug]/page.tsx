@@ -1,16 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import {
-  CalendarDays,
-  CreditCard,
-  Globe2,
-  Instagram,
-  MapPin,
-  MessageCircle,
-  Scissors,
-  ShoppingBag,
-  Star,
-  type LucideIcon,
-} from "lucide-react";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
 import {
@@ -28,16 +16,16 @@ type PageProps = {
   }>;
 };
 
-const actionIcons: Record<string, LucideIcon> = {
-  services: Scissors,
-  catalog: ShoppingBag,
-  whatsapp: MessageCircle,
-  booking: CalendarDays,
-  instagram: Instagram,
-  location: MapPin,
-  pix: CreditCard,
-  google_review: Star,
-  website: Globe2,
+const actionIcons: Record<string, string> = {
+  services: "✂️",
+  catalog: "🛍️",
+  whatsapp: "💬",
+  booking: "📅",
+  instagram: "📸",
+  location: "📍",
+  pix: "💳",
+  google_review: "⭐",
+  website: "🌐",
 };
 
 function getActionHref(
@@ -101,12 +89,10 @@ export default async function SmartBusinessPage({
     notFound();
   }
 
-  const accentColor = getAccentColor(
-    business.accentColor,
-  );
-
   const portalStyle = {
-    "--portal-accent": accentColor,
+    "--portal-accent": getAccentColor(
+      business.accentColor,
+    ),
   } as CSSProperties;
 
   const visibleActions = business.actions
@@ -120,7 +106,7 @@ export default async function SmartBusinessPage({
       ): item is {
         action: SmartBusinessAction;
         href: string;
-      } => Boolean(item.href),
+      } => item.href !== null,
     );
 
   return (
@@ -128,8 +114,6 @@ export default async function SmartBusinessPage({
       className={styles.page}
       style={portalStyle}
     >
-      <div className={styles.glow} />
-
       <section className={styles.portal}>
         <header className={styles.header}>
           {business.logoUrl ? (
@@ -146,7 +130,7 @@ export default async function SmartBusinessPage({
               {business.name
                 .split(/\s+/)
                 .slice(0, 2)
-                .map((part) => part[0])
+                .map((part) => part[0] ?? "")
                 .join("")
                 .toUpperCase()}
             </div>
@@ -170,8 +154,6 @@ export default async function SmartBusinessPage({
             aria-label="Acessos rápidos"
           >
             {visibleActions.map(({ action, href }) => {
-              const Icon =
-                actionIcons[action.actionType] ?? Globe2;
               const external = href.startsWith("http");
 
               return (
@@ -187,7 +169,7 @@ export default async function SmartBusinessPage({
                   }
                 >
                   <span className={styles.actionIcon}>
-                    <Icon size={21} strokeWidth={2} />
+                    {actionIcons[action.actionType] ?? "↗"}
                   </span>
                   <span>{action.label}</span>
                 </a>
@@ -246,7 +228,7 @@ export default async function SmartBusinessPage({
 
         {business.address && (
           <section className={styles.address}>
-            <MapPin size={18} />
+            <span aria-hidden="true">📍</span>
             <span>{business.address}</span>
           </section>
         )}
