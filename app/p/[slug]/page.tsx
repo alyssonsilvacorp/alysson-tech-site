@@ -59,7 +59,7 @@ function whatsappLink(phone: string | null, businessName: string) {
   const digits = phone.replace(/\D/g, "");
   if (digits.length < 10 || digits.length > 13) return null;
   const text = encodeURIComponent(
-    `Olá! Acessei o menu digital da ${businessName} e gostaria de agendar um horário.`,
+    `Olá! Acessei o menu digital da ${businessName} e gostaria de informações sobre o atendimento.`,
   );
   return `https://wa.me/${digits}?text=${text}`;
 }
@@ -82,7 +82,8 @@ function actionUrl(action: SmartBusinessAction, business: SmartBusiness) {
 }
 
 function actionTitle(type: string) {
-  if (type === "whatsapp" || type === "booking") return "Agendar horário";
+  if (type === "whatsapp") return "Falar no WhatsApp";
+  if (type === "booking") return "Agendar horário";
   if (type === "instagram") return "Instagram";
   if (type === "location") return "Como chegar";
   if (type === "services" || type === "catalog") return "Serviços e valores";
@@ -282,8 +283,8 @@ export default async function SmartBusinessPage({ params }: PageProps) {
           <ActionLink
             featured={Boolean(bookingUrl)}
             icon="◉"
-            label="Agendar horário"
-            detail={bookingUrl ? "Atendimento pelo WhatsApp" : "Agendamento em configuração"}
+            label={bookingAction?.actionType === "booking" ? "Agendar horário" : bookingAction?.label ?? "Falar no WhatsApp"}
+            detail={bookingUrl ? "Atendimento pelo WhatsApp" : "Contato em configuração"}
             href={bookingUrl}
           />
         </div>
@@ -340,7 +341,7 @@ export default async function SmartBusinessPage({ params }: PageProps) {
             <ActionLink
               icon="◉"
               label="WhatsApp"
-              detail={bookingUrl ? "Dúvidas e agendamento" : "Contato em preparação"}
+              detail={bookingUrl ? "Dúvidas e informações" : "Contato em preparação"}
               href={bookingUrl}
             />
             <ActionLink
