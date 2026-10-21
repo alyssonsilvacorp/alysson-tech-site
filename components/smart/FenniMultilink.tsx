@@ -53,7 +53,7 @@ function AccessCard({
   const className = `${styles.accessCard} ${variant === "featured" ? styles.featured : ""} ${!href ? styles.disabled : ""}`;
   if (!href) return <div className={className} aria-disabled="true">{content}</div>;
   return (
-    <a className={className} href={href} target="_blank" rel="noopener noreferrer">
+    <a className={className} href={href} target={href.startsWith("#") ? undefined : "_blank"} rel={href.startsWith("#") ? undefined : "noopener noreferrer"}>
       {content}
     </a>
   );
