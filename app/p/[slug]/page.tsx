@@ -7,6 +7,7 @@ import {
   type SmartBusinessAction,
 } from "../../../lib/smart-business";
 import PixCopy from "../../../components/smart/PixCopy";
+import FenniMultilink from "../../../components/smart/FenniMultilink";
 import styles from "./portal.module.css";
 
 export const dynamic = "force-dynamic";
@@ -193,6 +194,10 @@ export default async function SmartBusinessPage({ params }: PageProps) {
   const business = await getSmartBusiness(slug);
 
   if (!business) notFound();
+
+  if (business.slug === "otica-fenni") {
+    return <FenniMultilink business={business} />;
+  }
 
   const accent = business.accentColor && /^#[0-9a-fA-F]{6}$/.test(business.accentColor)
     ? business.accentColor
