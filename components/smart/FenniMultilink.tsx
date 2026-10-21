@@ -3,8 +3,6 @@ import type { SmartBusiness } from "../../lib/smart-business";
 import PixCopy from "./PixCopy";
 import styles from "./FenniMultilink.module.css";
 
-const originalLogo = "https://raw.githubusercontent.com/alyssonsilvacorp/otica-fenni-vitrine/main/public/images/brand/logo-fenni.png";
-
 function safeUrl(value: string | null | undefined) {
   if (!value) return null;
   try {
@@ -47,7 +45,7 @@ function AccessCard({
         <strong>{title}</strong>
         <small>{subtitle}</small>
       </span>
-      <span className={styles.actionArrow} aria-hidden="true">{href ? "↗" : "—"}</span>
+      <span className={styles.actionArrow} aria-hidden="true">{href ? "→" : "—"}</span>
     </>
   );
   const className = `${styles.accessCard} ${variant === "featured" ? styles.featured : ""} ${!href ? styles.disabled : ""}`;
@@ -85,36 +83,53 @@ export default function FenniMultilink({ business }: { business: SmartBusiness }
         </div>
 
         <header className={styles.hero}>
+          <img
+            className={styles.heroPhoto}
+            src="https://raw.githubusercontent.com/alyssonsilvacorp/otica-fenni-vitrine/main/public/images/store/loja-interior-fenni.jpg"
+            alt=""
+            aria-hidden="true"
+          />
           <span aria-hidden="true" className={styles.heroRule} />
           <div className={styles.identity}>
             <div className={styles.logoFrame}>
-              <span aria-hidden="true" className={styles.logoFallback}>FN</span>
-              <img src={business.logoUrl ?? originalLogo} alt="Marca da Ótica Fenni" />
+              <svg viewBox="0 0 100 100" role="img" aria-label="Monograma FN, Ótica Fenni">
+                <circle cx="50" cy="50" r="47" fill="#f7f1e8" stroke="#c9a970" strokeWidth="1.5" />
+                <circle cx="50" cy="50" r="39" fill="none" stroke="#947a6a" strokeWidth=".7" />
+                <text x="50" y="19.5" textAnchor="middle" fill="#641f2a" fontSize="6.2" letterSpacing="2.4">ÓTICA</text>
+                <text x="47" y="64" textAnchor="middle" fill="#641f2a" fontFamily="Georgia,serif" fontSize="44" letterSpacing="-4">FN</text>
+                <text x="50" y="87" textAnchor="middle" fill="#641f2a" fontSize="6.2" letterSpacing="2.5">FENNI</text>
+              </svg>
             </div>
-            <span className={styles.category}>ÓTICA FENNI · MACEIÓ</span>
+            <div className={styles.identityBrand}>
+              <span className={styles.category}>ÓTICA · MACEIÓ</span>
+              <strong>Fenni</strong>
+              <small>UM NOVO OLHAR</small>
+            </div>
           </div>
           <h1>Um novo olhar <em>começa aqui.</em></h1>
-          <p>Seu acesso rápido à Fenni. Avalie nosso atendimento, fale com a equipe e encontre tudo em um só lugar.</p>
+          <p>Seu espaço Fenni. Encontre nossos canais, conheça as novidades e compartilhe sua experiência.</p>
           <div className={styles.heroFooter}>
             <span>ATENDIMENTO PERSONALIZADO</span>
             <span className={styles.star} aria-hidden="true">✦</span>
           </div>
         </header>
 
+        <div className={styles.spotlight}>
+          <AccessCard
+            title="Avaliar no Google"
+            subtitle={reviewUrl?.includes("maps.app.goo.gl") ? "Abra o perfil e toque em Avaliar" : reviewUrl ? "Conte sua experiência" : "Avaliações em preparação"}
+            symbol="☆"
+            href={reviewUrl}
+          />
+        </div>
+
         <section className={styles.actions} aria-labelledby="fenni-links">
-          <div className={styles.sectionHeading}>
-            <span className={styles.eyebrow}>ACESSO RÁPIDO</span>
+          <div className={styles.welcome}>
+            <span className={styles.kicker}>CONTE COM A FENNI</span>
             <h2 id="fenni-links">Como podemos ajudar?</h2>
-            <p>Escolha uma opção para continuar.</p>
+            <p>Escolha como deseja se conectar com a nossa ótica.</p>
           </div>
-          <div className={styles.actionList}>
-            <AccessCard
-              title="Avaliar no Google"
-              subtitle={reviewUrl ? "Sua opinião faz a diferença" : "Avaliação em preparação"}
-              symbol="☆"
-              href={reviewUrl}
-              variant="featured"
-            />
+          <div className={styles.actionsList}>
             <AccessCard
               title="Falar no WhatsApp"
               subtitle={whatsapp ? "Tire suas dúvidas com a Fenni" : "Contato em preparação"}
