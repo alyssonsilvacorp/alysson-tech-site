@@ -88,3 +88,122 @@ a.accessCard:hover, a.accessCard:focus-visible { transform: translateY(-2px); bo
   .actionCopy strong { font-size: .8rem; }
   .actionCopy small { font-size: .7rem; }
 }
+
+
+/* Fenni Premium v2: identidade editorial bordô/creme */
+.page {
+  background: radial-gradient(ellipse at 90% 0%, #f2e7dd, transparent 36%), #fcfaf6;
+  padding-top: 16px;
+}
+.shell { max-width: 520px; }
+.topline {
+  align-items: center; margin-bottom: 15px; padding-bottom: 13px;
+  border-bottom: 1px solid #641f2a25;
+}
+.smallBrand { font-size: 1.55rem; letter-spacing: .14em; }
+.smallBrand span { font-size: .58rem; }
+.toplineDetail { color: #8d706c; }
+.hero {
+  overflow: hidden; isolation: isolate; min-height: 0; padding: 25px 23px 20px;
+  border: 1px solid #873b46; border-radius: 13px;
+  background: linear-gradient(112deg, #4a1620 0%, #631e2a 64%, #722b36 100%);
+  color: #fff9f0; box-shadow: 0 16px 40px #641f2a28;
+}
+.hero::before { width: 75px; height: 3px; background: #d8b88d; }
+.hero::after {
+  content: "F"; right: -3%; top: -75px; font-size: 310px;
+  color: #fff5eb09; transform: rotate(0deg);
+}
+.heroPhoto {
+  position: absolute; z-index: -1; top: 0; right: 0;
+  width: 65%; height: 100%; object-fit: cover; object-position: center 38%;
+  opacity: .14; pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 75%);
+  mask-image: linear-gradient(90deg, transparent 0%, black 75%);
+}
+.identity { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.logoFrame {
+  width: 88px; height: 88px; flex: 0 0 88px;
+  border-radius: 50%; border: 2px solid #d8b88db5;
+  background: #f7f1e8; box-shadow: 0 7px 19px #24060e38; margin-bottom: 0;
+}
+.logoFrame svg { width: 100%; height: 100%; display: block; }
+.category { color: #f2d6a9; font-size: .64rem; letter-spacing: .18em; }
+.identityBrand { display: flex; flex-direction: column; gap: 5px; }
+.identityBrand strong {
+  font: 400 1.45rem/1 Georgia,serif; letter-spacing: .055em; color: #fff7ef;
+}
+.identityBrand small {
+  color: #e3c9bb; font-size: .62rem; letter-spacing: .12em;
+}
+.hero h1 {
+  color: #fffaf4; max-width: 410px; font-weight: 500; line-height: 1;
+  font-size: clamp(2.35rem, 10vw, 3.4rem); margin-top: 14px;
+}
+.hero h1 em { color: #eac59b; }
+.hero p { max-width: 335px; color: #f2e1d8; font-size: .84rem; line-height: 1.6; }
+.heroBottom {
+  color: #e7cdba; margin-top: 20px; border-top: 1px solid #fff8e72b;
+  padding-top: 13px;
+}
+.heroBottom span:last-child { color: #eac59b; }
+.spotlight { margin-top: 13px; }
+.spotlight .actionCard {
+  min-height: 85px; padding: 16px 17px; border-radius: 13px;
+  border-color: #d8b88d; background: #fffdf9;
+  box-shadow: 0 6px 19px #641f2a18;
+}
+.spotlight .actionIcon { width: 48px; height: 48px; flex-basis: 48px; font-size: 1.7rem; }
+.spotlight .actionText strong { font-size: 1.02rem; color: #4a1620; }
+.spotlight .actionText small { font-size: .74rem; }
+.spotlight .actionArrow { font-size: 1.45rem; }
+.welcome { padding: 27px 3px 17px; text-align: center; }
+.welcome h2 {
+  color: #40141b; font: 500 2rem/1.07 Georgia,serif;
+  letter-spacing: -.035em; margin: 8px 0;
+}
+.welcome p { color: #756560; font-size: .82rem; }
+.kicker { color: #7c2936; }
+.actionsList { display: grid; gap: 10px; }
+.actionCard {
+  border: 1px solid #e7d8cb; border-radius: 12px; background: #fffdfb;
+  box-shadow: 0 3px 12px #641f2a09;
+  min-height: 76px;
+}
+a.actionCard:hover,a.actionCard:focus-visible {
+  background: #fff9f3; border-color: #8e4651;
+}
+.actionIcon {
+  border-radius: 50%; background: #f7f0e9; border: 1px solid #e5d2c4;
+  color: #641f2a;
+}
+.actionText strong { color: #3e2021; font-size: .91rem; }
+.actionText small { color: #74645f; font-size: .74rem; }
+.actionArrow { color: #641f2a; font-family: Arial,sans-serif; }
+.unavailable { border-style: dashed; background: #f8f3ed; opacity: .75; }
+.payment {
+  border: 1px solid #e3cfc0; border-radius: 13px;
+  background: #f5ebdf; margin-top: 18px;
+}
+.paymentHeader>span { border-radius: 50%; border-color: #b78e80; color: #641f2a; }
+.paymentHeader strong { color: #46161e; }
+.paymentHeader small,.pendingPix { color: #74645f; }
+.section { padding-top: 28px; }
+.sectionHeading h2 { color: #46161e; font-family: Georgia,serif; font-weight: 500; }
+.preparing { background: #f7f1e8; border-color: #d9c1b2; }
+.preparing strong { color: #46161e; }
+.preparing p { color: #74645f; }
+.serviceCard { background: #fffdfa; border-color: #e7d8cb; }
+.serviceDetail h3 { color: #46161e; }
+.serviceDetail p { color: #74645f; }
+.address { color: #74645f; text-align: center; justify-content: center; }
+.footer { border-top-color: #641f2a20; }
+.footer>span { color: #641f2a; font-family: Georgia,serif; }
+.footer strong { color: #641f2a; }
+@media(max-width:380px) {
+  .hero { padding: 22px 19px 18px; }
+  .logoFrame { width: 72px; height: 72px; flex-basis: 72px; }
+  .hero h1 { font-size: 2.28rem; }
+  .identityBrand strong { font-size: 1.3rem; }
+  .spotlight .actionCard { padding: 14px 12px; }
+}
