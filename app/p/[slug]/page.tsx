@@ -223,11 +223,14 @@ export default async function SmartBusinessPage({ params }: PageProps) {
     : safeUrl(business.mapsUrl);
 
   const pixData = getPixData(business.actions);
+  const reviewAction = business.actions.find(a => a.actionType === "google_review");
+  const reviewUrl = reviewAction ? actionUrl(reviewAction, business) : null;
+  const isOptica = business.category === "otica";
   const categoryLabel = labels[business.category?.toLowerCase() ?? ""] ??
     (business.category ?? "NEGÓCIO LOCAL").toUpperCase();
 
   const hasExtraActions = business.actions.some(a =>
-    !["booking", "whatsapp", "instagram", "location", "services", "catalog", "pix"].includes(a.actionType) &&
+    !["booking", "whatsapp", "instagram", "location", "services", "catalog", "pix", "google_review"].includes(a.actionType) &&
     actionUrl(a, business));
 
   return (
@@ -246,7 +249,7 @@ export default async function SmartBusinessPage({ params }: PageProps) {
               <img src={business.coverUrl} alt="" />
             </div>
           )}
-          <div className={styles.heroShape} aria-hidden="true">L</div>
+          <div className={styles.heroShape} aria-hidden="true">{initials.slice(0, 1)}</div>
 
           <div className={styles.identity}>
             {business.logoUrl ? (
@@ -275,8 +278,8 @@ export default async function SmartBusinessPage({ params }: PageProps) {
         <div className={styles.primaryActions}>
           <ActionLink
             featured
-            icon="✂"
-            label="Serviços e valores"
+            icon={isOptica ? "▦" : "✂"}
+            label={isOptica ? "Catálogo de produtos" : "Serviços e valores"}
             detail={business.services.length ? "Conheça nossos serviços" : "Catálogo em preparação"}
             href={business.services.length ? "#servicos" : null}
           />
@@ -322,7 +325,7 @@ export default async function SmartBusinessPage({ params }: PageProps) {
             </div>
           ) : (
             <div className={styles.preparing}>
-              <span className={styles.preparingIcon} aria-hidden="true">✂</span>
+              <span className={styles.preparingIcon} aria-hidden="true">{isOptica ? "▦" : "✂"}</span>
               <div>
                 <strong>Catálogo em preparação</strong>
                 <p>A relação de serviços, descrições e preços será disponibilizada após confirmação do estabelecimento.</p>
@@ -356,6 +359,12 @@ export default async function SmartBusinessPage({ params }: PageProps) {
               detail={locationUrl ? "Abrir no mapa" : "Endereço em preparação"}
               href={locationUrl}
             />
+            <ActionLink
+              icon="☆"
+              label="Avaliar no Google"
+              detail={reviewUrl ? "Conte sua experiência" : "Link de avaliação em preparação"}
+              href={reviewUrl}
+            />
           </div>
         </section>
 
@@ -376,7 +385,7 @@ export default async function SmartBusinessPage({ params }: PageProps) {
                 <p className={styles.note}>Confira o nome do recebedor no aplicativo do banco antes de confirmar.</p>
               </>
             ) : (
-              <p className={styles.pendingPix}>A opção de Pix aparecerá aqui quando os dados de pagamento forem confirmados pela barbearia.</p>
+              <p className={styles.pendingPix}>A opção de Pix aparecerá aqui quando os dados de pagamento forem confirmados pelo estabelecimento.</p>
             )}
           </div>
         </section>
@@ -386,7 +395,7 @@ export default async function SmartBusinessPage({ params }: PageProps) {
             {sectionHeading("04 / MAIS ACESSOS", "Outros canais")}
             <div className={styles.secondaryActions}>
               {business.actions
-                .filter(a => !["booking", "whatsapp", "instagram", "location", "services", "catalog", "pix"].includes(a.actionType))
+                .filter(a => !["booking", "whatsapp", "instagram", "location", "services", "catalog", "pix", "google_review"].includes(a.actionType))
                 .map(a => ({ action: a, href: actionUrl(a, business) }))
                 .filter((item): item is { action: SmartBusinessAction; href: string } => item.href !== null)
                 .map(({ action, href }) => (
