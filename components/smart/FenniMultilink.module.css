@@ -1,237 +1,213 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap");
 
 .page {
-  --wine:#641f2a;
-  --wine-dark:#3c1019;
-  --wine-light:#843947;
-  --cream:#fcfaf6;
-  --paper:#f7f1e8;
-  --ink:#302126;
-  --muted:#72615e;
-  --line:#e9d9ce;
-  min-height:100vh;
-  background: radial-gradient(circle at 85% 5%, #f1e6d9 0%, transparent 25%), #fcfaf6;
-  color:var(--ink);
-  padding:0 28px 40px;
-  font-family:Manrope,Arial,sans-serif;
-  -webkit-font-smoothing:antialiased;
+  --wine-950: #351116;
+  --wine-900: #46161e;
+  --wine-800: #641f2a;
+  --wine-700: #7c2936;
+  --cream-50: #fcfaf6;
+  --cream-100: #f7f1e8;
+  --cream-200: #efe4d5;
+  --champagne: #c9a970;
+  --ink: #292321;
+  --ink-soft: #6e625d;
+  min-height: 100vh;
+  background: radial-gradient(circle at 100% 0%, rgba(201,169,112,.17), transparent 33%), var(--cream-50);
+  color: var(--ink);
+  padding: 24px 15px 32px;
+  font-family: Manrope, Arial, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
-.page * { box-sizing:border-box; }
-.page a { -webkit-tap-highlight-color:transparent; }
-.page a:focus-visible { outline:2px solid #c79b64; outline-offset:4px; }
-.shell { width:100%; max-width:1080px; margin:0 auto; }
-.header { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:24px 0 22px; }
-.brand { display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit; }
-.brandMark {
-  height:60px; width:60px; flex:0 0 60px; overflow:hidden; display:grid;
-  place-items:center; background:#f7f1e8; border:1px solid #d5bca8;
-  border-radius:50%; box-shadow:0 6px 20px #641f2a11;
-}
-.brandMark img { height:100%; width:100%; object-fit:cover; display:block; }
-.brandWords { display:flex; flex-direction:column; gap:6px; }
-.brandWords strong { font:500 1.95rem/1 "Cormorant Garamond",Georgia,serif; color:#571825; letter-spacing:-.02em; }
-.brandWords small { color:#9d7771; font-size:.58rem; font-weight:800; letter-spacing:.23em; }
-.headerLocation { display:flex; align-items:center; gap:7px; color:#8b7771; font-size:.72rem; letter-spacing:.01em; }
+.page * { box-sizing: border-box; }
+.shell { max-width: 510px; margin: 0 auto; }
+.topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 17px; border-bottom: 1px solid #641f2a26; padding: 0 2px 14px; }
+.smallBrand { color: var(--wine-900); font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; letter-spacing: .11em; font-size: 1.4rem; line-height: 1; }
+.smallBrand span { font-family: Manrope, Arial, sans-serif; font-size: .52rem; letter-spacing: .24em; margin-left: 4px; }
+.toplineDetail { font-size: .59rem; font-weight: 800; color: var(--wine-800); letter-spacing: .12em; white-space: nowrap; }
 
+.hero { position: relative; overflow: hidden; padding: 27px 25px 22px; min-height: 330px; border-radius: 3px; background: linear-gradient(105deg, var(--cream-100) 0%, #fbf8f0 70%, var(--cream-200) 100%); border: 1px solid #e3d5c5; box-shadow: 0 20px 50px #46161e0e; }
+.hero:before { content: ""; position: absolute; top: 0; bottom: 0; right: 0; width: 9px; background: var(--wine-800); }
+.hero:after { content: "F"; position: absolute; right: 10px; top: -60px; font: 500 330px/1 "Cormorant Garamond", Georgia, serif; color: #641f2a0d; pointer-events: none; }
+.heroRule { position: absolute; top: 0; left: 0; height: 4px; width: 115px; background: var(--wine-800); }
+.identity { position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.logoFrame { width: 66px; height: 66px; flex: 0 0 66px; position: relative; border-radius: 50%; border: 1px solid #641f2a2e; background: #fffdf9; overflow: hidden; display: grid; place-items: center; }
+.logoFrame img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; }
+.logoFallback { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; color: var(--wine-800); font-size: 1.5rem; }
+.category { font-weight: 800; font-size: .69rem; color: var(--wine-800); letter-spacing: .17em; }
+.hero h1 { position: relative; z-index: 1; max-width: 405px; font: 500 clamp(2.45rem, 11vw, 3.8rem)/.99 "Cormorant Garamond", Georgia, serif; letter-spacing: -.04em; color: var(--wine-950); margin: 0 0 18px; }
+.hero h1 em { color: var(--wine-700); font-style: italic; }
+.hero p { position: relative; z-index: 1; max-width: 355px; font-size: .81rem; line-height: 1.75; color: var(--ink-soft); margin: 0; }
+.heroFooter { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #641f2a2d; padding-top: 13px; margin-top: 25px; color: var(--wine-800); font-size: .57rem; letter-spacing: .12em; font-weight: 800; }
+.star { color: var(--champagne); font-size: 1.4rem; }
+
+.actions { padding: 31px 0 0; }
+.sectionHeading { margin: 0 3px 22px; }
+.eyebrow { display: block; font-size: .65rem; letter-spacing: .18em; color: var(--wine-700); font-weight: 800; }
+.sectionHeading h2, .catalog h2 { font: 600 2.1rem/1 "Cormorant Garamond", Georgia, serif; letter-spacing: -.035em; color: var(--wine-950); margin: 9px 0 10px; }
+.sectionHeading p { color: var(--ink-soft); font-size: .82rem; margin: 0; }
+.actionList { display: grid; gap: 10px; }
+.accessCard { display: flex; align-items: center; text-decoration: none; gap: 14px; min-height: 75px; padding: 13px 15px; border: 1px solid #e8dace; border-radius: 5px; background: #fffdf9; color: var(--wine-950); box-shadow: 0 5px 16px #641f2a0a; transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+a.accessCard:hover, a.accessCard:focus-visible { transform: translateY(-2px); border-color: var(--wine-800); box-shadow: 0 8px 20px #641f2a20; outline: none; }
+.actionSymbol { display: grid; place-items: center; flex: 0 0 45px; width: 45px; height: 45px; border-radius: 50%; color: var(--wine-800); border: 1px solid #e1cdbe; background: #f7f1e8; font-size: 1.5rem; font-weight: 600; }
+.actionCopy { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.actionCopy strong { font-size: .85rem; font-weight: 800; }
+.actionCopy small { font-size: .73rem; font-weight: 500; color: var(--ink-soft); line-height: 1.4; }
+.actionArrow { color: var(--wine-700); font-size: 1.5rem; font-weight: 700; }
+.featured { background: var(--wine-800); color: var(--cream-50); border-color: var(--wine-800); }
+.featured .actionSymbol { background: #ffffff14; color: #f3dfc4; border-color: #ffffff40; }
+.featured .actionCopy small, .featured .actionArrow { color: #f6e7d7; }
+.disabled { background: #f8f3ec; border-style: dashed; opacity: .75; box-shadow: none; }
+.disabled .actionArrow { color: #a2928b; }
+.catalog { padding: 30px 3px 0; scroll-margin-top: 18px; }
+.catalogList { display: grid; gap: 10px; }
+.catalogItem { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid #dcc9b9; padding: 10px 0 14px; }
+.catalogItem strong { font-size: .87rem; color: var(--wine-950); }
+.catalogItem p { margin: 6px 0 0; font-size: .78rem; color: var(--ink-soft); }
+.catalogItem>span { font-size: .78rem; font-weight: 700; color: var(--wine-800); white-space: nowrap; }
+.payment { margin-top: 28px; display: flex; gap: 14px; background: #f4eadf; border: 1px solid #e6d6c7; border-left: 4px solid var(--wine-800); padding: 18px 17px; border-radius: 4px; }
+.paymentIcon { flex: 0 0 42px; width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; border: 1px solid #641f2a44; color: var(--wine-800); font-size: 1.5rem; }
+.paymentContent { flex: 1; min-width: 0; }
+.payment h2 { color: var(--wine-950); font: 600 1.6rem/1.1 "Cormorant Garamond", Georgia, serif; margin: 5px 0 9px; }
+.payment p { color: var(--ink-soft); font-size: .78rem; line-height: 1.6; margin: 0; }
+.payment .pending { color: #7a6b64; }
+.pixWrapper { margin-top: 9px; }
+.pixWrapper input { border-color: #dbc7ba; background: #fffdf9; color: var(--wine-950); }
+.pixWrapper button { background: var(--wine-800); color: white; }
+.address { margin: 23px 4px; text-align: center; color: var(--ink-soft); font-size: .77rem; }
+.footer { text-align: center; margin-top: 28px; border-top: 1px solid #641f2a2b; padding: 20px 0 0; display: flex; flex-direction: column; gap: 6px; }
+.footer>span { color: var(--wine-900); font: 700 1.3rem/1 "Cormorant Garamond", Georgia, serif; letter-spacing: .12em; }
+.footer small { color: #87736a; font-size: .65rem; }
+.footer strong { color: var(--wine-800); font-size: .7rem; letter-spacing: .08em; }
+
+@media (max-width: 380px) {
+  .page { padding: 17px 11px 24px; }
+  .hero { padding: 24px 19px 18px; }
+  .toplineDetail { font-size: .53rem; }
+  .hero h1 { font-size: 2.6rem; }
+  .actionCopy strong { font-size: .8rem; }
+  .actionCopy small { font-size: .7rem; }
+}
+
+
+/* Fenni Premium v2: identidade editorial bordô/creme */
+.page {
+  background: radial-gradient(ellipse at 90% 0%, #f2e7dd, transparent 36%), #fcfaf6;
+  padding-top: 16px;
+}
+.shell { max-width: 520px; }
+.topline {
+  align-items: center; margin-bottom: 15px; padding-bottom: 13px;
+  border-bottom: 1px solid #641f2a25;
+}
+.smallBrand { font-size: 1.55rem; letter-spacing: .14em; }
+.smallBrand span { font-size: .58rem; }
+.toplineDetail { color: #8d706c; }
 .hero {
-  display:grid; grid-template-columns:1.13fr .87fr;
-  min-height:454px; overflow:hidden; border-radius:12px;
-  background:#541b26; box-shadow:0 23px 58px #45142020; animation:rise .55s ease both;
+  overflow: hidden; isolation: isolate; min-height: 0; padding: 25px 23px 20px;
+  border: 1px solid #873b46; border-radius: 13px;
+  background: linear-gradient(112deg, #4a1620 0%, #631e2a 64%, #722b36 100%);
+  color: #fff9f0; box-shadow: 0 16px 40px #641f2a28;
 }
-.heroCopy {
-  position:relative; isolation:isolate; display:flex; align-items:flex-start;
-  flex-direction:column; justify-content:center; padding:46px clamp(30px,5vw,74px);
-  background:linear-gradient(126deg,#4c1520,#65212e); color:#fdf5ec;
+.hero::before { width: 75px; height: 3px; background: #d8b88d; }
+.hero::after {
+  content: "F"; right: -3%; top: -75px; font-size: 310px;
+  color: #fff5eb09; transform: rotate(0deg);
 }
-.heroCopy::after {
-  content:"F"; position:absolute; right:-12px; top:6%; z-index:-1;
-  font:400 390px/1 "Cormorant Garamond",Georgia,serif; color:#ffffff07;
-  pointer-events:none;
+.heroPhoto {
+  position: absolute; z-index: -1; top: 0; right: 0;
+  width: 65%; height: 100%; object-fit: cover; object-position: center 38%;
+  opacity: .14; pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 75%);
+  mask-image: linear-gradient(90deg, transparent 0%, black 75%);
 }
-.eyebrow { font-size:.67rem; font-weight:800; letter-spacing:.2em; color:#873e47; }
-.hero .eyebrow { display:flex; align-items:center; gap:11px; color:#edcba5; }
-.tinyLine { display:inline-block; width:25px; height:1px; background:#d5b08c; }
+.identity { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.logoFrame {
+  width: 88px; height: 88px; flex: 0 0 88px;
+  border-radius: 50%; border: 2px solid #d8b88db5;
+  background: #f7f1e8; box-shadow: 0 7px 19px #24060e38; margin-bottom: 0;
+}
+.logoFrame svg { width: 100%; height: 100%; display: block; }
+.category { color: #f2d6a9; font-size: .64rem; letter-spacing: .18em; }
+.identityBrand { display: flex; flex-direction: column; gap: 5px; }
+.identityBrand strong {
+  font: 400 1.45rem/1 Georgia,serif; letter-spacing: .055em; color: #fff7ef;
+}
+.identityBrand small {
+  color: #e3c9bb; font-size: .62rem; letter-spacing: .12em;
+}
 .hero h1 {
-  font:400 clamp(3.3rem,5.6vw,5.4rem)/.9 "Cormorant Garamond",Georgia,serif;
-  letter-spacing:-.055em; margin:24px 0 19px; max-width:480px;
-  color:#fffaf4;
+  color: #fffaf4; max-width: 410px; font-weight: 500; line-height: 1;
+  font-size: clamp(2.35rem, 10vw, 3.4rem); margin-top: 14px;
 }
-.hero h1 em { display:block; font-weight:400; color:#e7bd96; }
-.heroCopy p { max-width:430px; font-size:.84rem; line-height:1.95; color:#e4d0c7; margin:0; }
-.heroActions { display:flex; flex-wrap:wrap; align-items:center; gap:12px 22px; margin-top:28px; }
-.heroPrimary {
-  display:inline-flex; align-items:center; justify-content:center; gap:14px;
-  min-height:46px; padding:0 19px; border:1px solid #efd8bf;
-  border-radius:5px; background:#f7eee2; color:#531b26;
-  font-size:.78rem; font-weight:800; text-decoration:none;
-  transition:transform .18s ease,background .18s ease;
+.hero h1 em { color: #eac59b; }
+.hero p { max-width: 335px; color: #f2e1d8; font-size: .84rem; line-height: 1.6; }
+.heroBottom {
+  color: #e7cdba; margin-top: 20px; border-top: 1px solid #fff8e72b;
+  padding-top: 13px;
 }
-.heroPrimary:hover { background:#fffaf3; transform:translateY(-2px); }
-.heroSecondary {
-  display:inline-flex; gap:7px; align-items:center; color:#f3dfd3;
-  text-decoration:none; border-bottom:1px solid #efd7ca8a; padding-bottom:5px;
-  font-size:.76rem; font-weight:600;
+.heroBottom span:last-child { color: #eac59b; }
+.spotlight { margin-top: 13px; }
+.spotlight .actionCard {
+  min-height: 85px; padding: 16px 17px; border-radius: 13px;
+  border-color: #d8b88d; background: #fffdf9;
+  box-shadow: 0 6px 19px #641f2a18;
 }
-.heroSecondary:hover { color:white; }
-.heroTags { display:flex; flex-wrap:wrap; gap:9px 17px; align-items:center; margin-top:24px; color:#ddc7bc; }
-.heroTags span { display:inline-flex; gap:6px; align-items:center; font-size:.64rem; }
-.heroTags svg { color:#dab88f; }
-.heroVisual { position:relative; min-height:440px; overflow:hidden; background:#dac5b7; }
-.heroVisual::after { content:""; pointer-events:none; position:absolute; inset:0; background:linear-gradient(to top,#31171f97,transparent 38%); }
-.heroVisual img { display:block; width:100%; height:100%; object-fit:cover; object-position:center 36%; transition:transform .7s ease; }
-.heroVisual:hover img { transform:scale(1.035); }
-.imageCaption {
-  position:absolute; z-index:1; bottom:23px; left:24px; display:flex; align-items:center;
-  gap:9px; color:#fff5eb; font-size:.64rem; font-weight:800; letter-spacing:.13em;
+.spotlight .actionIcon { width: 48px; height: 48px; flex-basis: 48px; font-size: 1.7rem; }
+.spotlight .actionText strong { font-size: 1.02rem; color: #4a1620; }
+.spotlight .actionText small { font-size: .74rem; }
+.spotlight .actionArrow { font-size: 1.45rem; }
+.welcome { padding: 27px 3px 17px; text-align: center; }
+.welcome h2 {
+  color: #40141b; font: 500 2rem/1.07 Georgia,serif;
+  letter-spacing: -.035em; margin: 8px 0;
 }
-.imageCaptionDot { width:6px; height:6px; border-radius:50%; background:#e7b479; }
-
-.actionSection { padding:54px 0 0; }
-.sectionHead { display:flex; align-items:end; justify-content:space-between; gap:30px; margin:0 0 20px; }
-.sectionHead h2 {
-  margin:9px 0 0; font:500 clamp(2.3rem,4vw,3.25rem)/1 "Cormorant Garamond",Georgia,serif;
-  letter-spacing:-.04em; color:#4c1821;
+.welcome p { color: #756560; font-size: .82rem; }
+.kicker { color: #7c2936; }
+.actionsList { display: grid; gap: 10px; }
+.actionCard {
+  border: 1px solid #e7d8cb; border-radius: 12px; background: #fffdfb;
+  box-shadow: 0 3px 12px #641f2a09;
+  min-height: 76px;
 }
-.sectionHead p { color:var(--muted); font-size:.83rem; padding-bottom:4px; margin:0; }
-.accessGrid { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:13px; }
-.accessFeatured,.accessCard {
-  display:flex; align-items:center; gap:15px; border-radius:9px; min-width:0;
-  text-decoration:none; color:#492028; background:#fffdfa; border:1px solid #e8d7ca;
-  box-shadow:0 7px 24px #641f2a0a; transition:transform .19s ease,box-shadow .19s ease,border-color .19s ease;
+a.actionCard:hover,a.actionCard:focus-visible {
+  background: #fff9f3; border-color: #8e4651;
 }
-.accessFeatured { grid-column:span 3; min-height:107px; padding:19px 21px; }
-.accessCard { grid-column:span 2; min-height:97px; padding:16px 16px; }
-.accessFeatured:first-child { color:#fff9f3; background:linear-gradient(120deg,#742735,#581a25); border-color:#64212e; }
-a.accessFeatured:hover,a.accessCard:hover {
-  transform:translateY(-3px); box-shadow:0 14px 26px #641f2a1c; border-color:#a56b70;
+.actionIcon {
+  border-radius: 50%; background: #f7f0e9; border: 1px solid #e5d2c4;
+  color: #641f2a;
 }
-.accessIcon {
-  display:grid; place-items:center; flex:0 0 48px; height:48px; width:48px;
-  border-radius:50%; background:#f6eee6; color:#762937; border:1px solid #e6d0c0;
+.actionText strong { color: #3e2021; font-size: .91rem; }
+.actionText small { color: #74645f; font-size: .74rem; }
+.actionArrow { color: #641f2a; font-family: Arial,sans-serif; }
+.unavailable { border-style: dashed; background: #f8f3ed; opacity: .75; }
+.payment {
+  border: 1px solid #e3cfc0; border-radius: 13px;
+  background: #f5ebdf; margin-top: 18px;
 }
-.accessFeatured:first-child .accessIcon { background:#ffffff17; border-color:#ffffff5c; color:#f3d4bd; }
-.accessFeatured:first-child .accessArrow { color:#f5e1d1; }
-.accessFeatured:first-child .accessCopy small { color:#f2dcd7; }
-.accessCopy { display:flex; flex-direction:column; flex:1; min-width:0; gap:5px; }
-.accessCopy strong { font-size:.9rem; font-weight:800; letter-spacing:-.022em; }
-.accessCopy small { color:#826d67; font-size:.72rem; line-height:1.5; }
-.accessArrow { color:#7c2936; flex:0 0 auto; }
-.unavailable { opacity:.65; border-style:dashed; cursor:default; }
-
-.catalogTeaser {
-  display:grid; grid-template-columns:1fr .76fr; gap:0; overflow:hidden;
-  border:1px solid #e4d5c9; border-radius:12px; background:#f4ece3;
-  margin-top:58px; scroll-margin-top:20px; min-height:294px;
-}
-.catalogCopy { display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding:40px clamp(28px,5vw,60px); }
-.catalogCopy h2 {
-  font:500 clamp(2.45rem,4.7vw,4rem)/.98 "Cormorant Garamond",Georgia,serif;
-  letter-spacing:-.045em; color:#521d28; margin:12px 0 13px;
-}
-.catalogCopy h2 em { font-weight:400; color:#873744; }
-.catalogCopy p { max-width:500px; font-size:.79rem; line-height:1.85; color:#75645f; margin:0; }
-.catalogStatus {
-  display:inline-flex; margin-top:18px; padding:7px 10px; border:1px solid #caaf9c;
-  border-radius:3px; color:#873744; font-size:.6rem; font-weight:800; letter-spacing:.1em;
-}
-.catalogAction {
-  display:inline-flex; align-items:center; gap:10px; margin-top:18px; text-decoration:none;
-  color:#682331; border-bottom:1px solid #a46570; padding-bottom:5px; font-size:.75rem; font-weight:800;
-}
-.catalogAction:hover { color:#9d344b; }
-.catalogVisual {
-  position:relative; background:linear-gradient(150deg,#4c1823,#7a2b3b);
-  display:flex; align-items:center; flex-direction:column; justify-content:center;
-  color:#eed5c5; overflow:hidden; min-height:284px;
-}
-.catalogVisual::before,.catalogVisual::after { content:""; position:absolute; border:1px solid #ead1be30; border-radius:50%; width:280px; height:280px; }
-.catalogVisual::after { width:225px; height:225px; }
-.catalogMonogram { position:relative; z-index:1; color:#f9eee3; font:400 clamp(5rem,10vw,8rem)/1 "Cormorant Garamond",Georgia,serif; letter-spacing:-.09em; margin:0 17px 2px 0; }
-.catalogVisual span { position:relative; z-index:1; font-size:.66rem; letter-spacing:.25em; font-weight:700; }
-.catalogVisual small { position:relative; z-index:1; margin-top:7px; color:#d3bba9; font-size:.53rem; letter-spacing:.14em; }
-
-.aboutStrip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; margin-top:42px; padding:27px 0; border-top:1px solid #e8d8ce; border-bottom:1px solid #e8d8ce; }
-.aboutStrip>div { display:grid; grid-template-columns:30px 1fr; column-gap:10px; align-items:start; }
-.aboutNumber { grid-row:span 2; font:400 1.45rem/1 "Cormorant Garamond",Georgia,serif; color:#a67c77; }
-.aboutStrip strong { color:#59202b; font-size:.8rem; font-weight:750; line-height:1.4; }
-.aboutStrip p { font-size:.73rem; line-height:1.5; color:#85716b; margin:5px 0 0; }
-
-.payment { display:flex; gap:14px; align-items:flex-start; margin-top:28px; padding:24px 26px; border:1px solid #e8dacd; background:#fffdf9; border-radius:10px; }
-.paymentHeader { display:flex; align-items:center; gap:15px; }
-.paymentIcon { width:43px; height:43px; flex:0 0 43px; display:grid; place-items:center; background:#f4e9dc; color:#69202f; border:1px solid #e5d3c7; border-radius:50%; }
-.payment h2 { margin:3px 0 4px; font:500 1.65rem/1 "Cormorant Garamond",Georgia,serif; color:#551e2a; }
-.payment p { color:#826f68; font-size:.75rem; margin:4px 0 0; }
-.pixCopy { flex:1; min-width:0; }
-.pixCopy :global(input) { max-width:100%; background:#faf5ef; color:#471725; border-color:#caa99a; }
-.pixCopy :global(button) { background:#641f2a; color:#fffaf4; }
-.pixCopy small { display:block; font-size:.7rem; color:#7d6b65; margin-top:8px; }
-
-.footer { margin-top:40px; padding-top:25px; display:flex; align-items:center; justify-content:space-between; gap:15px; border-top:1px solid #e4d3c7; }
-.footer>div { display:flex; flex-direction:column; gap:5px; }
-.footer strong { color:#59212b; }
-.footer>div:first-child strong { font:500 1.55rem/1 "Cormorant Garamond",Georgia,serif; }
-.footer span,.footer small { color:#8a7871; font-size:.72rem; }
-.footerRight { align-items:flex-end; text-align:right; }
-.footerRight small strong { font:800 .7rem Manrope,Arial,sans-serif; letter-spacing:.05em; }
-
-@keyframes rise { from { opacity:0; transform:translateY(13px); } to { opacity:1; transform:translateY(0); } }
-@media(max-width:850px) {
-  .hero { grid-template-columns:1fr .82fr; min-height:415px; }
-  .heroCopy { padding:34px; }
-  .hero h1 { font-size:clamp(3rem,6.4vw,4.3rem); }
-  .accessFeatured { padding:16px; }
-  .accessCard { padding:13px; }
-  .accessIcon { width:40px; height:40px; flex-basis:40px; }
-  .accessCopy strong { font-size:.79rem; }
-  .accessCopy small { font-size:.66rem; }
-}
-@media(max-width:680px) {
-  .page { padding:0 16px 30px; }
-  .header { padding:16px 0 15px; }
-  .brandMark { width:53px; height:53px; flex-basis:53px; }
-  .brandWords strong { font-size:1.63rem; }
-  .headerLocation { display:none; }
-  .hero { grid-template-columns:1fr; min-height:0; border-radius:11px; }
-  .heroCopy { padding:30px 26px 25px; }
-  .hero h1 { margin:14px 0 11px; font-size:clamp(3.15rem,13vw,4.3rem); }
-  .heroCopy p { font-size:.78rem; line-height:1.75; }
-  .heroActions { margin-top:22px; gap:12px 17px; }
-  .heroTags { margin-top:19px; }
-  .heroVisual { height:210px; min-height:0; }
-  .imageCaption { bottom:14px; left:18px; }
-  .actionSection { padding:30px 0 0; }
-  .sectionHead { flex-direction:column; align-items:flex-start; gap:7px; margin-bottom:15px; }
-  .sectionHead h2 { font-size:2.5rem; }
-  .sectionHead p { font-size:.76rem; }
-  .accessGrid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-  .accessFeatured { grid-column:span 2; min-height:80px; padding:13px 15px; }
-  .accessCard { grid-column:span 2; min-height:72px; padding:12px 15px; }
-  .accessCopy strong { font-size:.86rem; }
-  .accessCopy small { font-size:.72rem; }
-  .catalogTeaser { grid-template-columns:1fr; margin-top:30px; }
-  .catalogCopy { padding:26px 23px; }
-  .catalogCopy h2 { font-size:2.95rem; }
-  .catalogVisual { min-height:190px; }
-  .catalogVisual::before { width:210px; height:210px; }
-  .catalogVisual::after { width:170px; height:170px; }
-  .catalogMonogram { font-size:5.5rem; }
-  .aboutStrip { grid-template-columns:1fr; gap:17px; margin-top:27px; padding:23px 0; }
-  .payment { flex-direction:column; padding:20px; }
-  .footer { margin-top:28px; flex-direction:column; align-items:flex-start; gap:14px; }
-  .footerRight { align-items:flex-start; text-align:left; }
-}
+.paymentHeader>span { border-radius: 50%; border-color: #b78e80; color: #641f2a; }
+.paymentHeader strong { color: #46161e; }
+.paymentHeader small,.pendingPix { color: #74645f; }
+.section { padding-top: 28px; }
+.sectionHeading h2 { color: #46161e; font-family: Georgia,serif; font-weight: 500; }
+.preparing { background: #f7f1e8; border-color: #d9c1b2; }
+.preparing strong { color: #46161e; }
+.preparing p { color: #74645f; }
+.serviceCard { background: #fffdfa; border-color: #e7d8cb; }
+.serviceDetail h3 { color: #46161e; }
+.serviceDetail p { color: #74645f; }
+.address { color: #74645f; text-align: center; justify-content: center; }
+.footer { border-top-color: #641f2a20; }
+.footer>span { color: #641f2a; font-family: Georgia,serif; }
+.footer strong { color: #641f2a; }
 @media(max-width:380px) {
-  .page { padding-left:12px; padding-right:12px; }
-  .heroCopy { padding:27px 21px 23px; }
-  .hero h1 { font-size:2.9rem; }
-  .heroPrimary { padding:0 14px; }
-  .catalogCopy h2 { font-size:2.6rem; }
+  .hero { padding: 22px 19px 18px; }
+  .logoFrame { width: 72px; height: 72px; flex-basis: 72px; }
+  .hero h1 { font-size: 2.28rem; }
+  .identityBrand strong { font-size: 1.3rem; }
+  .spotlight .actionCard { padding: 14px 12px; }
 }
-@media(prefers-reduced-motion:reduce) {
-  .hero { animation:none; }
-  .heroPrimary,.accessFeatured,.accessCard,.heroVisual img { transition:none; }
-  .heroPrimary:hover,.accessFeatured:hover,.accessCard:hover,.heroVisual:hover img { transform:none; }
-}
+
 
 /* Catálogo progressivo Fenni: fotos primeiro, prévias em vídeo sob demanda */
 .catalog { scroll-margin-top: 15px; margin-top: 28px; padding: 22px 18px; background: #fffdfa; border: 1px solid #e6d4c7; border-radius: 13px; }
@@ -278,4 +254,54 @@ a.accessFeatured:hover,a.accessCard:hover {
 @media(prefers-reduced-motion: reduce) {
   .productCard,.productMedia img { transition: none; }
   .productCard:hover,.productMedia img:hover { transform: none; }
+}
+
+
+/* Fenni refinement — the original functional component remains unchanged. */
+.heroPhoto { opacity:.25; }
+.logoFrame img { object-fit:cover; border-radius:50%; height:100%; width:100%; display:block; }
+.hero { transition:box-shadow .25s ease; }
+.actionCard { transition:transform .23s ease,box-shadow .23s ease,border-color .23s ease; }
+a.actionCard:active { transform:scale(.99); }
+.catalogPreview img { background:#e5d5ca; }
+@media(min-width:800px) {
+  .page { padding:32px 35px 65px; }
+  .shell { max-width:1010px; }
+  .topline { padding:10px 0 20px; margin:0 0 20px; }
+  .smallBrand { font-size:1.7rem; }
+  .toplineDetail { font-size:.67rem; letter-spacing:.15em; }
+  .hero { padding:50px 58px 45px; min-height:400px; border-radius:17px; }
+  .heroPhoto { width:47%; opacity:.32; object-position:center 30%; }
+  .hero::after { right:10%; font-size:420px; opacity:.4; }
+  .hero h1 { max-width:660px; font-size:clamp(3.5rem,6vw,5.2rem); line-height:.93; }
+  .hero p { max-width:450px; font-size:.93rem; line-height:1.8; }
+  .heroFooter { max-width:540px; padding-top:20px; margin-top:28px; }
+  .identity { margin-bottom:23px; }
+  .logoFrame { width:92px; height:92px; flex-basis:92px; }
+  .identityBrand strong { font-size:1.8rem; }
+  .spotlight { margin-top:17px; }
+  .spotlight .actionCard { max-width:none; min-height:94px; padding:19px 25px; }
+  .spotlight .actionText strong { font-size:1.14rem; }
+  .welcome { padding:40px 0 22px; }
+  .welcome h2 { font-size:2.8rem; }
+  .welcome p { font-size:.94rem; }
+  .actionsList { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+  .actionsList .actionCard { min-height:100px; padding:20px 24px; }
+  .actionsList .actionText strong { font-size:1rem; }
+  .actionsList .actionText small { font-size:.82rem; }
+  .actionsList .actionIcon { width:52px; height:52px; flex-basis:52px; }
+  .catalog { padding:34px 40px; margin-top:48px; border-radius:15px; }
+  .catalog h2 { font-size:3.4rem; }
+  .catalogPreview { display:grid; grid-template-columns:245px 1fr; gap:34px; padding-top:26px; }
+  .catalogPreview img { width:245px; height:260px; object-fit:cover; border-radius:9px; }
+  .catalogPreview strong { font-size:1.25rem; }
+  .catalogPreview p { font-size:.9rem; margin-top:10px; }
+  .catalogPreview a { font-size:.86rem; margin-top:12px; }
+  .payment { max-width:none; margin-top:35px; padding:27px 35px; }
+  .address { margin:36px 0; font-size:.88rem; }
+  .footer { margin-top:30px; padding:22px 0; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .actionCard { transition:none; }
+  a.actionCard:active { transform:none; }
 }

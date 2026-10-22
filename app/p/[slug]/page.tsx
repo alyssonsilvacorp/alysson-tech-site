@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { CSSProperties, ReactNode } from "react";
 import {
@@ -16,26 +15,6 @@ export const dynamic = "force-dynamic";
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-  if (slug === "otica-fenni") {
-    return {
-      title: "Ótica Fenni — Um novo olhar começa aqui",
-      description: "Seu espaço digital da Ótica Fenni em Maceió. WhatsApp, localização, avaliação no Google e catálogo de armações.",
-      alternates: { canonical: "/p/otica-fenni" },
-      icons: { icon: "/fenni/logo-oficial-instagram.jpg" },
-      openGraph: {
-        title: "Ótica Fenni | Seu espaço digital",
-        description: "Conheça a Ótica Fenni, compartilhe sua experiência e fale com a equipe.",
-        type: "website",
-        locale: "pt_BR",
-        images: [{ url: "/fenni/loja-fenni.jpg", width: 800, height: 1000, alt: "Ótica Fenni em Maceió" }],
-      },
-    };
-  }
-  return { title: "Menu digital" };
-}
 
 const iconMap: Record<string, string> = {
   services: "✂",
