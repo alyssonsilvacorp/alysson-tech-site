@@ -14,6 +14,7 @@ export type SmartBusinessService = {
   price: number | null;
   priceLabel: string | null;
   imageUrl: string | null;
+  videoUrl: string | null;
   sortOrder: number;
 };
 
@@ -62,6 +63,7 @@ type ServiceRow = {
   price: number | null;
   price_label: string | null;
   image_url: string | null;
+  video_url: string | null;
   sort_order: number;
 };
 
@@ -108,7 +110,7 @@ export async function getSmartBusiness(
     supabase
       .from("smart_business_services")
       .select(
-        "name,description,price,price_label,image_url,sort_order",
+        "name,description,price,price_label,image_url,video_url,sort_order",
       )
       .eq("business_id", business.id)
       .eq("is_active", true)
@@ -161,6 +163,7 @@ export async function getSmartBusiness(
       price: service.price,
       priceLabel: service.price_label,
       imageUrl: service.image_url,
+      videoUrl: service.video_url,
       sortOrder: service.sort_order,
     })),
   };
