@@ -207,3 +207,51 @@ a.actionCard:hover,a.actionCard:focus-visible {
   .identityBrand strong { font-size: 1.3rem; }
   .spotlight .actionCard { padding: 14px 12px; }
 }
+
+
+/* Catálogo progressivo Fenni: fotos primeiro, prévias em vídeo sob demanda */
+.catalog { scroll-margin-top: 15px; margin-top: 28px; padding: 22px 18px; background: #fffdfa; border: 1px solid #e6d4c7; border-radius: 13px; }
+.catalog .eyebrow { color: #7c2936; }
+.catalog h2 { margin: 8px 0 14px; font: 500 clamp(1.75rem, 7vw, 2.25rem)/1.05 Georgia, "Times New Roman", serif; color: #46161e; letter-spacing: -.045em; }
+.catalogPreview { border-top: 1px solid #e8d8cc; padding-top: 15px; display: grid; grid-template-columns: 115px minmax(0,1fr); gap: 15px; align-items: center; }
+.catalogPreview img { width: 115px; height: 150px; object-fit: cover; object-position: center 30%; border-radius: 9px; display: block; }
+.catalogPreview strong { display: block; color: #46161e; font-size: .89rem; line-height: 1.4; }
+.catalogPreview p { margin: 6px 0 11px; color: #77665e; font-size: .74rem; line-height: 1.65; }
+.catalogPreview a { display: inline-flex; gap: 4px; align-items: center; color: #641f2a; font-size: .71rem; line-height: 1.35; font-weight: 800; text-decoration: none; border-bottom: 1px solid #641f2a55; padding-bottom: 3px; }
+.galleryLead { font-size: .8rem; line-height: 1.6; color: #77665e; margin: -4px 0 17px; }
+.galleryGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 13px; }
+.productCard { position: relative; text-align: left; border: 1px solid #e9dace; border-radius: 11px; overflow: hidden; cursor: pointer; background: #fffdfa; color: #46161e; display: flex; flex-direction: column; padding: 0; font: inherit; box-shadow: 0 6px 14px #641f2a0b; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+.productCard:hover,.productCard:focus-visible { transform: translateY(-3px); border-color: #b99487; box-shadow: 0 11px 24px #641f2a1b; outline: none; }
+.productMedia { display: grid; place-items: center; width: 100%; aspect-ratio: 4/5; background: linear-gradient(145deg,#f6ede5,#e8d5c9); position: relative; overflow: hidden; }
+.productMedia img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
+.productCard:hover .productMedia img { transform: scale(1.04); }
+.productMonogram { font: 500 3.4rem/1 Georgia,serif; color: #641f2a65; letter-spacing: -.08em; }
+.videoLabel { position: absolute; right: 8px; top: 8px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; padding: 5px 8px; background: #45141ecb; color: white; font: 750 .55rem/1 Arial,sans-serif; letter-spacing: .09em; }
+.productInfo { padding: 13px 11px 15px; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; width: 100%; }
+.productInfo strong { color: #46161e; font: 650 .87rem/1.25 Arial,sans-serif; padding-right: 10px; }
+.productInfo small { color: #806c65; font-size: .68rem; line-height: 1.4; max-height: 2.8em; overflow: hidden; }
+.productPrice { margin-top: 4px; color: #641f2a; font-size: .71rem; font-weight: 800; }
+.productOpenIcon { position: absolute; right: 10px; bottom: 13px; color: #7c2936; }
+.galleryOverlay { position: fixed; inset: 0; z-index: 9999; padding: max(18px,env(safe-area-inset-top)) 12px max(18px,env(safe-area-inset-bottom)); background: #260b14d9; backdrop-filter: blur(12px); display: grid; place-items: center; }
+.galleryDialog { position: relative; width: min(100%,490px); max-height: calc(100dvh - 36px); overflow-y: auto; background: #fcfaf6; border: 1px solid #d6b9a7; border-radius: 13px; box-shadow: 0 22px 80px #10030877; }
+.galleryClose { position: absolute; z-index: 2; top: 11px; right: 11px; height: 36px; width: 36px; display: grid; place-items: center; border: 1px solid #fff6e6aa; border-radius: 50%; color: #fffdf9; background: #3e1724d9; cursor: pointer; }
+.galleryClose:focus-visible { outline: 2px solid #f2cd9e; outline-offset: 3px; }
+.galleryMediaDetail { aspect-ratio: 4/4; background: #eadccf; display: grid; place-items: center; }
+.galleryMediaDetail img,.galleryMediaDetail video { display: block; width: 100%; height: 100%; object-fit: contain; }
+.galleryDialogText { padding: 21px 22px 23px; }
+.galleryDialogText h3 { font: 500 2.05rem/1.1 Georgia,serif; letter-spacing: -.035em; color: #46161e; margin: 8px 0 7px; }
+.galleryDialogText p { margin: 0 0 10px; color: #71615b; font-size: .83rem; line-height: 1.55; }
+.dialogPrice { display: block; color: #641f2a; font-size: .86rem; margin-bottom: 13px; }
+.galleryContact { background: #641f2a; padding: 14px 12px; color: #fff9f2; border-radius: 7px; display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center; font: 750 .78rem/1.3 Arial,sans-serif; text-decoration: none; }
+.galleryContact:focus-visible { outline: 2px solid #c9a970; outline-offset: 2px; }
+@media(max-width:380px) {
+  .catalogPreview { grid-template-columns: 90px minmax(0,1fr); gap: 11px; }
+  .catalogPreview img { width: 90px; height: 137px; }
+  .catalog { padding: 18px 14px; }
+  .galleryGrid { gap: 8px; }
+  .productInfo { padding: 11px 9px; }
+}
+@media(prefers-reduced-motion: reduce) {
+  .productCard,.productMedia img { transition: none; }
+  .productCard:hover,.productMedia img:hover { transform: none; }
+}
