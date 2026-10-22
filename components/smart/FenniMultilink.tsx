@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import type { SmartBusiness } from "../../lib/smart-business";
 import PixCopy from "./PixCopy";
+import FenniProductGallery from "./FenniProductGallery";
 import styles from "./FenniMultilink.module.css";
 
 function safeUrl(value: string | null | undefined) {
@@ -72,7 +73,6 @@ export default function FenniMultilink({ business }: { business: SmartBusiness }
     ? copyPaste.trim()
     : typeof pixKey === "string" && pixKey.trim() ? pixKey.trim() : null;
   const receiver = pix?.config["receiver_name"];
-  const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
   return (
     <main className={styles.page}>
@@ -152,27 +152,29 @@ export default function FenniMultilink({ business }: { business: SmartBusiness }
               title="Catálogo de produtos"
               subtitle={business.services.length ? "Conheça nossos produtos" : "Catálogo em preparação"}
               symbol="▦"
-              href={business.services.length ? "#catalogo" : null}
+              href="#catalogo"
             />
           </div>
         </section>
 
-        {business.services.length > 0 && (
-          <section id="catalogo" className={styles.catalog}>
-            <span className={styles.eyebrow}>COLEÇÃO FENNI</span>
-            <h2>Produtos e opções</h2>
-            <div className={styles.catalogList}>
-              {business.services.map((item, index) => (
-                <div className={styles.catalogItem} key={`${item.name}-${index}`}>
-                  <div>
-                    <strong>{item.name}</strong>
-                    {item.description && <p>{item.description}</p>}
-                  </div>
-                  {(item.priceLabel || item.price !== null) && (
-                    <span>{item.priceLabel ?? brl.format(item.price!)}</span>
-                  )}
-                </div>
-              ))}
+
+        {business.services.length > 0 ? (
+          <FenniProductGallery products={business.services} contactUrl={whatsapp} />
+        ) : (
+          <section id="catalogo" className={styles.catalog} aria-labelledby="fenni-catalog-coming">
+            <span className={styles.eyebrow}>EM BREVE · COLEÇÃO FENNI</span>
+            <h2 id="fenni-catalog-coming">Seu próximo olhar começa aqui.</h2>
+            <div className={styles.catalogPreview}>
+              <img
+                src="https://raw.githubusercontent.com/alyssonsilvacorp/otica-fenni-vitrine/main/public/images/store/loja-interior-fenni.jpg"
+                alt="Interior da Ótica Fenni"
+                loading="lazy"
+              />
+              <div>
+                <strong>Estamos preparando nossa vitrine de armações.</strong>
+                <p>Fotos reais, detalhes de cada modelo e atendimento pelo WhatsApp. Em breve, prévias de vídeo para conhecer as peças de perto.</p>
+                {whatsapp && <a href={whatsapp} target="_blank" rel="noopener noreferrer">Conhecer as opções pelo WhatsApp <span aria-hidden="true">↗</span></a>}
+              </div>
             </div>
           </section>
         )}
