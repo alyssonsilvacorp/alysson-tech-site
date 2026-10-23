@@ -305,3 +305,72 @@ a.actionCard:active { transform:scale(.99); }
   .actionCard { transition:none; }
   a.actionCard:active { transform:none; }
 }
+
+
+/* Fenni production catalogue: immersive responsive browsing and photo-first layout */
+.catalog { background:#fcfaf6; border-color:#e8d6c9; scroll-margin-top:20px; }
+.catalog .eyebrow { color:#8a3545; font-weight:800; letter-spacing:.14em; }
+.catalog h2 { font-size:clamp(2.7rem,6.5vw,4rem); line-height:.98; margin:12px 0 13px; font-weight:500; }
+.galleryLead { max-width:730px; color:#756761; font-size:clamp(.82rem,1.35vw,.98rem); line-height:1.8; margin-bottom:23px; }
+.galleryFilters { display:flex; gap:9px; flex-wrap:wrap; margin-bottom:14px; }
+.filterPill {
+  display:inline-flex; align-items:center; gap:8px; border:1px solid #dac1b4;
+  padding:11px 17px; background:#fffdfa; border-radius:999px;
+  font:700 .78rem/1.2 Arial,sans-serif; color:#6c2c39; cursor:pointer;
+  transition:background .18s ease,transform .18s ease,color .18s ease;
+}
+.filterPill span { font-size:.7rem; opacity:.65; }
+.filterPill:hover,.typePill:hover { border-color:#8f4753; }
+.filterPill:focus-visible,.typePill:focus-visible { outline:2px solid #c38c6c; outline-offset:2px; }
+.filterActive { color:#fff8f0; background:#64212d; border-color:#64212d; box-shadow:0 5px 16px #641f2a23; }
+.frameFilters { display:flex; align-items:center; flex-wrap:wrap; gap:7px; margin-bottom:12px; }
+.typePill {
+  padding:8px 12px; border:1px solid #e6d9cf; border-radius:999px; cursor:pointer;
+  color:#806960; font:600 .71rem/1.2 Arial,sans-serif; background:#fffdf9;
+}
+.typeActive { background:#f2e2db; border-color:#a96876; color:#651f2e; }
+.galleryCount { font-size:.7rem; color:#907a74; margin:6px 0 17px; }
+.galleryGrid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:13px; }
+.productCard { border:1px solid #e4d3c8; border-radius:10px; }
+.productMedia { aspect-ratio:1.15/1; background:#e7e2d8; }
+.productMedia img { object-fit:cover; object-position:center; }
+.productInfo { padding:14px 11px 17px; gap:7px; }
+.productSku { font:bold .58rem/1.2 Arial,sans-serif; letter-spacing:.16em; color:#9e5863; }
+.productInfo strong { font-size:.9rem; min-height:2.2em; display:block; }
+.productInfo small { font-size:.71rem; color:#947e73; }
+.productPrice { font-size:.68rem; font-weight:650; padding-right:15px; }
+.productOpenIcon { right:10px; bottom:16px; }
+.galleryDialog { max-width:560px; max-height:calc(100dvh - 35px); }
+.galleryMediaDetail { aspect-ratio:4/3; background:#eee7dd; }
+.galleryMediaDetail img { object-fit:contain; }
+.galleryDialogText { padding:24px 27px 22px; }
+.galleryDialogText h3 { font-size:2.4rem; }
+.galleryNavigation { display:flex; align-items:center; justify-content:space-between; gap:13px; margin-top:17px; }
+.galleryNavigation button {
+  display:inline-flex; align-items:center; gap:5px; padding:9px 4px; border:0;
+  background:transparent; color:#682330; font-size:.79rem; cursor:pointer; font-weight:750;
+}
+.galleryNavigation button:disabled { opacity:.3; cursor:default; }
+.galleryNavigation button:focus-visible { outline:2px solid #c9a970; }
+.galleryNavigation span { font-size:.74rem; color:#8a776e; }
+@media(max-width:850px) { .galleryGrid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media(max-width:680px) {
+  .catalog { margin-top:29px; padding:22px 15px; }
+  .catalog h2 { font-size:2.75rem; }
+  .galleryGrid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  .galleryFilters { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; margin-right:-10px; padding:2px 10px 8px 2px; }
+  .galleryFilters::-webkit-scrollbar { display:none; }
+  .filterPill { flex:0 0 auto; padding:10px 13px; font-size:.75rem; }
+  .frameFilters { gap:6px; }
+  .typePill { padding:8px 11px; }
+  .productInfo { padding:12px 9px 15px; }
+  .productInfo strong { font-size:.82rem; }
+  .productInfo small { font-size:.68rem; }
+  .productMedia { aspect-ratio:1.13/1; }
+  .galleryDialog { max-height:calc(100dvh - 24px); }
+  .galleryDialogText { padding:21px 19px 17px; }
+  .galleryDialogText h3 { font-size:2.1rem; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .filterPill,.typePill { transition:none; }
+}
