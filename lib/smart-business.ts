@@ -9,6 +9,10 @@ export type SmartBusinessAction = {
 };
 
 export type SmartBusinessService = {
+  sku: string | null;
+  audience: string | null;
+  frameType: string | null;
+  availability: string;
   name: string;
   description: string | null;
   price: number | null;
@@ -58,6 +62,10 @@ type ActionRow = {
 };
 
 type ServiceRow = {
+  sku: string | null;
+  audience: string | null;
+  frame_type: string | null;
+  availability: string;
   name: string;
   description: string | null;
   price: number | null;
@@ -110,7 +118,7 @@ export async function getSmartBusiness(
     supabase
       .from("smart_business_services")
       .select(
-        "name,description,price,price_label,image_url,video_url,sort_order",
+        "sku,audience,frame_type,availability,name,description,price,price_label,image_url,video_url,sort_order",
       )
       .eq("business_id", business.id)
       .eq("is_active", true)
@@ -158,6 +166,10 @@ export async function getSmartBusiness(
       sortOrder: action.sort_order,
     })),
     services: serviceRows.map((service) => ({
+      sku: service.sku,
+      audience: service.audience,
+      frameType: service.frame_type,
+      availability: service.availability,
       name: service.name,
       description: service.description,
       price: service.price,
