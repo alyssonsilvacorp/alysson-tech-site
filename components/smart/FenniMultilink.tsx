@@ -72,7 +72,8 @@ export default function FenniMultilink({ business }: { business: SmartBusiness }
   const pixValue = typeof copyPaste === "string" && copyPaste.trim()
     ? copyPaste.trim()
     : typeof pixKey === "string" && pixKey.trim() ? pixKey.trim() : null;
-  const receiver = pix?.config["receiver_name"];
+  // Formato amigável para exibição; a chave completa (+55) é copiada ao tocar.
+  const displayPix = pixValue?.replace(/^\+55(?=\d{11}$)/, "") ?? null;
 
   return (
     <main className={styles.page}>
@@ -180,9 +181,8 @@ export default function FenniMultilink({ business }: { business: SmartBusiness }
             <h2 id="fenni-pix">Pagamento por Pix</h2>
             {pixValue ? (
               <>
-                {typeof receiver === "string" && receiver.trim() && <p>Recebedor: {receiver}</p>}
                 <div className={styles.pixWrapper}>
-                  <PixCopy value={pixValue} label={typeof copyPaste === "string" && copyPaste.trim() ? "Pix Copia e Cola" : "Chave Pix"} />
+                  <PixCopy value={displayPix ?? pixValue} copyValue={pixValue} label={typeof copyPaste === "string" && copyPaste.trim() ? "Pix Copia e Cola" : "Chave Pix"} />
                 </div>
                 <p>Confira o nome do recebedor no banco antes de pagar.</p>
               </>
