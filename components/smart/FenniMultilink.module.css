@@ -430,3 +430,10 @@ a.actionCard:active { transform:scale(.99); }
   .actionSymbol,.actionArrow,.accessCard { transition:none; }
   .accessCard:hover .actionSymbol,.accessCard:focus-visible .actionSymbol,.accessCard:hover .actionArrow,.accessCard:focus-visible .actionArrow { transform:none; }
 }
+
+
+/* Only rendered for models that actually have a short video. */
+.galleryMediaControls { display:flex; align-items:center; justify-content:center; gap:9px; padding:12px 14px 3px; background:#fcfaf6; }
+.galleryMediaControls button { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:8px 15px; border:1px solid #dcc9bc; border-radius:999px; background:#fffdfa; color:#6b3a40; font:700 .73rem/1.3 Arial,sans-serif; cursor:pointer; }
+.galleryMediaControls button.mediaSelected { background:#641f2a; border-color:#641f2a; color:#fff8ef; }
+.galleryMediaControls button:focus-visible { outline:2px solid #ca9a72; outline-offset:2px; }
