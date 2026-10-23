@@ -374,3 +374,59 @@ a.actionCard:active { transform:scale(.99); }
 @media(prefers-reduced-motion:reduce) {
   .filterPill,.typePill { transition:none; }
 }
+
+
+/* Finishing pass — consistent minimal icons and refined micro-interaction. */
+.actionSymbol {
+  width:50px;
+  height:50px;
+  flex:0 0 50px;
+  border:1px solid #e2cec2;
+  background:linear-gradient(160deg,#fbf6f1,#f4eae2);
+  color:#702838;
+  border-radius:15px;
+  display:grid;
+  place-items:center;
+  box-shadow:inset 0 1px 0 #fff9f3,0 2px 7px #45141c0a;
+  transition:background .2s ease,border-color .2s ease,color .2s ease,transform .2s ease;
+}
+.actionSymbol svg { display:block; width:22px; height:22px; }
+.actionArrow { display:grid; place-items:center; flex:0 0 25px; color:#713143; transition:transform .2s ease; }
+.accessCard {
+  min-width:0;
+  border-radius:14px;
+  border-color:#e7d8ce;
+  box-shadow:0 5px 18px #43141e08;
+  transition:background .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease;
+}
+.accessCard:hover,.accessCard:focus-visible {
+  background:#fffaf7;
+  border-color:#bb928a;
+}
+.accessCard:hover .actionSymbol,.accessCard:focus-visible .actionSymbol {
+  background:#f0e1d9;
+  border-color:#c9a89b;
+  transform:translateY(-1px);
+}
+.accessCard:hover .actionArrow,.accessCard:focus-visible .actionArrow { transform:translate(2px,-2px); }
+.accessCard:active { transform:scale(.99); }
+.accessCard:focus-visible { outline:2px solid #ba8a6f; outline-offset:3px; }
+.spotlight .actionSymbol { background:#f0e4dc; color:#6b2334; border-color:#d9bfb0; }
+.spotlight .actionCopy strong { font-weight:800; }
+.payment { border-radius:14px; border-left:1px solid #e6d6c7; scroll-margin-top:22px; }
+.paymentIcon { flex:0 0 46px; width:46px; height:46px; background:#fbf6f1; border-radius:14px; }
+.pixWrapper :global(button) { border-radius:8px; }
+@media(min-width:800px) {
+  .actionsList .accessCard { min-height:106px; padding:19px 23px; }
+  .actionsList .accessCard:last-child:nth-child(odd) { grid-column:1/-1; }
+}
+@media(max-width:430px) {
+  .actionSymbol { width:45px; height:45px; flex-basis:45px; border-radius:13px; }
+  .accessCard { padding:12px 13px; }
+  .actionCopy strong { font-size:.87rem; }
+  .actionCopy small { font-size:.72rem; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .actionSymbol,.actionArrow,.accessCard { transition:none; }
+  .accessCard:hover .actionSymbol,.accessCard:focus-visible .actionSymbol,.accessCard:hover .actionArrow,.accessCard:focus-visible .actionArrow { transform:none; }
+}
