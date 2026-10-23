@@ -46,6 +46,7 @@ export default function FenniProductGallery({ products, contactUrl }: Props) {
   const [audience, setAudience] = useState<string>("Todos");
   const [frame, setFrame] = useState<string>("Todos");
   const [selectedSku, setSelectedSku] = useState<string | null>(null);
+  const [mediaMode, setMediaMode] = useState<"photo" | "video">("photo");
   const closeRef = useRef<HTMLButtonElement>(null);
   const selected = products.find((p) => (p.sku ?? p.name) === selectedSku) ?? null;
 
@@ -89,6 +90,7 @@ export default function FenniProductGallery({ products, contactUrl }: Props) {
   function changeItem(step: number) {
     if (selectedIndex < 0 || !visible.length) return;
     const index = (selectedIndex + step + visible.length) % visible.length;
+    setMediaMode("photo");
     setSelectedSku(visible[index].sku ?? visible[index].name);
   }
 
@@ -146,7 +148,7 @@ export default function FenniProductGallery({ products, contactUrl }: Props) {
               key={key}
               className={styles.productCard}
               type="button"
-              onClick={() => setSelectedSku(key)}
+              onClick={() => { setMediaMode("photo"); setSelectedSku(key); }}
               aria-label={`Ver fotos e detalhes de ${product.name}`}
             >
               <span className={styles.productMedia}>
@@ -173,12 +175,18 @@ export default function FenniProductGallery({ products, contactUrl }: Props) {
           <div role="dialog" aria-modal="true" aria-label={`Detalhes de ${selected.name}`} className={styles.galleryDialog}>
             <button ref={closeRef} type="button" className={styles.galleryClose} onClick={() => setSelectedSku(null)} aria-label="Fechar detalhes"><X size={21} /></button>
             <div className={styles.galleryMediaDetail}>
-              {safeMedia(selected.videoUrl) ? (
-                <video key={selected.sku} src={safeMedia(selected.videoUrl)!} poster={safeMedia(selected.imageUrl) ?? undefined} muted autoPlay loop playsInline controls preload="metadata" />
+              {mediaMode === "video" && safeMedia(selected.videoUrl) ? (
+                <video key={selected.sku} src={safeMedia(selected.videoUrl)!} poster={safeMedia(selected.imageUrl) ?? undefined} muted autoPlay loop playsInline controls preload="metadata" aria-label={`Vídeo curto da armação ${selected.name}`} />
               ) : safeMedia(selected.imageUrl) ? (
                 <img src={safeMedia(selected.imageUrl)!} alt={`Armação ${selected.name}`} />
               ) : <span className={styles.productMonogram} aria-hidden="true">FN</span>}
             </div>
+            {safeMedia(selected.videoUrl) && (
+              <div className={styles.galleryMediaControls} role="group" aria-label="Escolher mídia do produto">
+                <button type="button" aria-pressed={mediaMode === "photo"} className={mediaMode === "photo" ? styles.mediaSelected : ""} onClick={() => setMediaMode("photo")}>Foto</button>
+                <button type="button" aria-pressed={mediaMode === "video"} className={mediaMode === "video" ? styles.mediaSelected : ""} onClick={() => setMediaMode("video")}><Play size={14} /> Vídeo curto</button>
+              </div>
+            )}
             <div className={styles.galleryDialogText}>
               <span className={styles.eyebrow}>{selected.sku ?? "ÓTICA FENNI"} · {selected.frameType ?? "ARMAÇÃO"}</span>
               <h3>{selected.name}</h3>
