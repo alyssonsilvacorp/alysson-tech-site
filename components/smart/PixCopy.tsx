@@ -5,16 +5,18 @@ import styles from "../../app/p/[slug]/portal.module.css";
 
 export default function PixCopy({
   value,
+  copyValue,
   label,
 }: {
   value: string;
+  copyValue?: string;
   label: string;
 }) {
   const [feedback, setFeedback] = useState("");
 
   async function copyPix() {
     try {
-      await navigator.clipboard.writeText(value);
+      await navigator.clipboard.writeText(copyValue ?? value);
       setFeedback("Copiado! Confira os dados do recebedor no seu banco.");
     } catch {
       setFeedback("Não foi possível copiar automaticamente. Selecione o texto acima para copiar.");
@@ -39,7 +41,7 @@ export default function PixCopy({
         className={styles.pixCopyButton}
         onClick={copyPix}
       >
-        Copiar dados para pagamento
+        Copiar chave Pix
       </button>
       {feedback && (
         <div className={styles.pixFeedback} role="status">
