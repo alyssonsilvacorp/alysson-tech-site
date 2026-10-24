@@ -9,6 +9,7 @@ import {
 } from "../../../lib/smart-business";
 import PixCopy from "../../../components/smart/PixCopy";
 import FenniMultilink from "../../../components/smart/FenniMultilink";
+import LimaMultilink from "../../../components/smart/LimaMultilink";
 import styles from "./portal.module.css";
 
 export const dynamic = "force-dynamic";
@@ -31,6 +32,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         locale: "pt_BR",
         type: "website",
         images: [{ url: "/fenni/loja-fenni.jpg", width: 800, height: 1000, alt: "Ótica Fenni em Maceió" }],
+      },
+    };
+  }
+  if (slug === "barbearia-lima") {
+    return {
+      title: "Barbearia Lima | Atendimento por ordem de chegada",
+      description: "Barbearia Lima no Santos Dumont, Maceió. Atendimento por ordem de chegada, WhatsApp, Instagram e localização em um só lugar.",
+      alternates: { canonical: "/p/barbearia-lima" },
+      openGraph: {
+        title: "Barbearia Lima — Seu corte. Sua identidade.",
+        description: "Conheça a Barbearia Lima e consulte o atendimento por ordem de chegada.",
+        locale: "pt_BR",
+        type: "website",
       },
     };
   }
@@ -218,6 +232,9 @@ export default async function SmartBusinessPage({ params }: PageProps) {
 
   if (business.slug === "otica-fenni") {
     return <FenniMultilink business={business} />;
+  }
+  if (business.slug === "barbearia-lima") {
+    return <LimaMultilink business={business} />;
   }
 
   const accent = business.accentColor && /^#[0-9a-fA-F]{6}$/.test(business.accentColor)
