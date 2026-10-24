@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [feat/placas-smart-portal-premium]
+    branches: [main, feat/placas-smart-portal-premium]
 jobs:
   validation:
     runs-on: ubuntu-latest
