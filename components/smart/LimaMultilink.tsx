@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import {
-  ArrowUpRight, Clock3, CreditCard, Instagram, MapPin, MessageCircle,
+  ArrowUpRight, Clock3, CreditCard, Instagram, MapPin,
   Navigation, Scissors, Star
 } from "lucide-react";
 import type { ReactNode } from "react";
