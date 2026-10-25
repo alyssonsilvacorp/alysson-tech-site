@@ -124,3 +124,23 @@
  .shortcut,.shortcutArrow { transition:none; }
  .shortcut:hover,.shortcut:active,.shortcut:hover .shortcutArrow { transform:none; }
 }
+
+
+/* Official Lima logo, preserved as a wide lockup rather than cropped into a circle. */
+.brandLogoOfficial {
+  width: min(360px, 70%);
+  max-width: 100%;
+  flex: 0 1 auto;
+  line-height: 0;
+  filter: drop-shadow(0 12px 24px rgba(0,0,0,.25));
+}
+.brandLogoOfficial img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+@media(max-width:680px) {
+  .brandLogoOfficial { width: min(275px, 80%); }
+  .heroText { padding-top: 32px; }
+}
