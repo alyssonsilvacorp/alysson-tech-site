@@ -171,3 +171,50 @@
   .privateSection { margin-top: 41px; padding-top: 32px; }
   .privateNotice { font-size: .73rem; }
 }
+
+
+/* Real Instagram feed showcase: static source images move continuously, no synthetic footage. */
+.workShowcase { margin:4px 0 42px; }
+.workShowcaseHeading { display:flex; justify-content:space-between; align-items:end; gap:14px; margin-bottom:19px; }
+.workShowcaseHeading h3 { font:500 clamp(1.65rem,4vw,2.4rem)/1.15 Georgia,Times,serif; color:#f9f0e3; letter-spacing:-.025em; margin:10px 0 0; }
+.workShowcaseHint { text-align:right; color:#a99068; letter-spacing:.08em; font-size:.65rem; padding-bottom:6px; }
+.workViewport { overflow:hidden; position:relative; border:1px solid #9f7b3955; border-radius:15px; background:#08090a; padding:12px 0; -webkit-mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent); mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent); }
+.workTrack { display:flex; align-items:stretch; width:max-content; animation:limaFeedLoop 75s linear infinite; will-change:transform; }
+.workGroup { display:flex; align-items:stretch; gap:12px; padding-right:12px; flex:0 0 auto; }
+.workPhoto { width:205px; height:268px; flex:0 0 205px; overflow:hidden; border-radius:10px; border:1px solid #bb975267; background:#161514; position:relative; }
+.workPhoto img { display:block; width:100%; height:100%; object-fit:cover; object-position:center; }
+.workPhoto:after { content:""; position:absolute; inset:0; pointer-events:none; box-shadow:inset 0 0 26px #0002; }
+.workViewport:hover .workTrack,.workViewport:focus-within .workTrack { animation-play-state:paused; }
+@keyframes limaFeedLoop { to { transform:translateX(-50%); } }
+.workDisclaimer { color:#958b7d; font-size:.69rem; line-height:1.55; margin:9px 1px 0; }
+.offerGroups { padding-top:7px; }
+.serviceCard { display:flex; flex-direction:column; overflow:hidden; background:linear-gradient(135deg,#1c1b19,#0f1113); }
+.serviceArtwork { position:relative; isolation:isolate; overflow:hidden; aspect-ratio:1.9 / 1; min-height:145px; padding:15px 17px; border-bottom:1px solid #9a793c66;
+ background:radial-gradient(ellipse at 50% 65%,#af873023 0%,transparent 55%),linear-gradient(136deg,#25231e,#0a0b0d 75%); display:flex; flex-direction:column; justify-content:space-between; }
+.serviceArtwork:before { content:"L"; position:absolute; z-index:-1; font:500 240px/.8 Georgia,serif; right:-17px; top:-37px; color:#e0bd5220; pointer-events:none; transform:rotate(-8deg); }
+.serviceArtwork:after { content:""; position:absolute; inset:8px; border:1px solid #ad8b4a64; border-radius:6px; pointer-events:none; }
+.artworkTop,.artworkBottom { display:flex; justify-content:space-between; align-items:center; gap:12px; color:#e4c27a; font-weight:750; letter-spacing:.18em; font-size:.58rem; }
+.artworkTop span:last-child { font-size:1.15rem; letter-spacing:0; }
+.artworkIcon { align-self:center; display:grid; place-items:center; color:#ffdc92; width:73px; height:73px; border-radius:50%; border:1px solid #d2a554a8; box-shadow:0 0 0 7px #b58b261c,inset 0 0 20px #b58b2622; background:#161513ab; }
+.artworkBottom strong { font-size:.65rem; color:#f3dbb0; font-weight:800; letter-spacing:.14em; }
+.artworkBottom span { color:#b9a07c; font-size:.65rem; }
+.serviceContent { min-height:108px; }
+.serviceContent h3 { font-size:1rem; color:#fff5e8; }
+.serviceInquiry { display:flex; align-items:center; justify-content:space-between; gap:8px; border-top:1px solid #68533870; padding:13px 19px 15px; text-decoration:none; color:#e4c27b; font-size:.76rem; font-weight:750; transition:background .15s ease; }
+.serviceInquiry:hover { background:#b6933333; }
+.serviceInquiry:focus-visible { outline:2px solid #e4c27b; outline-offset:-3px; }
+.monthlyCard .serviceArtwork { background:radial-gradient(ellipse at 50% 55%,#f8ce5730 0%,transparent 57%),linear-gradient(140deg,#292115,#151311 79%); }
+@media(max-width:680px) {
+  .workShowcase { margin-bottom:34px; }
+  .workShowcaseHeading { align-items:start; }
+  .workShowcaseHint { font-size:.57rem; max-width:100px; line-height:1.4; }
+  .workPhoto { width:166px; height:219px; flex-basis:166px; }
+  .workGroup { gap:9px; padding-right:9px; }
+  .workTrack { animation-duration:65s; }
+  .workViewport { margin-left:-6px; margin-right:-6px; }
+  .serviceArtwork { aspect-ratio:2.1 / 1; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .workViewport { overflow-x:auto; mask-image:none; -webkit-mask-image:none; }
+  .workTrack { animation:none; will-change:auto; }
+}
