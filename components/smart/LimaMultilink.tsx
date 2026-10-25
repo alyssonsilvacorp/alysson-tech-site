@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import {
-  ArrowUpRight, Clock3, CreditCard, MapPin,
+  ArrowUpRight, CarFront, Clock3, CreditCard, MapPin, Package,
   Navigation, Scissors, Star
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -75,6 +75,21 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
   const mapUrl = storedMap ?? mapSearch;
   const review = safeUrl(getAction("google_review")?.url);
 
+  // Estas ofertas sao independentes da plataforma Uber e possuem contatos separados.
+  // Apenas acoes ativas cadastradas para a barbearia sao exibidas.
+  const privateRideAction = getAction("private_transport");
+  const privateDeliveryAction = getAction("private_delivery");
+  const makeInquiry = (messageText: string) =>
+    whatsappDigits.length >= 10 && whatsappDigits.length <= 13
+      ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(messageText)}`
+      : null;
+  const privateRideUrl = privateRideAction
+    ? safeUrl(privateRideAction.url) ?? makeInquiry("Olá! Vi no cartão digital da Barbearia Lima que você realiza viagens particulares. Gostaria de consultar disponibilidade e valor.")
+    : null;
+  const privateDeliveryUrl = privateDeliveryAction
+    ? safeUrl(privateDeliveryAction.url) ?? makeInquiry("Olá! Vi no cartão digital da Barbearia Lima que você realiza entregas particulares. Gostaria de consultar disponibilidade e orçamento.")
+    : null;
+
   const pixAction = getAction("pix");
   const pixCode = pixAction?.config["pix_copia_e_cola"];
   const pixKey = pixAction?.config["pix_key"];
@@ -141,6 +156,39 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
             {pixValue && <Shortcut icon={<CreditCard size={23} strokeWidth={1.6} />} title="Chave Pix" detail="Ver e copiar dados de pagamento" href="#pix" external={false} />}
           </div>
         </section>
+
+        {(privateRideUrl || privateDeliveryUrl) && (
+          <section className={styles.privateSection} aria-labelledby="lima-private-heading">
+            <div className={styles.sectionHeading}>
+              <span className={styles.kicker}>ATENDIMENTOS PARTICULARES</span>
+              <h2 id="lima-private-heading">Viagens e entregas.</h2>
+              <p>Além da barbearia, você também pode consultar disponibilidade para estes serviços diretamente com a responsável.</p>
+            </div>
+
+            <div className={styles.shortcutGrid}>
+              {privateRideUrl && (
+                <Shortcut
+                  icon={<CarFront size={23} strokeWidth={1.6} />}
+                  title={privateRideAction?.label ?? "Viagens particulares"}
+                  detail="Consultar trajeto, disponibilidade e valor"
+                  href={privateRideUrl}
+                />
+              )}
+              {privateDeliveryUrl && (
+                <Shortcut
+                  icon={<Package size={23} strokeWidth={1.6} />}
+                  title={privateDeliveryAction?.label ?? "Entregas particulares"}
+                  detail="Consultar entrega, disponibilidade e orçamento"
+                  href={privateDeliveryUrl}
+                />
+              )}
+            </div>
+            <p className={styles.privateNotice}>
+              Atendimento particular combinado diretamente pelo WhatsApp, sujeito à disponibilidade.
+              Não é um serviço de solicitação de corridas pelo aplicativo Uber.
+            </p>
+          </section>
+        )}
 
         <section className={styles.serviceSection} id="servicos" aria-labelledby="lima-services-heading">
           <div className={styles.serviceHeading}>

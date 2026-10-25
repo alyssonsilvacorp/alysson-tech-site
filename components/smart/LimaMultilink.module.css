@@ -161,3 +161,13 @@
   .serviceContent { flex-wrap:wrap; }
   .serviceContent>strong { padding-left:26px;margin-top:5px; }
 }
+
+/* Servicos de transporte e entregas particulares, separados da barbearia. */
+.privateSection { margin-top: 54px; padding-top: 37px; border-top: 1px solid #745b373f; }
+.privateSection .sectionHeading { margin-bottom: 25px; }
+.privateSection .shortcut { border-color: #a9874d72; background: linear-gradient(130deg, #25211b, #111315); }
+.privateNotice { max-width: 730px; margin: 18px auto 0; text-align: center; color: #a59d8e; font-size: .75rem; line-height: 1.7; }
+@media(max-width:680px) {
+  .privateSection { margin-top: 41px; padding-top: 32px; }
+  .privateNotice { font-size: .73rem; }
+}
