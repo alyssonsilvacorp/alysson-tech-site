@@ -97,13 +97,21 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
           <span aria-hidden="true" className={styles.heroOrnament}>L</span>
           <div className={styles.heroInner}>
             <div className={styles.brandLine}>
-              <div className={styles.brandEmblem}>
-                {business.logoUrl ? <img src={business.logoUrl} alt="Logotipo da Barbearia Lima" /> : <Scissors size={32} strokeWidth={1.25} aria-hidden="true" />}
-              </div>
-              <div className={styles.brandIdentity}>
-                <span>IDENTIDADE · ESTILO · PRECISÃO</span>
-                <strong>BARBEARIA LIMA</strong>
-              </div>
+              {business.logoUrl ? (
+                <div className={styles.brandLogoOfficial}>
+                  <img src={business.logoUrl} alt="Logotipo oficial da Barbearia Lima" width={680} height={438} />
+                </div>
+              ) : (
+                <>
+                  <div className={styles.brandEmblem}>
+                    <Scissors size={32} strokeWidth={1.25} aria-hidden="true" />
+                  </div>
+                  <div className={styles.brandIdentity}>
+                    <span>IDENTIDADE · ESTILO · PRECISÃO</span>
+                    <strong>BARBEARIA LIMA</strong>
+                  </div>
+                </>
+              )}
             </div>
             <div className={styles.heroText}>
               <span className={styles.heroKicker}>SEU ESTILO COMEÇA AQUI</span>
