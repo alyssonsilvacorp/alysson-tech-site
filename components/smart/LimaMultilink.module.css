@@ -293,3 +293,10 @@
     aspect-ratio: 1.14 / 1;
   }
 }
+
+/* Final card framing: no clipping of lettering or service price on iPhone. */
+.serviceArtworkImage { aspect-ratio: 1 / 1; }
+.serviceArtworkImage img { object-fit: contain; object-position: center center; }
+@media (max-width: 680px) {
+  .serviceArtworkImage { aspect-ratio: 1 / 1; }
+}
