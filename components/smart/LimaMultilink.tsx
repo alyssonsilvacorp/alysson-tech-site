@@ -8,6 +8,46 @@ import type { SmartBusiness } from "../../lib/smart-business";
 import PixCopy from "./PixCopy";
 import styles from "./LimaMultilink.module.css";
 
+const realWorkPhotos = Array.from({ length: 11 }, (_, index) =>
+  `/lima/trabalhos/trabalho-${String(index + 1).padStart(2, "0")}.webp`
+);
+
+function LimaWorkShowcase() {
+  return (
+    <div className={styles.workShowcase} aria-label="Galeria de trabalhos reais realizados pela Barbearia Lima">
+      <div className={styles.workShowcaseHeading}>
+        <div>
+          <span className={styles.kicker}>TRABALHOS REAIS · INSTAGRAM</span>
+          <h3>Resultados que falam por si.</h3>
+        </div>
+        <span className={styles.workShowcaseHint}>Nossa vitrine em movimento</span>
+      </div>
+      <div className={styles.workViewport}>
+        <div className={styles.workTrack}>
+          {[0, 1].map((repeat) => (
+            <div key={repeat} className={styles.workGroup} aria-hidden={repeat === 1 ? "true" : undefined}>
+              {realWorkPhotos.map((src, index) => (
+                <div key={src} className={styles.workPhoto}>
+                  <img
+                    src={src}
+                    alt={repeat === 1 ? "" : `Corte realizado pela Barbearia Lima — trabalho ${index + 1}`}
+                    loading={repeat === 0 && index === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    width={230}
+                    height={285}
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+      <p className={styles.workDisclaimer}>Fotos reais dos trabalhos publicados pela Barbearia Lima. Os resultados variam conforme o corte e o cabelo.</p>
+    </div>
+  );
+}
+
+
 type ShortcutProps = {
   icon: ReactNode;
   title: string;
@@ -97,6 +137,10 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
     ? pixCode.trim()
     : typeof pixKey === "string" && pixKey.trim() ? pixKey.trim() : null;
   const pixLabel = typeof pixCode === "string" && pixCode.trim() ? "Pix Copia e Cola" : "Chave Pix";
+  const serviceInquiryUrl = (serviceName: string) =>
+    whatsappDigits.length >= 10 && whatsappDigits.length <= 13
+      ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(`Olá! Vi ${serviceName} no catálogo da Barbearia Lima e gostaria de tirar uma dúvida.`)}`
+      : whatsapp;
 
   return (
     <main className={styles.page}>
@@ -196,6 +240,7 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
             <h2 id="lima-services-heading">Cuide do seu estilo.</h2>
           </div>
 
+          <LimaWorkShowcase />
           {business.services.length ? (
             <div className={styles.offerGroups}>
               {[
@@ -221,7 +266,14 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
                   <div className={styles.serviceGrid}>
                     {group.items.map((service, index) => (
                       <article key={service.sku ?? `${service.name}-${index}`} className={`${styles.serviceCard} ${group.key === "mensais" ? styles.monthlyCard : ""}`}>
-                        {service.imageUrl && <img src={service.imageUrl} alt={service.name} loading="lazy" />}
+                        <div className={styles.serviceArtwork} aria-hidden="true">
+                          <div className={styles.artworkTop}><span>BARBEARIA LIMA</span><span>✦</span></div>
+                          <div className={styles.artworkIcon}><Scissors size={37} strokeWidth={1.1} /></div>
+                          <div className={styles.artworkBottom}>
+                            <strong>{group.key === "mensais" ? "PLANO MENSAL" : "SERVIÇO AVULSO"}</strong>
+                            <span>{service.sku?.replace("LIMA-", "") ?? String(index + 1).padStart(2,"0")}</span>
+                          </div>
+                        </div>
                         <div className={styles.serviceContent}>
                           <span>{String(index + 1).padStart(2, "0")}</span>
                           <div>
@@ -231,6 +283,11 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
                           {service.priceLabel && <strong>{service.priceLabel}</strong>}
                           {!service.priceLabel && service.price !== null && <strong>{new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(service.price)}</strong>}
                         </div>
+                        {serviceInquiryUrl(service.name) && (
+                          <a className={styles.serviceInquiry} href={serviceInquiryUrl(service.name)!} target="_blank" rel="noopener noreferrer">
+                            Consultar pelo WhatsApp <ArrowUpRight size={16} aria-hidden="true" />
+                          </a>
+                        )}
                       </article>
                     ))}
                   </div>
