@@ -149,17 +149,44 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
           </div>
 
           {business.services.length ? (
-            <div className={styles.serviceGrid}>
-              {business.services.map((service, index) => (
-                <article key={service.sku ?? `${service.name}-${index}`} className={styles.serviceCard}>
-                  {service.imageUrl && <img src={service.imageUrl} alt={service.name} loading="lazy" />}
-                  <div className={styles.serviceContent}>
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <div><h3>{service.name}</h3>{service.description && <p>{service.description}</p>}</div>
-                    {service.priceLabel && <strong>{service.priceLabel}</strong>}
-                    {!service.priceLabel && service.price !== null && <strong>{new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(service.price)}</strong>}
+            <div className={styles.offerGroups}>
+              {[
+                {
+                  key: "avulsos",
+                  label: "SERVIÇOS AVULSOS",
+                  heading: "Escolha seu atendimento",
+                  items: business.services.filter(service => !service.sku?.startsWith("LIMA-PL")),
+                },
+                {
+                  key: "mensais",
+                  label: "PLANOS MENSAIS",
+                  heading: "Seu estilo o mês inteiro",
+                  items: business.services.filter(service => service.sku?.startsWith("LIMA-PL")),
+                },
+              ].filter(group => group.items.length > 0).map(group => (
+                <div className={styles.offerGroup} key={group.key}>
+                  <div className={styles.offerHeading}>
+                    <span>{group.label}</span>
+                    <h3>{group.heading}</h3>
+                    {group.key === "mensais" && <p>4 atendimentos no mês · sobrancelha inclusa</p>}
                   </div>
-                </article>
+                  <div className={styles.serviceGrid}>
+                    {group.items.map((service, index) => (
+                      <article key={service.sku ?? `${service.name}-${index}`} className={`${styles.serviceCard} ${group.key === "mensais" ? styles.monthlyCard : ""}`}>
+                        {service.imageUrl && <img src={service.imageUrl} alt={service.name} loading="lazy" />}
+                        <div className={styles.serviceContent}>
+                          <span>{String(index + 1).padStart(2, "0")}</span>
+                          <div>
+                            <h3>{service.name}</h3>
+                            {service.description && <p>{service.description}</p>}
+                          </div>
+                          {service.priceLabel && <strong>{service.priceLabel}</strong>}
+                          {!service.priceLabel && service.price !== null && <strong>{new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(service.price)}</strong>}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           ) : (
@@ -185,7 +212,7 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
 
         <footer className={styles.footer}>
           <div className={styles.footerBrand}><Scissors size={21} strokeWidth={1.3} aria-hidden="true" /><strong>BARBEARIA LIMA</strong></div>
-          <p><Navigation size={15} aria-hidden="true" /> Santos Dumont · Maceió, AL</p>
+          <p><Navigation size={15} aria-hidden="true" /> {business.address ?? "Santos Dumont · Maceió, AL"}</p>
           <small>Seu estilo em boas mãos. Atendimento por ordem de chegada.</small>
           <div className={styles.credit}>TECNOLOGIA <strong>ALYSSON TECH</strong> · QR & NFC</div>
         </footer>
