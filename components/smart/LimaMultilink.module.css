@@ -144,3 +144,20 @@
   .brandLogoOfficial { width: min(275px, 80%); }
   .heroText { padding-top: 32px; }
 }
+
+
+/* Barber services: separate walk-in prices from recurring four-visit packages. */
+.offerGroups { display:grid; gap:34px; }
+.offerGroup { display:grid; gap:14px; }
+.offerHeading { display:grid; gap:7px; }
+.offerHeading>span { color:#d7b773; font-size:.61rem; letter-spacing:.19em; font-weight:800; }
+.offerHeading h3 { color:#f4efe6; font:500 clamp(1.45rem,3.4vw,2rem)/1.12 Georgia,serif; letter-spacing:-.028em; margin:0; }
+.offerHeading p { color:#dbbf85; font-size:.76rem; margin:2px 0 0; line-height:1.6; }
+.monthlyCard { border-color:#bb954f8a; background:linear-gradient(120deg,#282219,#19191a); }
+.monthlyCard .serviceContent>strong { color:#f6d493; font-size:1.02rem; }
+.footer p { line-height:1.6;max-width:570px;margin:16px auto 8px; }
+@media(max-width:680px) {
+  .offerGroups { gap:29px; }
+  .serviceContent { flex-wrap:wrap; }
+  .serviceContent>strong { padding-left:26px;margin-top:5px; }
+}
