@@ -12,6 +12,14 @@ const realWorkPhotos = Array.from({ length: 11 }, (_, index) =>
   `/lima/trabalhos/trabalho-${String(index + 1).padStart(2, "0")}.webp`
 );
 
+// Four brand-specific service posters, distinct from the authentic photo feed.
+const cardArtworkBySku: Record<string, string> = {
+  "LIMA-AV01": "/lima/cards/cabelo-degrade.webp",
+  "LIMA-AV02": "/lima/cards/cabelo-barba.webp",
+  "LIMA-PL01": "/lima/cards/plano-cabelo.webp",
+  "LIMA-PL02": "/lima/cards/plano-cabelo-barba.webp",
+};
+
 function LimaWorkShowcase() {
   return (
     <div className={styles.workShowcase} aria-label="Galeria de trabalhos reais realizados pela Barbearia Lima">
@@ -266,14 +274,27 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
                   <div className={styles.serviceGrid}>
                     {group.items.map((service, index) => (
                       <article key={service.sku ?? `${service.name}-${index}`} className={`${styles.serviceCard} ${group.key === "mensais" ? styles.monthlyCard : ""}`}>
-                        <div className={styles.serviceArtwork} aria-hidden="true">
-                          <div className={styles.artworkTop}><span>BARBEARIA LIMA</span><span>✦</span></div>
-                          <div className={styles.artworkIcon}><Scissors size={37} strokeWidth={1.1} /></div>
-                          <div className={styles.artworkBottom}>
-                            <strong>{group.key === "mensais" ? "PLANO MENSAL" : "SERVIÇO AVULSO"}</strong>
-                            <span>{service.sku?.replace("LIMA-", "") ?? String(index + 1).padStart(2,"0")}</span>
+                        {cardArtworkBySku[service.sku ?? ""] ? (
+                          <div className={styles.serviceArtworkImage}>
+                            <img
+                              src={cardArtworkBySku[service.sku ?? ""]}
+                              alt={`Arte do serviço ${service.name} da Barbearia Lima`}
+                              width={680}
+                              height={680}
+                              loading="lazy"
+                              decoding="async"
+                            />
                           </div>
-                        </div>
+                        ) : (
+                          <div className={styles.serviceArtwork} aria-hidden="true">
+                            <div className={styles.artworkTop}><span>BARBEARIA LIMA</span><span>✦</span></div>
+                            <div className={styles.artworkIcon}><Scissors size={37} strokeWidth={1.1} /></div>
+                            <div className={styles.artworkBottom}>
+                              <strong>{group.key === "mensais" ? "PLANO MENSAL" : "SERVIÇO AVULSO"}</strong>
+                              <span>{service.sku?.replace("LIMA-", "") ?? String(index + 1).padStart(2,"0")}</span>
+                            </div>
+                          </div>
+                        )}
                         <div className={styles.serviceContent}>
                           <span>{String(index + 1).padStart(2, "0")}</span>
                           <div>
