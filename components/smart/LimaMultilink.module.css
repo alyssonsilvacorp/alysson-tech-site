@@ -218,3 +218,78 @@
   .workViewport { overflow-x:auto; mask-image:none; -webkit-mask-image:none; }
   .workTrack { animation:none; will-change:auto; }
 }
+
+
+/* Oct 25 refinement: center the real wide logo and present the approved artwork, not the placeholder. */
+.brandLine {
+  width: 100%;
+  justify-content: center;
+}
+.brandLogoOfficial {
+  width: min(420px, 100%);
+  max-width: 100%;
+  margin-inline: auto;
+  flex: 0 1 auto;
+}
+.brandLogoOfficial img {
+  margin-inline: auto;
+}
+.serviceArtworkImage {
+  width: 100%;
+  aspect-ratio: 1.17 / 1;
+  overflow: hidden;
+  border-bottom: 1px solid #a5854e85;
+  background: #100e0b;
+}
+.serviceArtworkImage img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center center;
+}
+
+/* PixCopy is shared with the generic portal. Its old --portal-accent was
+   undefined on the Lima theme, resulting in black-on-black button text. */
+.pixSection {
+  --portal-accent: #e5bc6f;
+}
+.pixSection button {
+  display: block;
+  width: 100%;
+  min-height: 51px;
+  border-radius: 12px;
+  border: 1px solid #f6dcad;
+  background: linear-gradient(130deg, #f3d9a0 0%, #e2b663 60%, #c59846 100%);
+  color: #17120c;
+  font-size: .95rem;
+  font-weight: 850;
+  letter-spacing: .01em;
+  cursor: pointer;
+  box-shadow: 0 5px 18px #0005, inset 0 1px 0 #fff6;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.pixSection button:hover {
+  background: linear-gradient(130deg, #ffe7b6, #e5ba6e);
+}
+.pixSection button:active {
+  transform: translateY(1px);
+}
+.pixSection button:focus-visible {
+  outline: 3px solid #fff1c9;
+  outline-offset: 3px;
+}
+.pixSection [role="status"] {
+  color: #ffdf9b;
+  font-weight: 650;
+  line-height: 1.55;
+}
+@media (max-width:680px) {
+  .brandLogoOfficial {
+    width: min(330px, 100%);
+  }
+  .serviceArtworkImage {
+    aspect-ratio: 1.14 / 1;
+  }
+}
