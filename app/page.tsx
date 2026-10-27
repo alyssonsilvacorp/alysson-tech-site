@@ -232,13 +232,22 @@ export default function Home() {
           <a href="#solucoes">Soluções</a>
           <a href="#sobre">Sobre</a>
           <a href="#analise">Análise</a>
-          <Link href="/admin/login" title="Acesso seguro à área de operação da Alysson Tech" style={{ fontSize: "0.78rem", opacity: 0.76 }}>Acessar painel</Link>
         </nav>
 
-        <a className="header-cta" href="#analise">
-          Análise gratuita
-          <ArrowIcon />
-        </a>
+        <div className="header-actions">
+          <Link
+            className="header-portal-link"
+            href="/admin/login"
+            aria-label="Acessar Portal Alysson Tech — área administrativa"
+            title="Portal Alysson Tech — área administrativa"
+          >
+            Portal
+          </Link>
+          <a className="header-cta" href="#analise">
+            Análise gratuita
+            <ArrowIcon />
+          </a>
+        </div>
       </header>
 
       <section className="hero shell" id="inicio">
