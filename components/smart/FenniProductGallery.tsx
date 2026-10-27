@@ -38,8 +38,8 @@ function consultUrl(base: string | null, product: SmartBusinessService) {
 }
 
 function priceLabel(product: SmartBusinessService) {
-  if (product.priceLabel) return product.priceLabel;
-  return product.price !== null ? brl.format(product.price) : "Disponibilidade sob consulta";
+  if (product.price !== null) return brl.format(product.price);
+  return product.priceLabel || "Disponibilidade sob consulta";
 }
 
 export default function FenniProductGallery({ products, contactUrl }: Props) {
