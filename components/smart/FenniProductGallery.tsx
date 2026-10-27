@@ -62,7 +62,7 @@ export default function FenniProductGallery({ products, contactUrl }: Props) {
     () => categoryProducts.filter((product) => frame === "Todos" || product.frameType === frame),
     [categoryProducts, frame],
   );
-  const selectedIndex = selected ? visible.findIndex((item) => item.sku === selected.sku) : -1;
+  const selectedIndex = selected ? visible.findIndex((item) => (item.sku ?? item.name) === (selected.sku ?? selected.name)) : -1;
 
   useEffect(() => {
     if (!selected) return;
