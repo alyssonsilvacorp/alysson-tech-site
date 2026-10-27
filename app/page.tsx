@@ -231,6 +231,7 @@ export default function Home() {
           <a href="#solucoes">Soluções</a>
           <a href="#sobre">Sobre</a>
           <a href="#analise">Análise</a>
+          <a href="/admin/login" title="Acesso seguro à área de operação da Alysson Tech" style={{ fontSize: "0.78rem", opacity: 0.76 }}>Acessar painel</a>
         </nav>
 
         <a className="header-cta" href="#analise">
