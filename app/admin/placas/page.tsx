@@ -47,6 +47,14 @@ async function fetchReviewPlates(): Promise<LoadPlatesResult> {
     };
   }
 
+  const identity = await supabaseBrowser.auth.getUser();
+  if (identity.error || !identity.data.user) return {status:"unauthorized"};
+  const member = await supabaseBrowser.from("portal_members")
+    .select("role,is_active").eq("user_id",identity.data.user.id).maybeSingle();
+  if (member.error || member.data?.role !== "admin" || !member.data?.is_active) {
+    return {status:"unauthorized"};
+  }
+
   const { data, error } =
     await supabaseBrowser.rpc("list_review_plates");
 
