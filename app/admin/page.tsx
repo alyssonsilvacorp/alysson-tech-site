@@ -22,6 +22,7 @@ export default function AdminDashboardPage() {
 
   const [plates, setPlates] = useState<ReviewPlate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -31,6 +32,20 @@ export default function AdminDashboardPage() {
 
       if (!session) {
         router.replace("/admin/login");
+        return;
+      }
+
+      const userResult = await supabaseBrowser.auth.getUser();
+      const user = userResult.data.user;
+      if (!user || userResult.error) {
+        router.replace("/admin/login");
+        return;
+      }
+      const member = await supabaseBrowser.from("portal_members")
+        .select("role,is_active").eq("user_id",user.id).maybeSingle();
+      if (member.error || member.data?.role !== "admin" || !member.data?.is_active) {
+        setAccessDenied(true);
+        setLoading(false);
         return;
       }
 
@@ -84,6 +99,10 @@ export default function AdminDashboardPage() {
   async function signOut() {
     await supabaseBrowser.auth.signOut();
     router.replace("/admin/login");
+  }
+
+  if (accessDenied) {
+    return <main style={{minHeight:"100vh",background:"#050805",color:"#fff",padding:40}}><h1>Acesso administrativo restrito</h1><p>Esta conta não possui autorização para gerenciar a Alysson Tech.</p><Link href="/portal">Ir para o portal do cliente</Link></main>;
   }
 
   return (
