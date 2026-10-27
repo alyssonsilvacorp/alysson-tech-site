@@ -60,7 +60,7 @@ export default function AdminLoginPage() {
   return;
 }
 
-    router.replace("/admin/placas");
+    router.replace("/admin");
   }
 
   async function handleRecovery() {
