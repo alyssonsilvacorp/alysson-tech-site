@@ -176,3 +176,106 @@ grant select,insert,update,delete on public.smart_business_subscriptions to auth
 drop policy if exists smart_subscriptions_admin on public.smart_business_subscriptions;
 create policy smart_subscriptions_admin on public.smart_business_subscriptions for all to authenticated
  using (public.is_portal_admin()) with check (public.is_portal_admin());
+
+
+-- Inventario, ativacao e alternancia controlada dos dois formatos de placa.
+-- Permissao exclusiva do administrador; codigos fisicos nunca sao renomeados.
+create or replace function public.list_review_plates_extended()
+returns table(
+ code text,business_name text,destination_url text,status text,
+ activated_at timestamptz,created_at timestamptz,updated_at timestamptz,
+ plate_type text,smart_business_id uuid
+)
+language sql stable security definer set search_path=''
+as $$
+ select rp.code,rp.business_name,rp.destination_url,rp.status,
+        rp.activated_at,rp.created_at,rp.updated_at,rp.plate_type,rp.smart_business_id
+ from public.review_plates rp
+ where public.is_portal_admin()
+ order by rp.code;
+$$;
+revoke all on function public.list_review_plates_extended() from public,anon;
+grant execute on function public.list_review_plates_extended() to authenticated;
+
+create or replace function public.manage_review_plate(
+ p_code text,p_action text,p_plate_type text default null,
+ p_business_id uuid default null,p_destination_url text default null,
+ p_business_name text default null
+)
+returns void language plpgsql security definer set search_path=''
+as $$
+declare
+ v_code text := upper(trim(coalesce(p_code,'')));
+ v_type text := lower(trim(coalesce(p_plate_type,'')));
+ v_action text := lower(trim(coalesce(p_action,'')));
+ v_destination text;
+ v_name text;
+ v_business record;
+ v_plate record;
+begin
+ if (select auth.uid()) is null or not public.is_portal_admin() then
+   raise exception 'Acesso restrito ao administrador' using errcode='42501';
+ end if;
+ if v_code !~ '^AT-R[0-9]{3}$' then
+   raise exception 'Codigo invalido' using errcode='22023';
+ end if;
+ select rp.status,rp.plate_type,rp.smart_business_id,rp.destination_url
+ into v_plate from public.review_plates rp where rp.code=v_code for update;
+ if not found then raise exception 'Placa nao encontrada' using errcode='P0002'; end if;
+ if v_action='disable' then
+   update public.review_plates set status='disabled',updated_at=now() where code=v_code;
+   return;
+ end if;
+ if v_action='reactivate' then
+   if v_plate.status<>'disabled' then raise exception 'Placa nao esta desativada'; end if;
+   if v_plate.destination_url is null or v_plate.destination_url !~ '^https://' then
+      raise exception 'Placa sem destino valido';
+   end if;
+   if v_plate.plate_type='smart'
+      and not exists (select 1 from public.smart_businesses b
+          where b.id=v_plate.smart_business_id and b.is_published) then
+      raise exception 'Multilink indisponivel';
+   end if;
+   update public.review_plates set status='active',updated_at=now() where code=v_code;
+   return;
+ end if;
+ if v_action not in ('activate','update') then raise exception 'Operacao invalida' using errcode='22023'; end if;
+ if v_type not in ('google_review','smart') then raise exception 'Tipo de placa invalido' using errcode='22023'; end if;
+ if v_type='smart' then
+   if p_business_id is null then raise exception 'Selecione a empresa do multilink' using errcode='22023'; end if;
+   select b.name,b.slug,b.is_published into v_business
+      from public.smart_businesses b where b.id=p_business_id;
+   if not found then raise exception 'Empresa nao cadastrada'; end if;
+   if not v_business.is_published then raise exception 'Publique o multilink antes de ativar'; end if;
+   v_name:=v_business.name;
+   v_destination:='https://alyssontech.com.br/p/'||v_business.slug;
+ else
+   v_name:=nullif(trim(coalesce(p_business_name,'')),'');
+   v_destination:=nullif(trim(coalesce(p_destination_url,'')),'');
+   if v_name is null or v_destination is null or v_destination !~* '^https://[^[:space:]]+$' then
+     raise exception 'Informe nome e URL HTTPS para placa de link externo' using errcode='22023';
+   end if;
+ end if;
+ update public.review_plates rp
+ set status='active',plate_type=v_type,
+     smart_business_id=case when v_type='smart' then p_business_id else null end,
+     business_name=v_name,destination_url=v_destination,
+     activated_at=coalesce(rp.activated_at,now()),updated_at=now()
+ where rp.code=v_code;
+end;
+$$;
+revoke all on function public.manage_review_plate(text,text,text,uuid,text,text) from public,anon;
+grant execute on function public.manage_review_plate(text,text,text,uuid,text,text) to authenticated;
+
+-- Acoes de inventario sao autenticadas; resolucao publica da rota /r permanece intacta.
+revoke execute on function public.activate_review_plate(text,text,text) from public,anon;
+grant execute on function public.activate_review_plate(text,text,text) to authenticated;
+revoke execute on function public.update_review_plate_destination(text,text) from public,anon;
+grant execute on function public.update_review_plate_destination(text,text) to authenticated;
+revoke execute on function public.list_review_plates() from public,anon;
+grant execute on function public.list_review_plates() to authenticated;
+
+-- Modalidades comerciais sem inventar preco ou iniciar cobrancas automaticamente.
+alter table public.smart_business_subscriptions
+ add column if not exists plan_tier text not null default 'standard'
+ check (plan_tier in ('low_ticket','standard'));
