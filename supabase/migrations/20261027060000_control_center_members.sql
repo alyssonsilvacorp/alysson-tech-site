@@ -150,3 +150,19 @@ alter table public.smart_business_audit enable row level security;
 revoke all on public.smart_business_audit from anon;
 grant select on public.smart_business_audit to authenticated;
 create policy smart_business_audit_admin_read on public.smart_business_audit for select to authenticated using (public.is_portal_admin());
+
+-- Controle operacional de assinaturas (sem processamento financeiro automatico).
+create table if not exists public.smart_business_subscriptions(
+ business_id uuid primary key references public.smart_businesses(id) on delete cascade,
+ plan_name text not null default 'Manutencao multilink',
+ monthly_amount numeric(10,2) not null default 15 check (monthly_amount>=0),
+ status text not null default 'pending' check(status in ('pending','active','paused','cancelled')),
+ due_day smallint check(due_day between 1 and 28),
+ updated_at timestamptz not null default now()
+);
+alter table public.smart_business_subscriptions enable row level security;
+revoke all on public.smart_business_subscriptions from anon;
+grant select,insert,update,delete on public.smart_business_subscriptions to authenticated;
+drop policy if exists smart_subscriptions_admin on public.smart_business_subscriptions;
+create policy smart_subscriptions_admin on public.smart_business_subscriptions for all to authenticated
+ using (public.is_portal_admin()) with check (public.is_portal_admin());
