@@ -91,6 +91,15 @@ export default function PortalHome(){
   setShowForm(false);success("Catálogo salvo. Atualize o multilink para conferir.");await reload(businessId);
  }
  async function changeAvailability(item:Item,available:boolean){if(!canCatalog)return;setError("");const r=await supabaseBrowser.from("smart_business_services").update({is_active:available,availability:available?"disponivel":"vendido"}).eq("id",item.id).eq("business_id",businessId);if(r.error)setError(r.error.message);else{success("Disponibilidade atualizada.");await reload(businessId);}}
+ async function deleteItem(item:Item){
+  if(!canCatalog||!businessId)return;
+  if(!window.confirm(`Excluir permanentemente "${item.name}" do catálogo? Essa ação não poderá ser desfeita.`))return;
+  setBusy(true);setError("");
+  const result=await supabaseBrowser.from("smart_business_services").delete().eq("id",item.id).eq("business_id",businessId);
+  setBusy(false);
+  if(result.error){setError(result.error.message);return;}
+  success("Item excluído do catálogo.");await reload(businessId);
+ }
  async function logOut(){await supabaseBrowser.auth.signOut();router.replace("/portal/login");}
  if(checking)return <main style={{minHeight:"100vh",background:"#050805",color:"white",padding:32}}>Carregando seu acesso...</main>;
  return <main style={{background:"#050805",color:"#f2f7f2",minHeight:"100vh",padding:"24px 16px"}}>
@@ -125,7 +134,7 @@ export default function PortalHome(){
      </form>}
      {items.map(p=><article key={p.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,borderTop:"1px solid #2e4232",padding:"16px 0",flexWrap:"wrap"}}>
       <div style={{display:"flex",gap:12,alignItems:"center"}}>{p.image_url&&<img src={p.image_url} alt="" width={60} height={60} style={{objectFit:"cover",borderRadius:9}}/>}<div><strong>{p.name}</strong><p style={{fontSize:12,color:"#aeb7ad"}}>{p.price==null?"Sob consulta":Number(p.price).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})} · {p.is_active?"Disponível":p.availability==="vendido"?"Vendido":"Oculto"}</p></div></div>
-      {canCatalog&&<div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={button2} onClick={()=>begin(p)}>Editar</button><button style={button2} onClick={()=>void changeAvailability(p,!p.is_active)}>{p.is_active?"Marcar vendido":"Reativar"}</button></div>}
+      {canCatalog&&<div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={button2} onClick={()=>begin(p)}>Editar</button><button disabled={busy} style={button2} onClick={()=>void changeAvailability(p,!p.is_active)}>{p.is_active?"Marcar vendido":"Reativar"}</button><button disabled={busy} style={button2} onClick={()=>void deleteItem(p)}>Excluir item</button></div>}
      </article>)}
      {items.length===0&&<p style={{color:"#a2b0a4"}}>Nenhum item cadastrado.</p>}
     </section>
