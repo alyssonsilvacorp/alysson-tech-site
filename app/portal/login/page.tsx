@@ -1,6 +1,7 @@
 "use client";
 import {useEffect,useState} from "react";
 import {useRouter} from "next/navigation";
+import Link from "next/link";
 import {supabaseBrowser} from "../../../lib/supabase-browser";
 
 export default function PortalLogin(){
@@ -20,7 +21,7 @@ export default function PortalLogin(){
     <button disabled={busy} style={{width:"100%",padding:14,background:"#71ff41",color:"#071807",border:0,borderRadius:12,fontWeight:700}}>{busy?"Entrando...":"Acessar minha empresa"}</button></form>
     <button disabled={busy} onClick={()=>void recover()} style={{width:"100%",marginTop:18,padding:12,border:0,background:"none",color:"#b6d5b6"}}>Esqueci minha senha</button>
     {error&&<p role="alert" style={{color:"#ff9999"}}>{error}</p>}{info&&<p role="status" style={{color:"#abf5a3"}}>{info}</p>}
-    <a href="/" style={{color:"#bac4b9",fontSize:12}}>Voltar ao site Alysson Tech</a>
+    <Link href="/" style={{color:"#bac4b9",fontSize:12}}>Voltar ao site Alysson Tech</Link>
    </section>
  </main>;
 }
