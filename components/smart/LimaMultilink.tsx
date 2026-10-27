@@ -301,8 +301,7 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
                             <h3>{service.name}</h3>
                             {service.description && <p>{service.description}</p>}
                           </div>
-                          {service.priceLabel && <strong>{service.priceLabel}</strong>}
-                          {!service.priceLabel && service.price !== null && <strong>{new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(service.price)}</strong>}
+                          {service.price !== null ? <strong>{new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(service.price)}</strong> : service.priceLabel ? <strong>{service.priceLabel}</strong> : null}
                         </div>
                         {serviceInquiryUrl(service.name) && (
                           <a className={styles.serviceInquiry} href={serviceInquiryUrl(service.name)!} target="_blank" rel="noopener noreferrer">

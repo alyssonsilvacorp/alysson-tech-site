@@ -38,8 +38,8 @@ function consultUrl(base: string | null, product: SmartBusinessService) {
 }
 
 function priceLabel(product: SmartBusinessService) {
-  if (product.priceLabel) return product.priceLabel;
-  return product.price !== null ? brl.format(product.price) : "Disponibilidade sob consulta";
+  if (product.price !== null) return brl.format(product.price);
+  return product.priceLabel || "Disponibilidade sob consulta";
 }
 
 export default function FenniProductGallery({ products, contactUrl }: Props) {
@@ -62,7 +62,7 @@ export default function FenniProductGallery({ products, contactUrl }: Props) {
     () => categoryProducts.filter((product) => frame === "Todos" || product.frameType === frame),
     [categoryProducts, frame],
   );
-  const selectedIndex = selected ? visible.findIndex((item) => item.sku === selected.sku) : -1;
+  const selectedIndex = selected ? visible.findIndex((item) => (item.sku ?? item.name) === (selected.sku ?? selected.name)) : -1;
 
   useEffect(() => {
     if (!selected) return;
