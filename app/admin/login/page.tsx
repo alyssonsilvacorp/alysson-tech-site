@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
       if (!mounted) return;
 
       if (session) {
-        router.replace("/admin/placas");
+        router.replace("/admin");
         return;
       }
 
@@ -148,11 +148,11 @@ export default function AdminLoginPage() {
         </p>
 
         <h1 style={{ marginBottom: "8px" }}>
-          Portal administrativo
+          Control Center
         </h1>
 
         <p style={{ color: "#a5ada7", lineHeight: 1.6 }}>
-          Acesso interno para gerenciamento das placas inteligentes.
+          Acesso seguro à central de operações da Alysson Tech. Empresas, placas, catálogos e serviços em um só lugar.
         </p>
 
         <form
