@@ -48,8 +48,9 @@ export default function ControlModules({module}: {module:Module}){
  const [productType,setProductType]=useState("");
  const [productSku,setProductSku]=useState("");
  const [productAvailability,setProductAvailability]=useState("disponivel");
- const [members,setMembers]=useState<{id:string;business_id:string;user_id:string;member_role:string;can_edit_profile:boolean;can_edit_catalog:boolean;can_edit_payment:boolean}[]>([]);
+ const [members,setMembers]=useState<{id:string;business_id:string;user_id:string;member_role:string;can_edit_profile:boolean;can_edit_catalog:boolean;can_edit_payment:boolean;is_active:boolean}[]>([]);
  const [inviteEmail,setInviteEmail]=useState("");
+ const [inviteLink,setInviteLink]=useState("");
  const [inviteRole,setInviteRole]=useState("editor");
  const [editProfile,setEditProfile]=useState(true);
  const [editCatalog,setEditCatalog]=useState(true);
@@ -69,7 +70,7 @@ export default function ControlModules({module}: {module:Module}){
    setProducts((data??[]) as Product[]);
  },[companyId]);
  const loadMembers=useCallback(async()=>{
-   const {data,error:e}=await supabaseBrowser.from("smart_business_members").select("id,business_id,user_id,member_role,can_edit_profile,can_edit_catalog,can_edit_payment");
+   const {data,error:e}=await supabaseBrowser.from("smart_business_members").select("id,business_id,user_id,member_role,can_edit_profile,can_edit_catalog,can_edit_payment,is_active");
    if(e){setError("A gestão de usuários depende da migração de permissões: "+e.message);return;}
    setMembers(data??[]);
  },[]);
@@ -130,12 +131,21 @@ export default function ControlModules({module}: {module:Module}){
   if(action.error){setError(action.error.message);return;}
   setCreating(false);setProductEdit(null);setMessage("Catálogo atualizado.");await loadProducts();
  }
- async function invite(e:React.FormEvent){e.preventDefault();if(!companyId)return;setLoading(true);setError("");setMessage("");
-   const {data:{session}}=await supabaseBrowser.auth.getSession();
-   const result=await fetch("/api/admin/invite",{method:"POST",headers:{"content-type":"application/json",Authorization:"Bearer "+(session?.access_token??"")},body:JSON.stringify({email:inviteEmail.trim(),business_id:companyId,member_role:inviteRole,can_edit_profile:editProfile,can_edit_catalog:editCatalog,can_edit_payment:editPayment})});
-   const body=await result.json().catch(()=>({error:"Resposta inválida do servidor"}));
-   setLoading(false);if(!result.ok){setError(body.error??"Falha ao enviar convite");return;}
-   setInviteEmail("");setMessage("Convite enviado para o e-mail informado.");await loadMembers();
+ async function invite(e:React.FormEvent){e.preventDefault();if(!companyId)return;setLoading(true);setError("");setMessage("");setInviteLink("");
+   const {data,error:inviteError}=await supabaseBrowser.rpc("create_smart_business_invite",{
+     p_business_id:companyId,p_email:inviteEmail.trim().toLowerCase(),p_member_role:inviteRole,
+     p_can_edit_profile:editProfile,p_can_edit_catalog:editCatalog,p_can_edit_payment:editPayment
+   });
+   setLoading(false);
+   if(inviteError||typeof data!=="string"){setError(inviteError?.message??"Falha ao gerar convite");return;}
+   setInviteLink("https://alyssontech.com.br/portal/convite/"+data);
+   setMessage("Convite criado. Compartilhe o link com o responsável pelo WhatsApp ou e-mail. Validade: 14 dias.");
+ }
+ async function toggleMember(id:string,active:boolean){
+   if(!window.confirm((active?"Reativar":"Revogar")+" o acesso deste usuário?"))return;
+   setLoading(true);const r=await supabaseBrowser.from("smart_business_members").update({is_active:active}).eq("id",id);
+   setLoading(false);if(r.error){setError(r.error.message);return;}
+   setMessage(active?"Acesso reativado.":"Acesso revogado.");await loadMembers();
  }
  async function signOut(){await supabaseBrowser.auth.signOut();router.replace("/admin/login");}
  if(gate==="checking")return <main style={{padding:40,background:"#050805",color:"white",minHeight:"100vh"}}>Verificando acesso administrativo...</main>;
@@ -174,14 +184,15 @@ export default function ControlModules({module}: {module:Module}){
    {companyId&&products.length===0&&<p>Essa empresa ainda não possui itens no catálogo.</p>}
   </>}
   {module==="usuarios"&&<>
-   <form onSubmit={invite} style={card}><h2>Convidar responsável da empresa</h2><p style={{color:"#aab5ac",fontSize:13}}>Cada convite vincula somente a empresa selecionada. O cliente define a senha pelo e-mail.</p>
+   <form onSubmit={invite} style={card}><h2>Convidar responsável da empresa</h2><p style={{color:"#aab5ac",fontSize:13}}>Gere um link individual e compartilhe com o responsável. A pessoa cria a conta e confirma o próprio e-mail. Para uma venda sem painel, não é necessário convidar ninguém.</p>
     <label style={label}>E-mail do responsável</label><input style={input} type="email" required value={inviteEmail} onChange={e=>setInviteEmail(e.target.value)}/>
     <label style={{display:"block",marginTop:12}}><span style={label}>Papel</span><select style={input} value={inviteRole} onChange={e=>setInviteRole(e.target.value)}><option value="editor">Editor</option><option value="viewer">Visualização</option><option value="owner">Responsável</option></select></label>
     <div style={{display:"flex",flexWrap:"wrap",gap:18,margin:"17px 0"}}>{([["Informações",editProfile,setEditProfile],["Catálogo",editCatalog,setEditCatalog],["Pix",editPayment,setEditPayment]] as const).map(([name,val,set])=><label key={name} style={{fontSize:13}}><input type="checkbox" checked={val} onChange={e=>set(e.target.checked)}/> {name}</label>)}</div>
-    <button disabled={loading||!companyId} style={primary}>Enviar convite</button>
+    <button disabled={loading||!companyId} style={primary}>Gerar link de acesso</button>
    </form>
+   {inviteLink&&<div style={{...card,borderColor:"#71ff41"}}><strong>Link de convite criado</strong><p style={{fontSize:12,color:"#c0cfbe"}}>Válido por 14 dias, utilizável somente pelo e-mail informado.</p><input readOnly value={inviteLink} aria-label="Link de convite" onFocus={e=>e.target.select()} style={input}/><button type="button" style={{...secondary,marginTop:10}} onClick={()=>void navigator.clipboard.writeText(inviteLink)}>Copiar link</button></div>}
    <h2>Acessos vinculados</h2>
-   {members.filter(m=>!companyId||m.business_id===companyId).map(m=><article key={m.id} style={card}><strong>{m.member_role}</strong><p style={{fontSize:12,color:"#aab5ac"}}>Usuário {m.user_id.slice(0,8)}… · {companies.find(c=>c.id===m.business_id)?.name??m.business_id}</p><p style={{fontSize:12}}>Perfil: {m.can_edit_profile?"sim":"não"} · Catálogo: {m.can_edit_catalog?"sim":"não"} · Pix: {m.can_edit_payment?"sim":"não"}</p></article>)}
+   {members.filter(m=>!companyId||m.business_id===companyId).map(m=><article key={m.id} style={card}><strong>{m.member_role}</strong><p style={{fontSize:12,color:"#aab5ac"}}>Usuário {m.user_id.slice(0,8)}… · {companies.find(c=>c.id===m.business_id)?.name??m.business_id}</p><p style={{fontSize:12}}>Perfil: {m.can_edit_profile?"sim":"não"} · Catálogo: {m.can_edit_catalog?"sim":"não"} · Pix: {m.can_edit_payment?"sim":"não"}</p><p style={{fontSize:12,color:m.is_active?"#8ae98a":"#e5bcbc"}}>{m.is_active?"Acesso ativo":"Acesso revogado"}</p><button type="button" disabled={loading} style={secondary} onClick={()=>void toggleMember(m.id,!m.is_active)}>{m.is_active?"Revogar acesso":"Reativar acesso"}</button></article>)}
    {members.length===0&&<p style={{color:"#aab5ac"}}>Nenhum acesso de cliente vinculado ainda.</p>}
   </>}
   {module==="assinaturas"&&<><p style={{color:"#a9b8a8"}}>Registro manual das mensalidades. Nenhuma cobrança automática é feita aqui.</p>{companies.map(c=>{const sub=subscriptions.find(x=>x.business_id===c.id);return <article key={c.id} style={card}><strong>{c.name}</strong><p style={{color:"#a9b8a8",fontSize:12}}>{sub?currency(Number(sub.monthly_amount))+" / mês · "+sub.status:"Sem assinatura cadastrada"}</p><div style={{display:"flex",gap:10,alignItems:"end",flexWrap:"wrap"}}><label><span style={label}>Modalidade</span><select id={"tier-"+c.id} defaultValue={sub?.plan_tier??"standard"} style={{...input,maxWidth:180}}><option value="low_ticket">Low ticket — manutenção</option><option value="standard">Padrão — gestão</option></select></label><label><span style={label}>Mensalidade (R$)</span><input aria-label={"Valor para "+c.name} id={"valor-"+c.id} type="number" min="0" step="0.01" defaultValue={sub?.monthly_amount??""} style={{...input,maxWidth:150}}/></label><label><span style={label}>Situação</span><select id={"status-"+c.id} defaultValue={sub?.status??"pending"} style={{...input,maxWidth:160}}><option value="pending">Pendente</option><option value="active">Ativa</option><option value="paused">Pausada</option><option value="cancelled">Cancelada</option></select></label><button style={secondary} onClick={()=>void(async()=>{const rawValue=(document.getElementById("valor-"+c.id) as HTMLInputElement)?.value?.trim()??"";const value=rawValue===""?NaN:Number(rawValue);const status=(document.getElementById("status-"+c.id) as HTMLSelectElement)?.value;const plan_tier=(document.getElementById("tier-"+c.id) as HTMLSelectElement)?.value as "low_ticket"|"standard";if(!Number.isFinite(value)||value<0)return setError("Valor inválido");const r=await supabaseBrowser.from("smart_business_subscriptions").upsert({business_id:c.id,monthly_amount:value,status,plan_tier});if(r.error)return setError(r.error.message);setSubscriptions(current=>[...current.filter(x=>x.business_id!==c.id),{business_id:c.id,monthly_amount:value,status,plan_tier}]);setError("");setMessage("Assinatura registrada internamente.");})()}>Salvar</button></div></article>;})}</>}
