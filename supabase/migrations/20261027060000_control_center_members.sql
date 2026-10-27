@@ -164,8 +164,8 @@ create policy smart_business_audit_admin_read on public.smart_business_audit for
 -- Controle operacional de assinaturas (sem processamento financeiro automatico).
 create table if not exists public.smart_business_subscriptions(
  business_id uuid primary key references public.smart_businesses(id) on delete cascade,
- plan_name text not null default 'Manutencao multilink',
- monthly_amount numeric(10,2) not null default 15 check (monthly_amount>=0),
+ plan_name text not null default 'Serviços Alysson Tech',
+ monthly_amount numeric(10,2) not null check (monthly_amount>=0),
  status text not null default 'pending' check(status in ('pending','active','paused','cancelled')),
  due_day smallint check(due_day between 1 and 28),
  updated_at timestamptz not null default now()
