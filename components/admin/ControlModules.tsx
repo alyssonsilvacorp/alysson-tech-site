@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AdminShell from "./AdminShell";
 import { supabaseBrowser } from "../../lib/supabase-browser";
@@ -54,7 +55,6 @@ export default function ControlModules({module}: {module:Module}){
  const [editCatalog,setEditCatalog]=useState(true);
  const [editPayment,setEditPayment]=useState(true);
  const [subscriptions,setSubscriptions]=useState<{business_id:string;monthly_amount:number;status:string}[]>([]);
- const selected=useMemo(()=>companies.find(c=>c.id===companyId),[companies,companyId]);
 
  const loadCompanies=useCallback(async()=>{
    const {data,error:e}=await supabaseBrowser.from("smart_businesses").select("id,name,slug,category,short_description,whatsapp_number,instagram_url,is_published").order("name");
@@ -89,8 +89,8 @@ export default function ControlModules({module}: {module:Module}){
   void bootstrap();
   return()=>{alive=false;};
  },[router,loadCompanies]);
- useEffect(()=>{if(gate!=="ok")return;if(module==="catalogos")void loadProducts();},[gate,module,loadProducts]);
- useEffect(()=>{if(gate!=="ok")return;if(module==="usuarios")void loadMembers();},[gate,module,loadMembers]);
+ useEffect(()=>{if(gate!=="ok"||module!=="catalogos")return;void Promise.resolve().then(loadProducts);},[gate,module,loadProducts]);
+ useEffect(()=>{if(gate!=="ok"||module!=="usuarios")return;void Promise.resolve().then(loadMembers);},[gate,module,loadMembers]);
  useEffect(()=>{if(gate!=="ok"||module!=="assinaturas")return;void (async()=>{const r=await supabaseBrowser.from("smart_business_subscriptions").select("business_id,monthly_amount,status");if(!r.error)setSubscriptions(r.data??[]);else setError("Assinaturas ainda dependem da migração: "+r.error.message);})();},[gate,module]);
 
  async function createCompany(e:React.FormEvent){e.preventDefault();setError("");setMessage("");
@@ -139,7 +139,7 @@ export default function ControlModules({module}: {module:Module}){
  }
  async function signOut(){await supabaseBrowser.auth.signOut();router.replace("/admin/login");}
  if(gate==="checking")return <main style={{padding:40,background:"#050805",color:"white",minHeight:"100vh"}}>Verificando acesso administrativo...</main>;
- if(gate==="denied")return <main style={{padding:40,background:"#050805",color:"white",minHeight:"100vh"}}><h1>Acesso restrito</h1><p>Somente administradores podem acessar o Control Center.</p><a href="/admin/login">Entrar com outra conta</a></main>;
+ if(gate==="denied")return <main style={{padding:40,background:"#050805",color:"white",minHeight:"100vh"}}><h1>Acesso restrito</h1><p>Somente administradores podem acessar o Control Center.</p><Link href="/admin/login">Entrar com outra conta</Link></main>;
  return <AdminShell current={meta[module].current} onSignOut={signOut}>
   <header style={{marginBottom:25}}><p style={{fontSize:11,letterSpacing:2,color:"#71ff41"}}>ALYSSON TECH / CONTROL CENTER</p><h1 style={{fontSize:"clamp(28px,4vw,42px)",margin:"8px 0"}}>{meta[module].title}</h1><p style={{color:"#a9b7ac"}}>{meta[module].subtitle}</p></header>
   {message&&<p role="status" style={{...card,color:"#94fb87"}}>{message}</p>}
@@ -186,6 +186,6 @@ export default function ControlModules({module}: {module:Module}){
   </>}
   {module==="assinaturas"&&<><p style={{color:"#a9b8a8"}}>Registro manual das mensalidades. Nenhuma cobrança automática é feita aqui.</p>{companies.map(c=>{const sub=subscriptions.find(x=>x.business_id===c.id);return <article key={c.id} style={card}><strong>{c.name}</strong><p style={{color:"#a9b8a8",fontSize:12}}>{sub?currency(Number(sub.monthly_amount))+" / mês · "+sub.status:"Sem assinatura cadastrada"}</p><div style={{display:"flex",gap:10,alignItems:"end",flexWrap:"wrap"}}><label><span style={label}>Mensalidade (R$)</span><input aria-label={"Valor para "+c.name} id={"valor-"+c.id} type="number" min="0" step="0.01" defaultValue={sub?.monthly_amount??15} style={{...input,maxWidth:150}}/></label><label><span style={label}>Situação</span><select id={"status-"+c.id} defaultValue={sub?.status??"pending"} style={{...input,maxWidth:160}}><option value="pending">Pendente</option><option value="active">Ativa</option><option value="paused">Pausada</option><option value="cancelled">Cancelada</option></select></label><button style={secondary} onClick={()=>void(async()=>{const value=Number((document.getElementById("valor-"+c.id) as HTMLInputElement)?.value);const status=(document.getElementById("status-"+c.id) as HTMLSelectElement)?.value;if(!Number.isFinite(value)||value<0)return setError("Valor inválido");const r=await supabaseBrowser.from("smart_business_subscriptions").upsert({business_id:c.id,monthly_amount:value,status});if(r.error)return setError(r.error.message);setSubscriptions(current=>[...current.filter(x=>x.business_id!==c.id),{business_id:c.id,monthly_amount:value,status}]);setError("");setMessage("Assinatura registrada internamente.");})()}>Salvar</button></div></article>;})}</>}
   {module==="produtos"&&<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:14}}>{["Placas inteligentes QR / NFC","Multilinks digitais","Sites e landing pages","Sistemas operacionais","Automação e integrações","Consultoria e suporte de TI"].map(x=><div key={x} style={card}><h3>{x}</h3><p style={{color:"#aebaae",fontSize:12}}>Linha de serviços Alysson Tech. Gestão comercial centralizada em evolução.</p></div>)}</div>}
-  {module==="configuracoes"&&<div style={card}><h2>Ambiente central</h2><p>Supabase: Alysson Tech AI Office</p><p>As rotas permanentes de QR/NFC permanecem no módulo Placas inteligentes.</p><p style={{color:"#a6b4aa"}}>Somente administradores autorizados podem alterar vínculos, permissões e redirecionamentos.</p><a href="/admin/placas" style={{color:"#71ff41"}}>Gerenciar placas</a></div>}
+  {module==="configuracoes"&&<div style={card}><h2>Ambiente central</h2><p>Supabase: Alysson Tech AI Office</p><p>As rotas permanentes de QR/NFC permanecem no módulo Placas inteligentes.</p><p style={{color:"#a6b4aa"}}>Somente administradores autorizados podem alterar vínculos, permissões e redirecionamentos.</p><Link href="/admin/placas" style={{color:"#71ff41"}}>Gerenciar placas</Link></div>}
  </AdminShell>;
 }
