@@ -49,13 +49,13 @@ drop policy if exists smart_businesses_member_read on public.smart_businesses;
 create policy smart_businesses_member_read on public.smart_businesses for select to authenticated
  using (exists (
    select 1 from public.smart_business_members m
-   where m.business_id=id and m.user_id=(select auth.uid()) and m.is_active
+   where m.business_id=public.smart_businesses.id and m.user_id=(select auth.uid()) and m.is_active
  ));
 drop policy if exists smart_services_member_read on public.smart_business_services;
 create policy smart_services_member_read on public.smart_business_services for select to authenticated
  using (exists (
    select 1 from public.smart_business_members m
-   where m.business_id=business_id and m.user_id=(select auth.uid()) and m.is_active
+   where m.business_id=public.smart_business_services.business_id and m.user_id=(select auth.uid()) and m.is_active
  ));
 drop policy if exists smart_services_member_insert on public.smart_business_services;
 create policy smart_services_member_insert on public.smart_business_services for insert to authenticated
