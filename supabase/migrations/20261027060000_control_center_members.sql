@@ -68,6 +68,16 @@ drop policy if exists smart_services_member_delete on public.smart_business_serv
 create policy smart_services_member_delete on public.smart_business_services for delete to authenticated
  using (public.can_edit_smart_business(business_id,'catalog'));
 
+-- O cliente deve poder ler suas próprias ações (inclusive Pix) mesmo enquanto o multilink é rascunho.
+-- O RLS atual permite leitura pública apenas de ações ativas de empresas publicadas.
+drop policy if exists smart_actions_member_read on public.smart_business_actions;
+create policy smart_actions_member_read on public.smart_business_actions for select to authenticated
+ using (exists (
+   select 1 from public.smart_business_members m
+   where m.business_id=public.smart_business_actions.business_id
+     and m.user_id=(select auth.uid()) and m.is_active
+  ));
+
 -- Evitar UPDATE amplo no registro de empresa: apenas campos autorizados via RPC.
 create or replace function public.update_smart_business_contact(
  p_business_id uuid,p_whatsapp text,p_instagram text,p_description text
