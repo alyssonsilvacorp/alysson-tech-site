@@ -15,7 +15,6 @@ const mini:React.CSSProperties={display:"block",color:"#a8b6a9",fontSize:12,marg
 export default function PortalHome(){
  const router=useRouter();
  const [checking,setChecking]=useState(true);
- const [userId,setUserId]=useState("");
  const [memberships,setMemberships]=useState<Membership[]>([]);
  const [businessId,setBusinessId]=useState("");
  const [business,setBusiness]=useState<Business|null>(null);
@@ -43,7 +42,6 @@ export default function PortalHome(){
    const r=await supabaseBrowser.auth.getUser();
    if(!alive)return;
    if(r.error||!r.data.user){router.replace("/portal/login");return;}
-   setUserId(r.data.user.id);
    const q=await supabaseBrowser.from("smart_business_members").select("business_id,member_role,can_edit_profile,can_edit_catalog,can_edit_payment").eq("user_id",r.data.user.id).eq("is_active",true);
    if(!alive)return;
    if(q.error)setError("Acesso à empresa indisponível: "+q.error.message);
@@ -67,7 +65,7 @@ export default function PortalHome(){
   const key=typeof config?.pix_key==="string"?config.pix_key:typeof config?.pix_copia_e_cola==="string"?config.pix_copia_e_cola:"";
   setPix(key);setDraftPix(key);
  },[]);
- useEffect(()=>{if(businessId)void reload(businessId);},[businessId,reload]);
+ useEffect(()=>{if(!businessId)return;void Promise.resolve().then(()=>reload(businessId));},[businessId,reload]);
 
  function success(msg:string){setError("");setMessage(msg);}
  async function saveContact(e:React.FormEvent){e.preventDefault();if(!canProfile||!businessId)return;setBusy(true);setError("");const r=await supabaseBrowser.rpc("update_smart_business_contact",{p_business_id:businessId,p_whatsapp:contact.whatsapp,p_instagram:contact.instagram,p_description:contact.description});setBusy(false);if(r.error)setError(r.error.message);else{success("Informações atualizadas.");await reload(businessId);}}
