@@ -1,0 +1,48 @@
+.root {display:grid;gap:18px;}
+.summary {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;}
+.summary > div {position:relative;display:grid;gap:10px;min-height:122px;padding:20px;border-radius:16px;border:1px solid rgba(194,230,201,.12);background:linear-gradient(135deg,rgba(159,226,153,.045),rgba(255,255,255,.009)),#0e1711;}
+.summary svg {position:absolute;right:17px;top:17px;width:19px;height:19px;color:#8edb80;}
+.summary span {font-size:12px;color:#a6b8a8;}
+.summary strong {font-size:32px;line-height:1;font-weight:690;color:#eff8ed;font-variant-numeric:tabular-nums;}
+.toolbar {display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:4px 0;}
+.search {flex:1 1 250px;display:flex;align-items:center;gap:9px;min-height:43px;padding:0 12px;border:1px solid #374e3d;border-radius:11px;background:#0c140e;color:#8eac92;}
+.search input {width:100%;min-width:0;background:transparent;border:0;outline:none;color:#f2faf3;font-size:13px;}
+.select,.fields input,.fields select,.description textarea {min-height:43px;width:100%;border:1px solid #374e3d;background:#0b140f;border-radius:10px;color:#f2faf3;padding:11px 12px;font:inherit;font-size:13px;}
+.select {width:auto;min-width:140px;}
+.primary,.secondary {display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:43px;padding:0 14px;border-radius:10px;font-weight:730;font-size:12px;cursor:pointer;}
+.primary {background:#8aeb71;color:#0a180d;border:1px solid #8aeb71;}
+.secondary {background:#18261c;color:#dbe8dc;border:1px solid #35523b;}
+.primary:disabled,.secondary:disabled {opacity:.5;cursor:not-allowed;}
+.primary:hover:not(:disabled) {background:#b0ff99;}
+.secondary:hover:not(:disabled) {border-color:#81ba77;}
+.error,.success {margin:0;padding:14px 16px;border-radius:10px;font-size:13px;line-height:1.5;}
+.error {color:#ffb6b6;border:1px solid rgba(245,107,107,.35);background:rgba(146,42,42,.09);}
+.success {color:#a3f3a0;border:1px solid rgba(137,218,118,.28);background:rgba(66,130,60,.08);}
+.form {padding:23px;border:1px solid rgba(138,235,113,.33);border-radius:16px;background:#101c14;}
+.formHeader {display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px;}
+.formHeader h2 {margin:0;font-size:19px;font-weight:670;}
+.fields {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
+.fields label,.description {display:flex;flex-direction:column;gap:7px;color:#bbd1be;font-size:12px;}
+.description {margin-top:16px;}
+.description textarea {resize:vertical;}
+.formFooter {display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:19px;}
+.formFooter p {max-width:490px;font-size:12px;line-height:1.5;color:#8fa995;margin:0;}
+.grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:13px;}
+.card {display:flex;flex-direction:column;min-height:255px;padding:20px;border:1px solid rgba(194,230,201,.12);border-radius:16px;background:#101912;}
+.cardHeader {display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.category {font-size:10px;letter-spacing:.06em;font-weight:710;color:#8fc784;text-transform:uppercase;}
+.active,.inactive {font-size:10px;padding:5px 8px;border-radius:999px;white-space:nowrap;}
+.active {background:rgba(138,235,113,.11);color:#aff7a1;}
+.inactive {background:rgba(255,255,255,.07);color:#a2ada4;}
+.card h3 {font-size:17px;line-height:1.3;margin:18px 0 8px;font-weight:690;}
+.descriptionText {font-size:12px;line-height:1.6;color:#a4b6a7;margin:0 0 16px;min-height:40px;}
+.price {display:flex;flex-direction:column;gap:5px;padding-top:13px;margin-top:auto;border-top:1px solid rgba(255,255,255,.09);}
+.price strong {font-size:17px;color:#edf9eb;font-weight:720;}
+.price small {font-size:11px;color:#91a193;}
+.cardActions {display:flex;gap:8px;margin-top:18px;}
+.cardActions button {display:flex;align-items:center;justify-content:center;gap:6px;flex:1;min-height:37px;border:1px solid #36523b;border-radius:9px;background:#18251b;color:#dbe7da;font-size:12px;cursor:pointer;}
+.cardActions button:hover {border-color:#90e981;}
+.cardActions button:disabled {opacity:.4;cursor:not-allowed;}
+.empty {border:1px dashed #36523b;padding:28px;border-radius:14px;color:#a4b4a6;font-size:13px;}
+@media(max-width:700px) {.summary {grid-template-columns:repeat(2,minmax(0,1fr));}.summary>div:last-child {grid-column:1/-1;}.fields {grid-template-columns:1fr;}.formFooter {align-items:stretch;flex-direction:column;}.formFooter button{width:100%;}}
+@media(max-width:430px){.toolbar>.primary,.toolbar>.secondary {flex:1;}.select{flex:1;}.summary>div {min-height:105px;padding:16px;}.summary strong{font-size:29px;}}

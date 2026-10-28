@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AdminShell from "./AdminShell";
+import AdminOfferings from "./AdminOfferings";
 import { supabaseBrowser } from "../../lib/supabase-browser";
 
 type Company = { id:string;name:string;slug:string;category:string|null;short_description:string|null;whatsapp_number:string|null;instagram_url:string|null;is_published:boolean };
@@ -14,7 +15,7 @@ const meta:Record<Module,{title:string;subtitle:string;current:"companies"|"cata
  catalogos:{title:"Catálogos",subtitle:"Gerencie os produtos que aparecem nos multilinks.",current:"catalogs"},
  usuarios:{title:"Usuários e permissões",subtitle:"Vincule acessos de clientes à empresa correta.",current:"users"},
  assinaturas:{title:"Assinaturas",subtitle:"Planejamento de cobrança e manutenção recorrente.",current:"subscriptions"},
- produtos:{title:"Produtos e serviços",subtitle:"Portfólio de soluções Alysson Tech.",current:"products"},
+ produtos:{title:"Produtos e serviços",subtitle:"Cadastre suas ofertas, mantenha preços de referência e escolha entre venda avulsa e mensalidade.",current:"products"},
  configuracoes:{title:"Configurações",subtitle:"Infraestrutura e operação do Control Center.",current:"settings"}
 };
 const input:React.CSSProperties={width:"100%",padding:"12px",border:"1px solid #344137",borderRadius:10,background:"#0b100d",color:"#f3f8f4",fontSize:14};
@@ -196,7 +197,7 @@ export default function ControlModules({module}: {module:Module}){
    {members.length===0&&<p style={{color:"#aab5ac"}}>Nenhum acesso de cliente vinculado ainda.</p>}
   </>}
   {module==="assinaturas"&&<><p style={{color:"#a9b8a8"}}>Registro manual das mensalidades. Nenhuma cobrança automática é feita aqui.</p>{companies.map(c=>{const sub=subscriptions.find(x=>x.business_id===c.id);return <article key={c.id} style={card}><strong>{c.name}</strong><p style={{color:"#a9b8a8",fontSize:12}}>{sub?currency(Number(sub.monthly_amount))+" / mês · "+sub.status:"Sem assinatura cadastrada"}</p><div style={{display:"flex",gap:10,alignItems:"end",flexWrap:"wrap"}}><label><span style={label}>Modalidade</span><select id={"tier-"+c.id} defaultValue={sub?.plan_tier??"standard"} style={{...input,maxWidth:180}}><option value="low_ticket">Low ticket — manutenção</option><option value="standard">Padrão — gestão</option></select></label><label><span style={label}>Mensalidade (R$)</span><input aria-label={"Valor para "+c.name} id={"valor-"+c.id} type="number" min="0" step="0.01" defaultValue={sub?.monthly_amount??""} style={{...input,maxWidth:150}}/></label><label><span style={label}>Situação</span><select id={"status-"+c.id} defaultValue={sub?.status??"pending"} style={{...input,maxWidth:160}}><option value="pending">Pendente</option><option value="active">Ativa</option><option value="paused">Pausada</option><option value="cancelled">Cancelada</option></select></label><button style={secondary} onClick={()=>void(async()=>{const rawValue=(document.getElementById("valor-"+c.id) as HTMLInputElement)?.value?.trim()??"";const value=rawValue===""?NaN:Number(rawValue);const status=(document.getElementById("status-"+c.id) as HTMLSelectElement)?.value;const plan_tier=(document.getElementById("tier-"+c.id) as HTMLSelectElement)?.value as "low_ticket"|"standard";if(!Number.isFinite(value)||value<0)return setError("Valor inválido");const r=await supabaseBrowser.from("smart_business_subscriptions").upsert({business_id:c.id,monthly_amount:value,status,plan_tier});if(r.error)return setError(r.error.message);setSubscriptions(current=>[...current.filter(x=>x.business_id!==c.id),{business_id:c.id,monthly_amount:value,status,plan_tier}]);setError("");setMessage("Assinatura registrada internamente.");})()}>Salvar</button></div></article>;})}</>}
-  {module==="produtos"&&<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:14}}>{["Placas inteligentes QR / NFC","Multilinks digitais","Sites e landing pages","Sistemas operacionais","Automação e integrações","Consultoria e suporte de TI"].map(x=><div key={x} style={card}><h3>{x}</h3><p style={{color:"#aebaae",fontSize:12}}>Linha de serviços Alysson Tech. Gestão comercial centralizada em evolução.</p></div>)}</div>}
+  {module==="produtos"&&<AdminOfferings />}
   {module==="configuracoes"&&<div style={card}><h2>Ambiente central</h2><p>Supabase: Alysson Tech AI Office</p><p>As rotas permanentes de QR/NFC permanecem no módulo Placas inteligentes.</p><p style={{color:"#a6b4aa"}}>Somente administradores autorizados podem alterar vínculos, permissões e redirecionamentos.</p><Link href="/admin/placas" style={{color:"#71ff41"}}>Gerenciar placas</Link></div>}
  </AdminShell>;
 }

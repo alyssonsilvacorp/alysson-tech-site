@@ -253,7 +253,6 @@ export default function Home() {
             </svg>
             <span className="header-portal-link__text">
               <strong>Portal</strong>
-              <small>GESTÃO</small>
             </span>
           </Link>
           <a className="header-cta" href="#analise">
