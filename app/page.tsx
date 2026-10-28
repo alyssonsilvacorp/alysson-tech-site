@@ -241,7 +241,20 @@ export default function Home() {
             aria-label="Acessar Portal Alysson Tech — área administrativa"
             title="Portal Alysson Tech — área administrativa"
           >
-            Portal
+            <svg
+              className="header-portal-link__icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <rect x="5" y="10" width="14" height="11" rx="2.5" />
+              <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+              <path d="M12 14.5v2.5" />
+            </svg>
+            <span className="header-portal-link__text">
+              <strong>Portal</strong>
+              <small>GESTÃO</small>
+            </span>
           </Link>
           <a className="header-cta" href="#analise">
             Análise gratuita
