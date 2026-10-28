@@ -69,3 +69,15 @@
 @media(max-width:1120px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr));}.mainGrid,.bottomGrid{grid-template-columns:1fr;}}
 @media(max-width:560px){.header{align-items:flex-start;}.subtitle{font-size:13px;}.header h1{font-size:36px;}.metrics{gap:9px;}.metric,.metricPrimary{min-height:140px;padding:14px;}.metricTop span{font-size:9px;}.metricTop svg{width:16px;height:16px;}.metric strong,.metricPrimary strong{font-size:32px;}.metric p,.metricPrimary p{font-size:10px;}.panel{padding:17px;}.panelHeading{margin-bottom:18px;}.panelHeading h2{font-size:18px;}.inventoryBreakdown{grid-template-columns:1fr;gap:10px;}.inventoryBreakdown strong{margin-left:auto;}.activityRow{grid-template-columns:72px 1fr;gap:8px;}.activityRow>.active,.activityRow>.inactive{grid-column:2;justify-self:start;}.refresh{padding:0 10px;font-size:11px;}}
 @media(prefers-reduced-motion:reduce){.metric,.metricPrimary,.progress>div{transition:none;}}
+
+.officeEntry{display:flex;align-items:center;gap:17px;margin-bottom:19px;padding:19px 21px;border-radius:16px;border:1px solid rgba(148,237,121,.29);background:linear-gradient(115deg,rgba(148,237,121,.11),rgba(148,237,121,.018) 60%),#0f1711;color:#edf4ef;text-decoration:none;transition:border-color .15s ease,background .15s ease;}
+.officeEntry:hover{border-color:rgba(148,237,121,.6);background:linear-gradient(115deg,rgba(148,237,121,.17),rgba(148,237,121,.025) 70%),#0f1711;}
+.officeEntry:focus-visible{outline:2px solid #94ed79;outline-offset:3px;}
+.officeEntryIcon{display:grid;place-items:center;flex:0 0 58px;width:58px;height:58px;border:1px solid rgba(148,237,121,.28);border-radius:15px;background:rgba(148,237,121,.095);color:#b8ffa6;}
+.officeEntryCopy{display:grid;gap:5px;min-width:0;}
+.officeEntryCopy small{font-size:10px;font-weight:770;letter-spacing:.1em;color:#98dd8a;}
+.officeEntryCopy strong{font-size:20px;font-weight:730;line-height:1.2;}
+.officeEntryCopy>span{font-size:12px;line-height:1.5;color:#aabaae;}
+.officeEntryAction{display:flex;align-items:center;gap:7px;margin-left:auto;color:#c6f2be;font-size:12px;font-weight:650;white-space:nowrap;}
+@media(max-width:640px){.officeEntry{align-items:flex-start;gap:12px;padding:15px;flex-wrap:wrap;}.officeEntryIcon{flex-basis:48px;width:48px;height:48px;border-radius:12px;}.officeEntryCopy{flex:1;}.officeEntryCopy small{font-size:9px;}.officeEntryCopy strong{font-size:18px;}.officeEntryAction{margin:0 0 0 60px;}.officeEntryAction svg{width:15px;height:15px;}}
+@media(prefers-reduced-motion:reduce){.officeEntry{transition:none;}}
