@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowUpRight, Building2, ScanLine, CreditCard, Package, RefreshCw, Plus, UserPlus, BookOpen, ChevronRight } from "lucide-react";
+import { ArrowUpRight, Building2, ScanLine, CreditCard, Package, RefreshCw, Plus, UserPlus, BookOpen, ChevronRight, Bot } from "lucide-react";
 import AdminShell from "../../components/admin/AdminShell";
 import { supabaseBrowser } from "../../lib/supabase-browser";
 import styles from "./dashboard.module.css";
+import { AI_OFFICE_URL } from "../../lib/ai-office-link";
 
 type Plate = {
  code: string;
@@ -98,6 +99,21 @@ export default function AdminDashboardPage() {
     <RefreshCw size={16} aria-hidden="true" /> {loading ? "Atualizando" : "Atualizar"}
    </button>
   </header>
+  <a
+   className={styles.officeEntry}
+   href={AI_OFFICE_URL}
+   target="_blank"
+   rel="noopener noreferrer"
+   aria-label="Abrir AI Office em uma nova aba"
+  >
+   <span className={styles.officeEntryIcon}><Bot size={26} aria-hidden="true" /></span>
+   <span className={styles.officeEntryCopy}>
+    <small>ESCRITÓRIO DE INTELIGÊNCIA ARTIFICIAL</small>
+    <strong>AI Office</strong>
+    <span>Chief, agentes, tarefas e projetos. Acesso interno protegido.</span>
+   </span>
+   <span className={styles.officeEntryAction}>Abrir escritório <ArrowUpRight size={17} aria-hidden="true" /></span>
+  </a>
   {error && <div role="alert" className={styles.error}>{error}</div>}
   <section className={styles.metrics} aria-label="Indicadores da operação">
    <Link href="/admin/empresas" className={styles.metric}><div className={styles.metricTop}><span>EMPRESAS</span><Building2 size={19}/></div>
