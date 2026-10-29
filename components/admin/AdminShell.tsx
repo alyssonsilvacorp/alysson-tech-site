@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import {
   LayoutDashboard, ScanLine, Building2, BookOpen, Users, CreditCard,
-  BriefcaseBusiness, Settings, LogOut, Menu, X, ExternalLink, ShieldCheck,
+  BriefcaseBusiness, Settings, LogOut, Menu, X, ExternalLink, ShieldCheck, Bot,
 } from "lucide-react";
 import styles from "./AdminShell.module.css";
+import { AI_OFFICE_URL } from "../../lib/ai-office-link";
 
 type Module = "dashboard" | "plates" | "companies" | "catalogs" | "users" | "subscriptions" | "products" | "settings";
 type AdminShellProps = { children: ReactNode; current?: Module; onSignOut: () => void | Promise<void> };
@@ -77,6 +78,21 @@ export default function AdminShell({ children, current = "dashboard", onSignOut 
                 ))}
               </div>
             ))}
+            <div className={styles.navGroup}>
+              <p>ESCRITÓRIO DE IA</p>
+              <a
+                href={AI_OFFICE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMenuOpen(false)}
+                className={styles.navItem}
+                aria-label="Abrir AI Office em uma nova aba"
+              >
+                <Bot aria-hidden="true" size={18} strokeWidth={1.8} />
+                <span>AI Office</span>
+                <ExternalLink aria-hidden="true" size={13} />
+              </a>
+            </div>
           </nav>
           <div className={styles.sidebarFooter}>
             <div className={styles.systemStatus}>
