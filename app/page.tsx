@@ -379,37 +379,15 @@ export default function Home() {
                   {project.description}
                 </p>
                 <p className="client-project__note">{project.note}</p>
+                {"href" in project && project.href ? <a className="client-case-link" href={project.href} target="_blank" rel="noopener noreferrer">Visitar landing page da LS Log <ExternalIcon /></a> : null}
               </div>
               <div className="client-project__visual" aria-hidden="true">
-                <div className="client-visual__label">Visual abstrato</div>
-                <div className="client-visual__panel">
-                  <div className="client-visual__bar">
-                    <i />
-                    <i />
-                    <i />
-                    <span>LS / OPERAÇÃO</span>
-                  </div>
-                  <div className="client-visual__layout">
-                    <div className="client-visual__nav">
-                      <span />
-                      <span />
-                      <span />
-                      <span />
-                    </div>
-                    <div className="client-visual__workspace">
-                      <div className="client-visual__line" />
-                      <div className="client-visual__cards">
-                        <i />
-                        <i />
-                        <i />
-                      </div>
-                      <div className="client-visual__rows">
-                        <span />
-                        <span />
-                        <span />
-                      </div>
-                    </div>
-                  </div>
+                <div className="client-case-brand">
+                  <div className="client-case-brand__mark" aria-label="LS Log">LS<span>LOG</span></div>
+                  <span>LOGÍSTICA E GESTÃO</span>
+                  <strong>Portal de Motoristas</strong>
+                  <small>Projeto desenvolvido e entregue pela Alysson Tech.</small>
+                  <div className="client-case-brand__lines" aria-hidden="true"><i/><i/><i/></div>
                 </div>
               </div>
             </article>
