@@ -257,8 +257,14 @@ export default function UnifiedCatalogManager(){
     {showForm&&<form onSubmit={saveProduct} style={{marginTop:15,padding:18,border:"1px solid #547253",borderRadius:12}}>
       <h3>{editing?"Editar produto":"Novo produto"}</h3>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:13}}>
-       {([["name","Nome *"],["sku","Código SKU"],["catalog_category","Público (Masculino, Feminino, Infantil)"],["frame_type","Tipo de armação (Metal, Acetato, Nylon...)"],["price","Preço (R$), opcional"],["catalog_badge","Selo opcional"]] as const).map(([key,title])=><label style={{display:"grid",gap:6,fontSize:12}} key={key}>{title}<input style={field} value={form[key]} onChange={e=>setForm({...form,[key]:e.target.value})} required={key==="name"}/></label>)}
+       {([["name","Nome *"],["sku","Código SKU"],["catalog_category","Público (Masculino, Feminino, Infantil)"],["frame_type","Tipo de armação (Metal, Acetato, Nylon...)"],["catalog_badge","Selo opcional"]] as const).map(([key,title])=><label style={{display:"grid",gap:6,fontSize:12}} key={key}>{title}<input style={field} value={form[key]} onChange={e=>setForm({...form,[key]:e.target.value})} required={key==="name"}/></label>)}
        <label style={{display:"grid",gap:6,fontSize:12}}>Disponibilidade<select style={field} value={form.availability} onChange={e=>setForm({...form,availability:e.target.value})}><option value="disponivel">Disponível</option><option value="vendido">Vendido</option><option value="oculto">Oculto</option></select></label>
+      </div>
+      <div style={{marginTop:15,padding:15,border:"1px solid #537a56",borderRadius:11,background:"#17291a"}}>
+        <label style={{display:"grid",gap:7,fontSize:13,fontWeight:750,color:"#c5f8ba",maxWidth:350}}>Preço de venda (R$)
+          <input style={{...field,border:"1px solid #7bc66d",fontSize:17,fontWeight:700}} type="text" inputMode="decimal" placeholder="Ex.: 200,00" value={form.price} onChange={e=>setForm({...form,price:e.target.value})}/>
+        </label>
+        <p style={{...muted,margin:"8px 0 0"}}>Opcional. Informe o valor para aparecer no produto e no carrinho. Se deixar vazio, o cliente verá <strong>Sob consulta</strong> e o preço será combinado no WhatsApp.</p>
       </div>
       <label style={{display:"grid",gap:7,marginTop:13,fontSize:12}}>Descrição<textarea rows={2} style={field} value={form.description} onChange={e=>setForm({...form,description:e.target.value})}/></label>
       <label style={{display:"grid",gap:7,marginTop:13,fontSize:12}}>Variações (uma por linha; exemplo: Tamanho: P,M,G)<textarea rows={2} style={field} value={form.variants} onChange={e=>setForm({...form,variants:e.target.value})}/></label>
