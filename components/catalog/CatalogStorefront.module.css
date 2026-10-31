@@ -161,7 +161,7 @@
  padding:15px 20px max(15px,env(safe-area-inset-bottom));
  background:#fff;border-top:1px solid #e3e8e4;box-shadow:0 -6px 22px rgba(22,45,31,.035);
 }
-.drawerPriceSummary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:10px;row-gap:4px}
+.drawerFooter .drawerPriceSummary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:10px;row-gap:4px}
 .drawerPriceSummary>span{color:#516456;font-size:12px;line-height:1.4}
 .drawerPriceSummary>strong{font-size:20px;font-weight:800;color:#203127;white-space:nowrap}
 .drawerPriceSummary>small{grid-column:1/-1;font-size:11px;color:#6b786c;line-height:1.4}
