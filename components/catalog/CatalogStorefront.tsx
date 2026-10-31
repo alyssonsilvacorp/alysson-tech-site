@@ -121,7 +121,7 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
       <a href="#produtos">Explorar coleção <ArrowUpRight size={16} strokeWidth={1.7} aria-hidden="true"/></a>
      </div>
      {!brand.bannerImage&&<div className={styles.heroVisual} aria-hidden="true">
-      <div className={styles.heroSignature}><span>{brand.initials||brand.name.slice(0,1)}</span></div>
+      <div className={styles.heroSignature}><span>{brand.slug==="otica-fenni"?"FN":brand.initials||brand.name.slice(0,1)}</span></div>
       <span className={styles.heroBrandLetter}>{brand.name}</span>
      </div>}
      <div className={styles.heroProgress} aria-hidden="true"><span key={slide}/></div>
