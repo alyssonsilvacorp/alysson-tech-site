@@ -153,14 +153,29 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
      <div className={styles.drawerHead}><div><h2>Meu pedido</h2><small>Confira os itens antes de conversar com a loja</small></div><button type="button" onClick={()=>setShowCart(false)} aria-label="Fechar carrinho">×</button></div>
      <div className={styles.steps}><span className={step===1?styles.current:""}>1 Carrinho</span><span className={step===2?styles.current:""}>2 Seus dados</span><span className={step===3?styles.current:""}>3 Revisar</span></div>
      <div className={styles.drawerBody}>
-      {step===1&&<><h3>Seu carrinho</h3>{cart.map(l=><div className={styles.cartLine} key={l.key}><strong>{l.product.name}</strong><small>{Object.entries(l.selection).map(([k,v])=>k+": "+v).join(" · ")}</small><small>{priceText(l.product)}</small><div><button onClick={()=>changeQty(l.key,-1)}>−</button><span>{l.quantity}</span><button onClick={()=>changeQty(l.key,1)}>+</button></div></div>)}{!cart.length&&<p>Seu carrinho está vazio.</p>}</>}
+      {step===1&&<><h3>Seu carrinho</h3>{cart.map(l=><div className={styles.cartLine} key={l.key}>
+        <div className={styles.cartLineTitle}><strong>{l.product.name}</strong>{l.product.price!==null&&<strong className={styles.cartLinePrice}>{brl(l.product.price*l.quantity)}</strong>}</div>
+        {Object.entries(l.selection).length>0&&<small>{Object.entries(l.selection).map(([k,v])=>k+": "+v).join(" · ")}</small>}
+        <small className={styles.cartLineUnit}>{l.product.price===null?"Valor a confirmar com a loja":brl(l.product.price)+" por unidade"}</small>
+        <div className={styles.cartQty}><button type="button" aria-label={"Diminuir quantidade de "+l.product.name} onClick={()=>changeQty(l.key,-1)}>−</button><span>{l.quantity}</span><button type="button" aria-label={"Aumentar quantidade de "+l.product.name} onClick={()=>changeQty(l.key,1)}>+</button><button type="button" className={styles.removeLine} onClick={()=>changeQty(l.key,-l.quantity)}>Remover</button></div>
+       </div>)}{!cart.length&&<p>Seu carrinho está vazio. Feche esta janela para escolher produtos.</p>}</>}
       {step===2&&<><h3>Seus dados</h3><label>Seu nome<input required value={customer} onChange={e=>setCustomer(e.target.value)} placeholder="Como podemos chamar você?"/></label>{brand.deliveryEnabled&&brand.pickupEnabled&&<label>Recebimento<select value={fulfilment} onChange={e=>setFulfilment(e.target.value as "delivery"|"pickup")}><option value="delivery">Entrega</option><option value="pickup">Retirada</option></select></label>}{fulfilment==="delivery"&&brand.deliveryEnabled&&<><label>Bairro<select value={zone} onChange={e=>setZone(e.target.value)}><option value="">Selecione um bairro</option>{zones.map(z=><option key={z.id} value={z.id}>{z.label} · taxa {brl(Number(z.delivery_fee))}</option>)}</select></label><label>Endereço<input value={address} onChange={e=>setAddress(e.target.value)} placeholder="Rua, número e complemento"/></label></>}</>}
-      {step===3&&<><h3>Revisar pedido</h3>{cart.map(l=><p key={l.key}>{l.quantity}× {lineSummary(l.product,l.selection)} — {priceText(l.product)}</p>)}<p>Cliente: {customer}</p><p>{fulfilment==="delivery"?"Entrega em "+(shipping?.label??""):"Retirada no local"}</p><p>{unknownPrices?"Valores sob consulta; serão confirmados pela loja.":"Total estimado: "+brl(total)}</p></>}
+      {step===3&&<><h3>Revisar pedido</h3>{cart.map(l=><p key={l.key}>{l.quantity}× {lineSummary(l.product,l.selection)} — {priceText(l.product)}</p>)}<p>Cliente: {customer}</p><p>{fulfilment==="delivery"?"Entrega em "+(shipping?.label??""):"Retirada no local"}</p><p>{unknownPrices?(subtotal>0?"Subtotal com preço: "+brl(subtotal)+". Demais valores serão confirmados pela loja.":"Os preços serão confirmados pela loja no WhatsApp."):"Total estimado: "+brl(total)}</p></>}
      </div>
-     <div className={styles.drawerFooter}><button type="button" className={styles.continueShopping} onClick={()=>setShowCart(false)}>← Continuar escolhendo produtos</button><p>{unknownPrices?"Produtos sem preço serão confirmados no WhatsApp.":"Subtotal: "+brl(subtotal)}{fulfilment==="delivery"&&shipping?" · Entrega: "+brl(Number(shipping.delivery_fee)):""}</p>
-     <div>{step>1&&<button className={styles.outline} onClick={()=>setStep(step===3?2:1)}>Voltar</button>}
-     {step===1?<button disabled={!cart.length} onClick={()=>setStep(2)}>Continuar</button>:step===2?<button disabled={!customer.trim()||(fulfilment==="delivery"&&(!zone||!address.trim()))} onClick={()=>setStep(3)}>Revisar pedido</button>:<button disabled={!phone} onClick={submitWhatsApp}>Enviar pelo WhatsApp</button>}</div>
-     <small>Sem pagamento automático. Confirmação diretamente com a loja.</small></div>
-    </aside></div>}
+     <div className={styles.drawerFooter}>
+       <div className={styles.drawerPriceSummary} aria-live="polite">
+         <span>{unknownPrices?"Subtotal dos itens com preço":"Subtotal dos produtos"}</span>
+         <strong>{brl(subtotal)}</strong>
+         {unknownPrices&&<small>+ {cart.filter(l=>l.product.price===null).reduce((n,l)=>n+l.quantity,0)} item(ns) com valor sob consulta. Não é o total final.</small>}
+         {fulfilment==="delivery"&&shipping&&<small>Taxa de entrega: {brl(Number(shipping.delivery_fee))}</small>}
+         {!unknownPrices&&fulfilment==="delivery"&&shipping&&<strong className={styles.drawerGrandTotal}>Total estimado: {brl(total)}</strong>}
+       </div>
+       <div className={styles.drawerActions}>
+        {step===1?<button type="button" className={styles.continueShopping} onClick={()=>setShowCart(false)}>← Voltar aos produtos</button>:<button type="button" className={styles.outline} onClick={()=>setStep(step===3?2:1)}>← Etapa anterior</button>}
+        {step===1?<button type="button" disabled={!cart.length} onClick={()=>setStep(2)}>Informar meus dados →</button>:step===2?<button type="button" disabled={!customer.trim()||(fulfilment==="delivery"&&(!zone||!address.trim()))} onClick={()=>setStep(3)}>Revisar pedido →</button>:<button type="button" disabled={!phone} onClick={submitWhatsApp}>Enviar pelo WhatsApp ↗</button>}
+       </div>
+       <small className={styles.drawerNote}>Sem pagamento online. A loja confirmará disponibilidade e valores pelo WhatsApp.</small>
+      </div>
+     </aside></div>}
  </div>;
 }
