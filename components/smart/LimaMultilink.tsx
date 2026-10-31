@@ -203,7 +203,7 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
             {whatsapp && <Shortcut primary icon={<WhatsAppMark />} title="Falar pelo WhatsApp" detail="Dúvidas, valores e atendimento" href={whatsapp} />}
             {instagram && <Shortcut icon={<InstagramMark />} title="Instagram" detail="Acompanhe os trabalhos e novidades" href={instagram} />}
             {mapUrl && <Shortcut icon={<MapPin size={23} strokeWidth={1.6} />} title={storedMap ? "Como chegar" : "Buscar localização"} detail={storedMap ? "Abrir localização no Google Maps" : "Localizar a barbearia no Maps"} href={mapUrl} />}
-            <Shortcut icon={<Scissors size={23} strokeWidth={1.55} />} title="Serviços e valores" detail="Consulte as opções de atendimento" href="#servicos" external={false} />
+            <Shortcut icon={<Scissors size={23} strokeWidth={1.55} />} title={business.catalogUrl ? "Catálogo de produtos" : "Serviços e valores"} detail={business.catalogUrl ? "Abrir catálogo completo" : "Consulte as opções de atendimento"} href={business.catalogUrl ?? "#servicos"} external={Boolean(business.catalogUrl)} />
             {review && <Shortcut icon={<Star size={23} strokeWidth={1.6} />} title="Avaliar no Google" detail="Compartilhe sua experiência" href={review} />}
             {pixValue && <Shortcut icon={<CreditCard size={23} strokeWidth={1.6} />} title="Chave Pix" detail="Ver e copiar dados de pagamento" href="#pix" external={false} />}
           </div>
@@ -242,7 +242,7 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
           </section>
         )}
 
-        <section className={styles.serviceSection} id="servicos" aria-labelledby="lima-services-heading">
+        {!business.catalogUrl && <section className={styles.serviceSection} id="servicos" aria-labelledby="lima-services-heading">
           <div className={styles.serviceHeading}>
             <span className={styles.kicker}>01 / SERVIÇOS</span>
             <h2 id="lima-services-heading">Cuide do seu estilo.</h2>
@@ -324,7 +324,7 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
               </div>
             </div>
           )}
-        </section>
+        </section>}
 
         {pixValue && (
           <section className={styles.pixSection} id="pix" aria-labelledby="lima-pix-heading">
