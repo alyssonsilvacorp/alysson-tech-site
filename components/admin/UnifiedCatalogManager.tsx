@@ -7,10 +7,10 @@ import {supabaseBrowser} from "../../lib/supabase-browser";
 
 type Company={id:string;slug:string;name:string;category:string|null;whatsapp_number:string|null;logo_url:string|null;logo_initials:string|null;accent_color:string|null;brand_support_color:string|null;brand_background_color:string|null;brand_highlight_color:string|null;has_catalog:boolean};
 type SlideAsset={image_url:string;title?:string;text?:string;eyebrow?:string};
-type Settings={status:"draft"|"published"|"paused";headline:string;subheadline:string;announcement:string;delivery_enabled:boolean;pickup_enabled:boolean;accept_inquiries:boolean;banner_image_url:string|null;banner_slides:SlideAsset[];gallery_images:string[]};
+type Settings={status:"draft"|"published"|"paused";catalog_kind:"products"|"services";headline:string;subheadline:string;announcement:string;delivery_enabled:boolean;pickup_enabled:boolean;accept_inquiries:boolean;banner_image_url:string|null;banner_slides:SlideAsset[];gallery_images:string[]};
 type ProductRow=CatalogProduct & {business_id:string;is_active:boolean;audience:string|null;frame_type:string|null};
 type ZoneRow=DeliveryZone & {is_active:boolean};
-const defaultSettings:Settings={status:"draft",headline:"Encontre o que procura.",subheadline:"Escolha os produtos e consulte diretamente pelo WhatsApp.",announcement:"",delivery_enabled:false,pickup_enabled:true,accept_inquiries:true,banner_image_url:null,banner_slides:[],gallery_images:[]};
+const defaultSettings:Settings={status:"draft",catalog_kind:"products",headline:"Encontre o que procura.",subheadline:"Escolha os produtos e consulte diretamente pelo WhatsApp.",announcement:"",delivery_enabled:false,pickup_enabled:true,accept_inquiries:true,banner_image_url:null,banner_slides:[],gallery_images:[]};
 const panel:React.CSSProperties={border:"1px solid #304638",background:"#101a13",padding:20,borderRadius:16};
 const field:React.CSSProperties={padding:12,border:"1px solid #3c5542",background:"#0b150f",color:"#f2f9f1",borderRadius:10,width:"100%",fontSize:13};
 const primary:React.CSSProperties={background:"#9bea83",color:"#12230c",padding:"11px 15px",fontWeight:750,border:0,borderRadius:10,cursor:"pointer"};
@@ -73,7 +73,7 @@ export default function UnifiedCatalogManager(){
  const load=useCallback(async(id:string)=>{
   if(!id)return;setLoading(true);setError("");
   const [s,p,z,a]=await Promise.all([
-   supabaseBrowser.from("smart_catalog_settings").select("status,headline,subheadline,announcement,delivery_enabled,pickup_enabled,accept_inquiries,banner_image_url,banner_slides,gallery_images").eq("business_id",id).maybeSingle(),
+   supabaseBrowser.from("smart_catalog_settings").select("status,headline,subheadline,announcement,delivery_enabled,pickup_enabled,accept_inquiries,banner_image_url,banner_slides,gallery_images,catalog_kind").eq("business_id",id).maybeSingle(),
    supabaseBrowser.from("smart_business_services").select("id,business_id,name,description,price,price_label,image_url,sku,audience,frame_type,availability,is_active,sort_order,catalog_category,catalog_badge,catalog_variants").eq("business_id",id).order("sort_order"),
    supabaseBrowser.from("smart_catalog_delivery_zones").select("id,label,delivery_fee,is_active").eq("business_id",id).order("sort_order"),
    supabaseBrowser.from("smart_catalog_routes").select("code").eq("business_id",id).maybeSingle(),
@@ -81,13 +81,13 @@ export default function UnifiedCatalogManager(){
   setLoading(false);
   const err=[s,p,z,a].map(x=>x.error?.message).filter(Boolean);if(err.length){setError(err.join(" · "));return;}
   const data=s.data;
-  setSettings(data?{status:data.status,headline:data.headline??"",subheadline:data.subheadline??"",announcement:data.announcement??"",delivery_enabled:data.delivery_enabled,pickup_enabled:data.pickup_enabled,accept_inquiries:data.accept_inquiries,banner_image_url:data.banner_image_url??null,banner_slides:Array.isArray(data.banner_slides)?data.banner_slides as SlideAsset[]:[],gallery_images:Array.isArray(data.gallery_images)?data.gallery_images:[]}:defaultSettings);
+  setSettings(data?{status:data.status,catalog_kind:data.catalog_kind==="services"?"services":"products",headline:data.headline??"",subheadline:data.subheadline??"",announcement:data.announcement??"",delivery_enabled:data.delivery_enabled,pickup_enabled:data.pickup_enabled,accept_inquiries:data.accept_inquiries,banner_image_url:data.banner_image_url??null,banner_slides:Array.isArray(data.banner_slides)?data.banner_slides as SlideAsset[]:[],gallery_images:Array.isArray(data.gallery_images)?data.gallery_images:[]}:defaultSettings);
   setItems((p.data??[]) as ProductRow[]);setZones((z.data??[]) as ZoneRow[]);setAlias(a.data?.code??"");
  },[]);
  useEffect(()=>{void Promise.resolve().then(loadCompanies);},[loadCompanies]);
  useEffect(()=>{if(!businessId)return;void Promise.resolve().then(()=>load(businessId));},[businessId,load]);
  const filtered=useMemo(()=>items.filter(p=>(p.name+" "+(p.sku??"")+" "+(p.catalog_category??"")).toLowerCase().includes(search.toLowerCase())),[items,search]);
- const brand:CatalogBrand|undefined=company?{name:company.name,slug:company.slug,initials:company.logo_initials||company.name.slice(0,2).toUpperCase(),category:company.category,logo:company.logo_url,whatsapp:company.whatsapp_number,primary:company.accent_color||"#6d293e",support:company.brand_support_color||(company.category==="barbearia"?"#272219":"#8d3b50"),background:company.brand_background_color||(company.category==="barbearia"?"#f9f7f1":"#faf8f9"),highlight:company.brand_highlight_color||(company.category==="barbearia"?"#f1e9d1":"#f1e5e7"),headline:settings.headline,subheadline:settings.subheadline,announcement:settings.announcement,bannerImage:settings.banner_image_url,bannerSlides:settings.banner_slides,galleryImages:settings.gallery_images,deliveryEnabled:settings.delivery_enabled,pickupEnabled:settings.pickup_enabled,acceptInquiries:settings.accept_inquiries}:undefined;
+ const brand:CatalogBrand|undefined=company?{name:company.name,slug:company.slug,catalogKind:settings.catalog_kind,initials:company.logo_initials||company.name.slice(0,2).toUpperCase(),category:company.category,logo:company.logo_url,whatsapp:company.whatsapp_number,primary:company.accent_color||"#6d293e",support:company.brand_support_color||(company.category==="barbearia"?"#272219":"#8d3b50"),background:company.brand_background_color||(company.category==="barbearia"?"#f9f7f1":"#faf8f9"),highlight:company.brand_highlight_color||(company.category==="barbearia"?"#f1e9d1":"#f1e5e7"),headline:settings.headline,subheadline:settings.subheadline,announcement:settings.announcement,bannerImage:settings.banner_image_url,bannerSlides:settings.banner_slides,galleryImages:settings.gallery_images,deliveryEnabled:settings.delivery_enabled,pickupEnabled:settings.pickup_enabled,acceptInquiries:settings.accept_inquiries}:undefined;
  function begin(p?:ProductRow){setEditing(p?.id??null);setForm(p?{name:p.name,sku:p.sku??"",description:p.description??"",price:p.price===null?"":String(p.price),catalog_category:p.audience??p.catalog_category??"",frame_type:p.frame_type??"",catalog_badge:p.catalog_badge??"",variants:variantsToText(p.catalog_variants),availability:p.is_active?"disponivel":p.availability==="vendido"?"vendido":"oculto",image_url:p.image_url??""}:blank);setPhoto(null);setShowForm(true);setError("");}
  async function addPhoto(file:File,identifier:string){
   const prepared=await prepareImage(file);
