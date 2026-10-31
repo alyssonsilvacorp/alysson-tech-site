@@ -113,3 +113,16 @@
 @keyframes catSlideFade{from{opacity:.4;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:720px){.filters{align-items:stretch}.hero{padding-bottom:50px}.heroCopy{padding-bottom:30px}.heroArtwork{display:none}.slideControls{left:25px;bottom:13px}.filters>input{align-self:stretch}}
 @media(prefers-reduced-motion:reduce){.heroCopy{animation:none}}
+
+.promoSection{padding:0 0 46px}
+.promoTitle{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:15px}
+.promoTitle span{color:var(--cat-primary);font-size:10px;font-weight:800;letter-spacing:.13em}
+.promoTitle h2{font-size:25px;letter-spacing:-.04em;margin:6px 0 0}
+.promoGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.promoCard{display:flex;align-items:center;gap:13px;text-align:left;background:#fff;border:1px solid #e5dfe0;padding:12px;border-radius:15px;cursor:pointer;color:#1b2c24}
+.promoCard img{width:88px;height:88px;object-fit:cover;border-radius:11px;flex-shrink:0}
+.promoCard span{display:grid;gap:4px;min-width:0}
+.promoCard small{font-size:10px;color:var(--cat-primary);font-weight:800}
+.promoCard strong{font-size:13px;line-height:1.35}
+.promoCard em{color:var(--cat-primary);font-size:11px;font-weight:700;font-style:normal}
+@media(max-width:720px){.promoGrid{grid-template-columns:1fr}.promoCard img{width:72px;height:72px}}
