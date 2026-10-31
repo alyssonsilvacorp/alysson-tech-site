@@ -192,7 +192,7 @@ export default function UnifiedCatalogManager(){
    if(!/^\d{12,13}$/.test(digits)){setError("Cadastre o WhatsApp real na área Empresas antes de publicar.");return;}
    if(!items.some(p=>p.is_active&&p.image_url)){setError("Antes de publicar, inclua pelo menos uma foto real em um produto ativo. Evite catálogos de demonstração.");return;}
    if(settings.delivery_enabled&&zones.filter(z=>z.is_active).length===0){setError("Cadastre pelo menos um bairro de entrega ou desative a entrega.");return;}
-   if(!settings.delivery_enabled&&!settings.pickup_enabled&&company.category!=="barbearia"){setError("Ative entrega ou retirada.");return;}
+   if(!settings.delivery_enabled&&!settings.pickup_enabled&&settings.catalog_kind!=="services"){setError("Ative entrega ou retirada.");return;}
   }
   if(status==="draft"&&settings.status==="published"&&!window.confirm("Retirar o catálogo publicado do ar e salvar como rascunho?"))return;
   setBusy(true);setError("");setMessage("");
@@ -260,7 +260,7 @@ export default function UnifiedCatalogManager(){
   {error&&<div style={{...panel,borderColor:"#864f4f",color:"#ffadad"}} role="alert">{error}</div>}
   {message&&<div style={{...panel,color:"#b2fa9c"}} role="status">{message}</div>}
   {company&&<><div style={{display:"flex",gap:9,flexWrap:"wrap"}}>
-   {([["products",company.category==="barbearia"?"Serviços e categorias":"Produtos e categorias"],["delivery","Entrega e retirada"],["settings","Visual e publicação"]] as const).filter(([tab])=>tab!=="delivery"||company.category!=="barbearia").map(([tab,name])=><button key={tab} type="button" style={activeTab===tab?primary:secondary} onClick={()=>setActiveTab(tab)}>{name}</button>)}
+   {([["products",settings.catalog_kind==="services"?"Serviços e categorias":"Produtos e categorias"],["delivery","Entrega e retirada"],["settings","Visual e publicação"]] as const).filter(([tab])=>tab!=="delivery"||settings.catalog_kind!=="services").map(([tab,name])=><button key={tab} type="button" style={activeTab===tab?primary:secondary} onClick={()=>setActiveTab(tab)}>{name}</button>)}
   </div>
   {activeTab==="products"&&<section style={panel}>
     <div style={{display:"flex",gap:8,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}><h2 style={{fontSize:18,margin:0}}>Produtos</h2><div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
@@ -299,7 +299,7 @@ export default function UnifiedCatalogManager(){
      <button type="button" style={{...secondary,padding:8}} onClick={()=>begin(p)}>Editar</button><button type="button" style={{...secondary,padding:8}} onClick={()=>void removeProduct(p)}>×</button>
     </article>)}</div>{loading&&<p style={muted}>Carregando...</p>}
   </section>}
-  {activeTab==="delivery"&&company.category!=="barbearia"&&<section style={panel}>
+  {activeTab==="delivery"&&settings.catalog_kind!=="services"&&<section style={panel}>
    <h2>Entrega e retirada</h2>
    <p style={muted}>As taxas são cadastradas por bairro. O catálogo não executa pagamento nem valida cobertura por endereço automaticamente.</p>
    <label style={{display:"block",marginBottom:13}}><input type="checkbox" checked={settings.delivery_enabled} onChange={e=>setSettings({...settings,delivery_enabled:e.target.checked})}/> Oferecer entrega</label>
