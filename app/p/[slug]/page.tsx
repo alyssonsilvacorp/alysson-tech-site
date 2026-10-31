@@ -325,9 +325,9 @@ export default async function SmartBusinessPage({ params }: PageProps) {
           <ActionLink
             featured
             icon={isOptica ? "▦" : "✂"}
-            label={isOptica ? "Catálogo de produtos" : "Serviços e valores"}
-            detail={business.services.length ? "Conheça nossos serviços" : "Catálogo em preparação"}
-            href={business.services.length ? "#servicos" : null}
+            label={business.catalogUrl ? "Catálogo de produtos" : isOptica ? "Catálogo de produtos" : "Serviços e valores"}
+            detail={business.catalogUrl ? "Abrir catálogo completo" : business.services.length ? "Conheça nossos serviços" : "Catálogo em preparação"}
+            href={business.catalogUrl ?? (business.services.length ? "#servicos" : null)}
           />
           <ActionLink
             featured={Boolean(bookingUrl)}
@@ -338,7 +338,7 @@ export default async function SmartBusinessPage({ params }: PageProps) {
           />
         </div>
 
-        <section className={styles.section} id="servicos">
+        {!business.catalogUrl && <section className={styles.section} id="servicos">
           {sectionHeading(
             "01 / CATÁLOGO",
             business.category === "otica" ? "Produtos e opções" : "Nossos serviços",
@@ -378,7 +378,7 @@ export default async function SmartBusinessPage({ params }: PageProps) {
               </div>
             </div>
           )}
-        </section>
+        </section>}
 
         <section className={styles.section}>
           {sectionHeading(
