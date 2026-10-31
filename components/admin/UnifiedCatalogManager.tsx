@@ -197,8 +197,8 @@ export default function UnifiedCatalogManager(){
   if(status==="draft"&&settings.status==="published"&&!window.confirm("Retirar o catálogo publicado do ar e salvar como rascunho?"))return;
   setBusy(true);setError("");setMessage("");
   const nextSlides=Array.from({length:3},(_,i)=>settings.banner_slides[i]??{image_url:""});
-  let nextGallery=[...settings.gallery_images];
-  let nextBanner=settings.banner_image_url;
+  const nextGallery=[...settings.gallery_images];
+  const nextBanner=settings.banner_image_url;
   try{
    for(let i=0;i<3;i++){
     const file=slideFiles[i];
