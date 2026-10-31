@@ -26,7 +26,7 @@ export async function getPublicCatalog(slug:string):Promise<PublicCatalog|null>{
     logo:business.logo_url,whatsapp:business.whatsapp_number,primary:business.accent_color||"#6d293e",
     support:business.brand_support_color||(business.category==="barbearia"?"#272219":"#8d3b50"),background:business.brand_background_color||(business.category==="barbearia"?"#f9f7f1":"#faf8f9"),
     highlight:business.brand_highlight_color||(business.category==="barbearia"?"#f1e9d1":"#f2e6e9"),headline:c.headline,subheadline:c.subheadline,announcement:c.announcement,bannerImage:c.banner_image_url,
-    bannerSlides:Array.isArray(c.banner_slides)?c.banner_slides.filter((b):b is {image_url:string;title?:string;text?:string;eyebrow?:string}=>Boolean(b)&&typeof b==="object"&&typeof b.image_url==="string").slice(0,3):[],
+    bannerSlides:Array.isArray(c.banner_slides)?c.banner_slides.slice(0,3).map(b=>b&&typeof b==="object"&&typeof b.image_url==="string"?b:{image_url:""}):[],
     galleryImages:Array.isArray(c.gallery_images)?c.gallery_images.filter((u):u is string=>typeof u==="string").slice(0,30):[],
     deliveryEnabled:c.delivery_enabled,pickupEnabled:c.pickup_enabled,acceptInquiries:c.accept_inquiries
    },
