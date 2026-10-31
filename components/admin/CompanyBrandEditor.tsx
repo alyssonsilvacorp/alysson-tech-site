@@ -2,9 +2,10 @@
 
 import {useCallback,useEffect,useState,type FormEvent} from "react";
 import Link from "next/link";
+import {useRouter} from "next/navigation";
 import {supabaseBrowser} from "../../lib/supabase-browser";
 
-type Company={id:string;slug:string;name:string;category:string|null;whatsapp_number:string|null;logo_url:string|null;logo_initials:string|null;accent_color:string|null;brand_support_color:string|null;brand_background_color:string|null;brand_highlight_color:string|null;short_description:string|null;instagram_url:string|null;is_published:boolean};
+type Company={id:string;slug:string;name:string;category:string|null;whatsapp_number:string|null;logo_url:string|null;logo_initials:string|null;accent_color:string|null;brand_support_color:string|null;brand_background_color:string|null;brand_highlight_color:string|null;short_description:string|null;instagram_url:string|null;is_published:boolean;has_catalog:boolean};
 type Fields={name:string;category:string;whatsapp_number:string;logo_initials:string;accent_color:string;brand_support_color:string;brand_background_color:string;brand_highlight_color:string;short_description:string;instagram_url:string};
 const empty:Fields={name:"",category:"",whatsapp_number:"",logo_initials:"",accent_color:"#6d293e",brand_support_color:"#8d3b50",brand_background_color:"#faf8f9",brand_highlight_color:"#f1e5e7",short_description:"",instagram_url:""};
 const panel:React.CSSProperties={padding:22,background:"#101a13",border:"1px solid #334739",borderRadius:16};
@@ -38,7 +39,9 @@ async function logoPalette(file:File):Promise<{primary:string;support:string;bac
  } finally{URL.revokeObjectURL(url);}
 }
 export default function CompanyBrandEditor(){
+ const router=useRouter();
  const [companies,setCompanies]=useState<Company[]>([]);
+ const [hasCatalog,setHasCatalog]=useState(false);
  const [selected,setSelected]=useState<string>("new");
  const [values,setValues]=useState<Fields>(empty);
  const [logoFile,setLogoFile]=useState<File|null>(null);
@@ -47,15 +50,15 @@ export default function CompanyBrandEditor(){
  const [error,setError]=useState("");
  const [success,setSuccess]=useState("");
  const [published,setPublished]=useState(false);
- const load=useCallback(async()=>{const r=await supabaseBrowser.from("smart_businesses").select("id,slug,name,category,whatsapp_number,logo_url,logo_initials,accent_color,brand_support_color,brand_background_color,brand_highlight_color,short_description,instagram_url,is_published").order("name");if(r.error){setError(r.error.message);return;}setCompanies((r.data??[]) as Company[]);},[]);
+ const load=useCallback(async()=>{const r=await supabaseBrowser.from("smart_businesses").select("id,slug,name,category,whatsapp_number,logo_url,logo_initials,accent_color,brand_support_color,brand_background_color,brand_highlight_color,short_description,instagram_url,is_published,has_catalog").order("name");if(r.error){setError(r.error.message);return;}setCompanies((r.data??[]) as Company[]);},[]);
  useEffect(()=>{void Promise.resolve().then(load);},[load]);
  function choose(id:string){setSelected(id);setError("");setSuccess("");setLogoFile(null);const c=companies.find(x=>x.id===id);
-  if(!c){setValues(empty);setLogoSrc(null);setPublished(false);return;}
+  if(!c){setValues(empty);setLogoSrc(null);setPublished(false);setHasCatalog(false);return;}
   setValues({name:c.name,category:c.category??"",whatsapp_number:c.whatsapp_number??"",logo_initials:c.logo_initials??"",
     accent_color:c.accent_color??empty.accent_color,brand_support_color:c.brand_support_color??empty.brand_support_color,
     brand_background_color:c.brand_background_color??empty.brand_background_color,brand_highlight_color:c.brand_highlight_color??empty.brand_highlight_color,
     short_description:c.short_description??"",instagram_url:c.instagram_url??""});
-  setLogoSrc(c.logo_url);setPublished(c.is_published);
+  setLogoSrc(c.logo_url);setPublished(c.is_published);setHasCatalog(c.has_catalog);
  }
  async function chooseLogo(file:File|null){if(!file)return;if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>3*1024*1024){setError("Logo JPG, PNG ou WebP de até 3 MB.");return;}setLogoFile(file);setLogoSrc(URL.createObjectURL(file));try{const p=await logoPalette(file);setValues(v=>({...v,accent_color:p.primary,brand_support_color:p.support,brand_background_color:p.background,brand_highlight_color:p.highlight}));}catch{setError("Não foi possível extrair as cores. Você pode escolhê-las manualmente.");}}
  async function save(e:FormEvent){e.preventDefault();if(busy)return;const name=values.name.trim(),category=values.category.trim();
@@ -63,7 +66,7 @@ export default function CompanyBrandEditor(){
   setBusy(true);setError("");setSuccess("");
   const payload={name,category,whatsapp_number:digits||null,logo_initials:values.logo_initials.trim().toUpperCase().slice(0,5)||name.slice(0,2).toUpperCase(),
     accent_color:values.accent_color,brand_support_color:values.brand_support_color,brand_background_color:values.brand_background_color,brand_highlight_color:values.brand_highlight_color,
-    short_description:values.short_description.trim()||null,instagram_url:values.instagram_url.trim()||null};
+    short_description:values.short_description.trim()||null,instagram_url:values.instagram_url.trim()||null,has_catalog:hasCatalog};
   let id=selected;
   if(selected==="new"){
    const slug=slugify(name);if(!slug){setError("Nome inválido para criar rota.");setBusy(false);return;}
@@ -83,7 +86,8 @@ export default function CompanyBrandEditor(){
     if(update.error)setError("Empresa salva, mas não foi possível vincular a logo: "+update.error.message);
    }
   }
-  setBusy(false);setLogoFile(null);setSuccess("Dados centralizados salvos. Os produtos e a identidade visual pertencem à mesma empresa.");await load();setSelected(id);
+  setBusy(false);setLogoFile(null);setSuccess(hasCatalog?"Empresa salva. Continue com a criação do catálogo.":"Empresa salva sem necessidade de catálogo.");await load();setSelected(id);
+   if(hasCatalog)router.push("/admin/catalogos?business="+encodeURIComponent(id));
  }
  async function toggleMultilink(){
   const company=companies.find(c=>c.id===selected);if(!company||busy)return;
@@ -101,7 +105,7 @@ export default function CompanyBrandEditor(){
    <button type="button" onClick={()=>choose("new")} style={btn}>+ Nova empresa</button></div>
    <label style={{display:"block",marginTop:17,fontSize:12,color:"#c5dbc8"}}>Empresa para editar<select style={{...field,marginTop:6}} value={selected} onChange={e=>choose(e.target.value)}>
     <option value="new">Cadastrar nova empresa</option>{companies.map(c=><option value={c.id} key={c.id}>{c.name}</option>)}</select></label>
-   {selectedCompany&&<p style={muted}>Rota do Multilink: /p/{selectedCompany.slug} {published?"· publicado":"· rascunho"} · Catálogo: /p/{selectedCompany.slug}/catalogo</p>}
+   {selectedCompany&&<p style={muted}>Rota do Multilink: /p/{selectedCompany.slug} {published?"· publicado":"· rascunho"} {selectedCompany.has_catalog?"· Catálogo: /p/"+selectedCompany.slug+"/catalogo":"· Sem catálogo contratado"}</p>}
   </section>
   {error&&<p role="alert" style={{...panel,borderColor:"#9f5050",color:"#ffb5b5"}}>{error}</p>}
   {success&&<p role="status" style={{...panel,color:"#aafa9a"}}>{success}</p>}
@@ -117,8 +121,18 @@ export default function CompanyBrandEditor(){
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:12,marginTop:19}}>
     {([["accent_color","Cor principal"],["brand_support_color","Cor de apoio"],["brand_background_color","Fundo"],["brand_highlight_color","Destaque"]] as const).map(([key,label])=><label key={key} style={{...panel,padding:10,display:"grid",gap:7,fontSize:12}}>{label}<input type="color" aria-label={label} value={values[key]} onChange={e=>setValues({...values,[key]:e.target.value})} style={{width:"100%",height:46,cursor:"pointer",border:0,background:"transparent"}}/><input aria-label={label+" em hexadecimal"} value={values[key]} maxLength={7} onChange={e=>{if(/^#[0-9a-fA-F]{0,6}$/.test(e.target.value))setValues({...values,[key]:e.target.value});}} style={{...field,padding:8,fontSize:11}}/></label>)}
    </div>
+   <div style={{...panel,marginTop:18,background:"#14231a"}}>
+     <strong style={{fontSize:15}}>Esta empresa terá catálogo digital?</strong>
+     <p style={{...muted,margin:"6px 0 13px"}}>Sim: libera o gerador de catálogo integrado. Não: mantém apenas os recursos contratados, sem exigir cadastro de produtos.</p>
+     <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+      <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer"}}><input type="radio" name="has-catalog" checked={hasCatalog} onChange={()=>setHasCatalog(true)}/> Sim, criar catálogo</label>
+      <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer"}}><input type="radio" name="has-catalog" checked={!hasCatalog} onChange={()=>setHasCatalog(false)}/> Não precisa de catálogo</label>
+     </div>
+     {hasCatalog&&<p style={{...muted,margin:"14px 0 0",color:"#b7f4ac"}}>Ao salvar, abriremos a etapa de produtos, fotos, entrega e publicação. O catálogo só fica público quando você ativar.</p>}
+     {!hasCatalog&&<p style={{...muted,margin:"12px 0 0"}}>Se já existia um catálogo publicado, desmarcar esta opção retirará seu acesso público, mas manterá os produtos salvos.</p>}
+    </div>
    <p style={muted}>As cores são compartilhadas com o catálogo e podem ser revisadas. Empresas novas começam como rascunho e não ativam automaticamente nenhuma placa.</p>
-   <div style={{display:"flex",alignItems:"center",gap:13,flexWrap:"wrap"}}><button disabled={busy} style={btn}>{busy?"Salvando...":selected==="new"?"Cadastrar empresa":"Salvar identidade da empresa"}</button>{selectedCompany&&<Link href="/admin/catalogos" style={{color:"#9ff68f",fontSize:13}}>Gerenciar catálogo ↗</Link>}{selectedCompany&&<button type="button" style={secondary} onClick={()=>void toggleMultilink()} disabled={busy}>{published?"Despublicar Multilink":"Publicar Multilink"}</button>}</div>
+   <div style={{display:"flex",alignItems:"center",gap:13,flexWrap:"wrap"}}><button disabled={busy} style={btn}>{busy?"Salvando...":selected==="new"?"Cadastrar empresa":"Salvar identidade da empresa"}</button>{selectedCompany&&selectedCompany.has_catalog&&<Link href={"/admin/catalogos?business="+encodeURIComponent(selectedCompany.id)} style={{color:"#9ff68f",fontSize:13}}>Gerenciar catálogo ↗</Link>}{selectedCompany&&<button type="button" style={secondary} onClick={()=>void toggleMultilink()} disabled={busy}>{published?"Despublicar Multilink":"Publicar Multilink"}</button>}</div>
   </form>
  </div>;
 }
