@@ -118,8 +118,8 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
     <div className={styles.brandMark}>{(brand.logo&&!logoFailed)||fallbackLogo
      ?<img src={logoFailed?fallbackLogo||"":brand.logo||fallbackLogo||""} onError={()=>setLogoFailed(true)} alt={"Logo "+brand.name}/>
      :<span>{brand.initials||brand.name.slice(0,2).toUpperCase()}</span>}</div>
-    <div className={styles.brandText}><strong>{brand.name}</strong><small>{brand.category??"Catálogo de produtos"}</small></div>
-    <nav className={styles.headerLinks}><a href="#produtos">Produtos</a><a href="#contato">Contato</a></nav>
+    <div className={styles.brandText}><strong>{brand.name}</strong><small>{isService?"Catálogo de serviços":brand.category??"Catálogo de produtos"}</small></div>
+    <nav className={styles.headerLinks}><a href="#produtos">{isService?"Serviços":"Produtos"}</a><a href="#contato">Contato</a></nav>
     {!isService&&<button type="button" className={styles.cartTrigger} onClick={()=>{setShowCart(true);setStep(1);}} aria-label={"Abrir sacola com "+cartCount+" itens"}>
       <ShoppingBag size={18} strokeWidth={1.8} aria-hidden="true"/><span>Sacola</span><b className={styles.cartBadge}>{cartCount}</b>
     </button>}
@@ -161,9 +161,9 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
       <div className={styles.filterGroups}>
        {!isService&&<div><span className={styles.filterLabel}>PÚBLICO</span><div className={styles.chips}>{categories.map(c=><button type="button" key={c} aria-pressed={category===c} className={category===c?styles.chipSelected:styles.chip} onClick={()=>setCategory(c)}>{c}</button>)}</div></div>}
        <div><span className={styles.filterLabel}>{isService?"CATEGORIA":"TIPO DE ARMAÇÃO"}</span><div className={styles.chips}>{frameTypes.map(c=><button type="button" key={c} aria-pressed={frameType===c} className={frameType===c?styles.chipSelected:styles.chip} onClick={()=>setFrameType(c)}>{c}</button>)}</div></div>
-      </div><input aria-label="Buscar produtos" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar produtos..."/>
+      </div><input aria-label="Buscar produtos" value={search} onChange={e=>setSearch(e.target.value)} placeholder={isService?"Buscar serviços...":"Buscar produtos..."}/>
      </div>
-     {(category!=="Todos"||frameType!=="Todos")&&<div className={styles.activeFilters}><span>{category==="Todos"?"Todos os públicos":category} · {frameType==="Todos"?"Todos os tipos":frameType}</span><button type="button" onClick={()=>{setCategory("Todos");setFrameType("Todos");}}>Limpar filtros</button></div>}
+     {(category!=="Todos"||frameType!=="Todos")&&<div className={styles.activeFilters}><span>{isService?(frameType==="Todos"?"Todos os serviços":frameType):(category==="Todos"?"Todos os públicos":category)+" · "+(frameType==="Todos"?"Todos os tipos":frameType)}</span><button type="button" onClick={()=>{setCategory("Todos");setFrameType("Todos");}}>Limpar filtros</button></div>}
      <div className={styles.grid}>{list.map(p=><article key={p.id} className={styles.card}>
        <button className={styles.productImage} onClick={()=>openProduct(p)} aria-label={"Ver detalhes de "+p.name}>
         {p.image_url?<img src={p.image_url} loading="lazy" alt={p.name}/>:<div className={styles.placeholder}>{brand.initials||"◇"}</div>}
@@ -177,11 +177,11 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
       </article>)}</div>
      {!list.length&&<p className={styles.empty}>Nenhum produto encontrado. Experimente outra categoria ou pesquisa.</p>}
     </section>
-    <section id="contato" className={styles.footer}><h2>Ficou com alguma dúvida?</h2><p>Consulte preços, modelos e disponibilidade com a equipe da {brand.name}.</p>
+    <section id="contato" className={styles.footer}><h2>Ficou com alguma dúvida?</h2><p>{isService?"Consulte serviços, valores e disponibilidade com a equipe da ":"Consulte preços, modelos e disponibilidade com a equipe da "}{brand.name}.</p>
       {phone?<a href={"https://wa.me/"+phone+"?text="+encodeURIComponent("Olá! Conheci o catálogo da "+brand.name+" e gostaria de informações.")} target="_blank" rel="noopener noreferrer">Falar no WhatsApp ↗</a>:<p>WhatsApp ainda não configurado pela loja.</p>}
     </section>
    </main>
-   <footer className={styles.credit}><span>{brand.name} · Catálogo digital</span><Link href="/">Tecnologia Alysson Tech</Link></footer>
+   <footer className={styles.credit}><span>{brand.name} · {isService?"Catálogo de serviços":"Catálogo digital"}</span><Link href="/">Tecnologia Alysson Tech</Link></footer>
    {!isService&&cartCount>0&&!showCart&&<button type="button" className={styles.floatCart} aria-label={"Abrir sacola com "+cartCount+" itens"} onClick={()=>{setShowCart(true);setStep(1);}}>
     <ShoppingBag size={21} strokeWidth={1.8} aria-hidden="true"/><span className={styles.floatBadge}>{cartCount}</span>
    </button>}
@@ -189,7 +189,7 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
      <button className={styles.close} onClick={()=>setDetail(null)} aria-label="Fechar">×</button>
      {detail.image_url&&<div className={styles.modalImage}><img src={detail.image_url} alt={detail.name}/></div>}
      <span className={styles.tag}>{isService?typeOf(detail):audienceOf(detail)+" · "+typeOf(detail)}</span><h2>{detail.name}</h2>{detail.sku&&<small>Código: {detail.sku}</small>}
-     <p>{detail.description||"Consulte este item diretamente com a loja."}</p><h3>{priceText(detail)}</h3>
+     <p>{detail.description||(isService?"Consulte este serviço diretamente com a equipe.":"Consulte este item diretamente com a loja.")}</p><h3>{priceText(detail)}</h3>
      {variationList(detail.catalog_variants).map(v=><label key={v.name} className={styles.variation}>{v.name}<select value={selection[v.name]||""} onChange={e=>setSelection({...selection,[v.name]:e.target.value})} required><option value="">Selecione</option>{v.options.map(o=><option key={o} value={o}>{o}</option>)}</select></label>)}
      <div className={styles.modalActions}>{!isService&&<button onClick={()=>addCart(detail)} disabled={!variantsReady(detail)}>Adicionar ao carrinho</button>}{brand.acceptInquiries&&<button className={isService?undefined:styles.outline} disabled={!phone||!variantsReady(detail)} onClick={()=>consult(detail)}>{isService?"Consultar serviço no WhatsApp":"Consultar este produto"}</button>}</div>
    </div></div>}
