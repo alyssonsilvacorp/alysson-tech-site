@@ -36,6 +36,7 @@ export type SmartBusiness = {
   mapsUrl: string | null;
   actions: SmartBusinessAction[];
   services: SmartBusinessService[];
+  catalogUrl: string | null;
 };
 
 type BusinessRow = {
@@ -108,7 +109,7 @@ export async function getSmartBusiness(
 
   const business = businessData as BusinessRow;
 
-  const [actionsResult, servicesResult] = await Promise.all([
+  const [actionsResult, servicesResult, catalogResult] = await Promise.all([
     supabase
       .from("smart_business_actions")
       .select("action_type,label,url,config,sort_order")
@@ -123,7 +124,17 @@ export async function getSmartBusiness(
       .eq("business_id", business.id)
       .eq("is_active", true)
       .order("sort_order", { ascending: true }),
+    supabase
+      .from("smart_catalog_settings")
+      .select("status")
+      .eq("business_id", business.id)
+      .eq("status", "published")
+      .maybeSingle(),
   ]);
+
+  if (catalogResult.error) {
+    console.error("Falha ao consultar catálogo publicado:", catalogResult.error.message);
+  }
 
   if (actionsResult.error) {
     console.error(
@@ -165,6 +176,7 @@ export async function getSmartBusiness(
       config: action.config ?? {},
       sortOrder: action.sort_order,
     })),
+    catalogUrl: catalogResult.data?.status === "published" ? `/p/${business.slug}/catalogo` : null,
     services: serviceRows.map((service) => ({
       sku: service.sku,
       audience: service.audience,
