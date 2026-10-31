@@ -61,3 +61,6 @@
 @media(max-width:800px){.workspace{grid-template-columns:1fr}.inspector{position:static}.catalogGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.inspector{display:grid;grid-template-columns:.7fr 1.3fr}.inspectorHead,.inspectorFooter{grid-column:1/-1}.inspectorBody{padding-top:20px}.logobox{height:100%;min-height:180px}}
 @media(max-width:540px){.toolbar{align-items:flex-start}.counter{padding:10px}.counter strong{font-size:27px}.counter span{font-size:8px}.intro h3{font-size:30px}.catalogGrid{gap:9px}.card,.cardSelected{padding:14px;min-height:217px}.cardTop{margin-bottom:14px}.card>strong,.cardSelected>strong{font-size:14px}.cardIcon{width:38px;height:38px}.card>p,.cardSelected>p{font-size:10px}.inspector{display:block}.logobox{height:105px;min-height:0}.logobox img{width:74px;height:74px}.inspectorBody{padding:10px 19px 20px}.bottom{flex-direction:column;align-items:flex-start;gap:15px}}
 @media(prefers-reduced-motion:reduce){.card,.cardSelected,.contact{transition:none}.card:hover,.cardSelected:hover{transform:none}}
+
+.solutionBrandLogo{display:block;border-radius:8px;width:37px;height:37px;object-fit:cover}
+.cardIcon:has(.solutionBrandLogo){background:#08130b;border-color:rgba(152,244,132,.36);overflow:hidden}
