@@ -311,12 +311,27 @@ export default function UnifiedCatalogManager(){
   {activeTab==="settings"&&<section style={panel}>
    <h2>Identidade e publicação</h2><p style={muted}>As cores e a logo vêm do cadastro único da empresa. Para alterá-las, abra <Link href="/admin/empresas" style={{color:"#a9ff98"}}>Empresas</Link>.</p>
    {([["headline","Título de destaque"],["subheadline","Descrição de destaque"],["announcement","Mensagem na faixa superior"]] as const).map(([key,label])=><label key={key} style={{display:"grid",gap:7,marginBottom:14,fontSize:12}}>{label}<textarea rows={2} style={field} value={settings[key]} onChange={e=>setSettings({...settings,[key]:e.target.value})}/></label>)}
-   <div style={{padding:15,border:"1px solid #38533e",borderRadius:12,marginBottom:18}}>
-    <strong>Banner de destaque da loja</strong>
-    <p style={muted}>O catálogo alterna 3 slides automaticamente. Imagem recomendada: 1600 × 640 px (desktop). Deixe o assunto central para recorte em celular. Sem upload, o banner usa logo e produtos.</p>
-    <label style={{display:"grid",gap:7,fontSize:12}}>Enviar banner personalizado<input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>setBannerFile(e.target.files?.[0]??null)}/></label>
-    {settings.banner_image_url&&<div style={{marginTop:10,display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}><img src={settings.banner_image_url} alt="Banner atual" style={{width:180,height:74,objectFit:"cover",borderRadius:8}}/><button style={secondary} type="button" onClick={()=>setSettings(v=>({...v,banner_image_url:null}))}>Remover banner</button></div>}
-   </div>
+   <div style={{padding:18,border:"1px solid #3b5d42",borderRadius:14,marginBottom:18}}>
+      <h3 style={{fontSize:16,margin:"0 0 7px"}}>Banners automáticos · 3 apresentações</h3>
+      <p style={muted}>As três apresentações alternam a cada 6,5 segundos, sem controles manuais. Personalize cada uma com imagem JPG/PNG/WebP (recomendação: 1600 × 640 px), título e texto. Sem imagem, o visual usa a identidade da empresa.</p>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,240px),1fr))",gap:13}}>
+       {[0,1,2].map(i=><div key={i} style={{border:"1px solid #304f39",borderRadius:12,padding:14,display:"grid",gap:10,minWidth:0}}>
+        <strong style={{fontSize:13}}>Banner {i+1}</strong>
+        {settings.banner_slides[i]?.image_url&&<img src={settings.banner_slides[i].image_url} alt={"Banner atual "+(i+1)} style={{width:"100%",aspectRatio:"2.5",objectFit:"cover",borderRadius:8}}/>}
+        <label style={{display:"grid",gap:5,fontSize:12}}>Selecionar imagem<input type="file" accept="image/*,.heic,.heif" style={{width:"100%",minWidth:0}} onChange={e=>setSlideFiles(old=>old.map((f,j)=>j===i?e.target.files?.[0]??null:f))}/></label>
+        {slideFiles[i]&&<small style={{color:"#b3ffa5",overflowWrap:"anywhere"}}>Pronto para enviar: {slideFiles[i]?.name}</small>}
+        <label style={{display:"grid",gap:5,fontSize:12}}>Título opcional<input style={field} maxLength={110} value={settings.banner_slides[i]?.title??""} onChange={e=>setSettings(v=>({...v,banner_slides:Array.from({length:3},(_,j)=>j===i?{...v.banner_slides[j],image_url:v.banner_slides[j]?.image_url??"",title:e.target.value}:v.banner_slides[j]??{image_url:""})}))}/></label>
+        <label style={{display:"grid",gap:5,fontSize:12}}>Descrição opcional<textarea style={field} rows={2} maxLength={220} value={settings.banner_slides[i]?.text??""} onChange={e=>setSettings(v=>({...v,banner_slides:Array.from({length:3},(_,j)=>j===i?{...v.banner_slides[j],image_url:v.banner_slides[j]?.image_url??"",text:e.target.value}:v.banner_slides[j]??{image_url:""})}))}/></label>
+        {settings.banner_slides[i]?.image_url&&<button type="button" style={secondary} onClick={()=>setSettings(v=>({...v,banner_slides:Array.from({length:3},(_,j)=>j===i?{...v.banner_slides[j],image_url:""}:v.banner_slides[j]??{image_url:""})}))}>Remover imagem</button>}
+       </div>)}
+      </div>
+      <h3 style={{fontSize:16,margin:"25px 0 6px"}}>Galeria animada · trabalhos reais</h3>
+      <p style={muted}>As fotos deslizam continuamente sem interrupção entre os banners. A Barbearia Lima aproveita automaticamente as 11 fotografias já existentes; outras lojas podem enviar as próprias imagens.</p>
+      <label style={{display:"grid",gap:7,fontSize:12}}>Adicionar fotos à galeria (máximo 30)<input type="file" multiple accept="image/*,.heic,.heif" style={{maxWidth:"100%"}} onChange={e=>setGalleryFiles(Array.from(e.target.files??[]))}/></label>
+      {galleryFiles.length>0&&<p style={{color:"#b3ffa5",fontSize:12}}>{galleryFiles.length} nova(s) foto(s) selecionada(s)</p>}
+      {settings.gallery_images.length>0&&<div style={{display:"flex",gap:9,overflowX:"auto",marginTop:14,paddingBottom:8}}>{settings.gallery_images.map((url,i)=><div key={url} style={{flex:"0 0 96px",display:"grid",gap:5}}><img src={url} alt={"Foto "+(i+1)} style={{width:96,height:110,objectFit:"cover",borderRadius:8}}/><button type="button" style={{...secondary,fontSize:10,padding:6}} onClick={()=>setSettings(v=>({...v,gallery_images:v.gallery_images.filter((_,j)=>j!==i)}))}>Remover</button></div>)}</div>}
+      <button type="button" disabled={busy} style={{...primary,marginTop:18}} onClick={()=>void saveSettings(settings.status)}>Salvar banners e galeria</button>
+     </div>
    <label style={{display:"block",marginBottom:15}}><input type="checkbox" checked={settings.accept_inquiries} onChange={e=>setSettings({...settings,accept_inquiries:e.target.checked})}/> Permitir consultas individuais sobre produtos no WhatsApp</label>
    <label style={{display:"block",marginBottom:15,fontSize:12,lineHeight:1.6,color:"#c8e0c8"}}><input type="checkbox" checked={verifiedPublication} onChange={e=>setVerifiedPublication(e.target.checked)}/> Conferi os produtos, fotos, informações e WhatsApp reais desta empresa antes de publicar.</label>
    <div style={{display:"flex",gap:10,flexWrap:"wrap"}}><button style={secondary} disabled={busy} onClick={()=>void saveSettings("draft")}>Salvar rascunho</button><button style={primary} disabled={busy} onClick={()=>void saveSettings("published")}>Publicar catálogo</button>{published&&<button style={secondary} disabled={busy} onClick={()=>void saveSettings("paused")}>Pausar catálogo</button>}<button style={{...secondary,color:"#ffc2be",borderColor:"#6f4544"}} disabled={busy} onClick={()=>void deleteCatalog()}>Excluir catálogo</button></div>
