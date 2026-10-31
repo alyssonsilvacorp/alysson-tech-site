@@ -88,3 +88,28 @@
 @media(max-width:980px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.hero{min-height:335px}.heroVisual span{font-size:60px}}
 @media(max-width:720px){.headerLinks{display:none}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.hero{grid-template-columns:1fr;min-height:280px}.heroVisual{display:none}.hero h1{font-size:38px}.features{grid-template-columns:1fr;gap:8px;margin:12px 0 38px}.main{padding:16px 12px}.filters{flex-direction:column;align-items:stretch}.filters input{width:100%}.productImage{height:185px}.cardBody{padding:12px}.credit{padding:24px 12px}.headerInner{padding:10px 12px}}
 @media(max-width:390px){.brandText strong{font-size:14px}.brandText small{font-size:9px}.headerInner{gap:8px}.cartTrigger{padding:0 8px;font-size:11px}.productImage{height:155px}.heroCopy{padding:27px}.hero h1{font-size:33px}}
+
+/* Vitrine Premium V2 — filtros combinados, slides e CTA da compra */
+.filterGroups{display:grid;gap:16px;min-width:0;flex:1}
+.filterLabel{display:block;font-size:10px;letter-spacing:.1em;font-weight:800;color:var(--cat-primary);margin-bottom:7px}
+.filters{align-items:end;gap:20px}
+.filters>input{align-self:end}
+.activeFilters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;color:#6e7c71;margin:-5px 0 16px}
+.activeFilters button{border:0;background:transparent;color:var(--cat-primary);font-size:12px;font-weight:750;cursor:pointer;text-decoration:underline}
+.cardBody .consultLink{padding:9px 4px;border:0;border-radius:0;background:transparent;text-align:left;color:var(--cat-primary);font-size:11px;font-weight:700;cursor:pointer;line-height:1.45}
+.cardBody .addButton{background:var(--cat-primary);border:1px solid var(--cat-primary);color:#fff;font-size:12px;min-height:43px;font-weight:800;margin:5px 0 0}
+.cardBody .addButton:hover{filter:brightness(1.14)}
+.hero{position:relative;isolation:isolate;overflow:hidden;padding-bottom:40px}
+.heroCopy{position:relative;z-index:2;animation:catSlideFade .4s ease-out}
+.heroVisual{overflow:hidden}
+.heroArtwork{width:100%;height:100%;max-height:390px;object-fit:contain;filter:drop-shadow(0 18px 22px rgba(0,0,0,.18));padding:32px}
+.slideControls{position:absolute;z-index:5;left:clamp(23px,4vw,66px);bottom:18px;display:flex;align-items:center;gap:8px}
+.slideControls button{width:32px;height:32px;border:1px solid #ffffff70;border-radius:10px;background:#ffffff20;color:white;cursor:pointer;font-size:19px;display:grid;place-items:center}
+.slideControls button.slideDot,.slideControls button.slideCurrent{width:10px;height:10px;padding:0;border-radius:99px;background:#ffffff7a;border:0}
+.slideControls button.slideCurrent{width:26px;background:#fff}
+.slideControls button:focus-visible,.addButton:focus-visible,.consultLink:focus-visible,.continueShopping:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.drawerFooter .continueShopping{background:#fff;color:var(--cat-primary);border:1px solid var(--cat-primary);font-size:12px;width:100%;min-height:42px;border-radius:10px;cursor:pointer;margin-bottom:12px}
+.drawerHead button{flex-shrink:0;font-size:24px;font-weight:750;color:#1b2c23;z-index:2}
+@keyframes catSlideFade{from{opacity:.4;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:720px){.filters{align-items:stretch}.hero{padding-bottom:50px}.heroCopy{padding-bottom:30px}.heroArtwork{display:none}.slideControls{left:25px;bottom:13px}.filters>input{align-self:stretch}}
+@media(prefers-reduced-motion:reduce){.heroCopy{animation:none}}
