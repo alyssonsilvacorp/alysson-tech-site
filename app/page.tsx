@@ -1,13 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import DiagnosisForm from "../components/DiagnosisForm";
-import {
-  clientProjects,
-  izalyPlatform,
-  ownProjects,
-  type ProjectTone,
-  vitalyonProject,
-} from "../data/projects";
+import { clientProjects, izalyPlatform } from "../data/projects";
+import PortfolioExplorer from "../components/home/PortfolioExplorer";
 
 const capabilities = [
   {
@@ -129,89 +124,6 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function ProjectVisual({ tone }: { tone: ProjectTone }) {
-  if (tone === "food") {
-    return (
-      <div className="mini-product mini-product--food" aria-hidden="true">
-        <div className="mini-product__top">
-          <span>Pedidos</span>
-          <span className="live-dot">ao vivo</span>
-        </div>
-        <div className="order-row">
-          <strong>#028</strong>
-          <span>Em preparo</span>
-          <i />
-        </div>
-        <div className="order-row">
-          <strong>#029</strong>
-          <span>Novo pedido</span>
-          <i />
-        </div>
-        <div className="order-progress">
-          <span />
-          <span />
-          <span />
-        </div>
-      </div>
-    );
-  }
-
-  if (tone === "crm") {
-    return (
-      <div className="mini-product mini-product--crm" aria-hidden="true">
-        <div className="mini-product__top">
-          <span>Pipeline</span>
-          <span>+ oportunidade</span>
-        </div>
-        <div className="pipeline">
-          <div>
-            <small>NOVOS</small>
-            <i />
-            <i />
-          </div>
-          <div>
-            <small>CONTATO</small>
-            <i />
-            <i />
-          </div>
-          <div>
-            <small>PROPOSTA</small>
-            <i />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (tone === "tech") {
-    return (
-      <div className="mini-product mini-product--tech" aria-hidden="true">
-        <div className="tech-orbit">
-          <span className="tech-core">IZ</span>
-          <i />
-          <i />
-          <i />
-        </div>
-        <div className="tech-caption">
-          <small>TECNOLOGIA</small>
-          <strong>que acompanha você</strong>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mini-product mini-product--joias" aria-hidden="true">
-      <div className="jewel-stage">
-        <span className="jewel-ring jewel-ring--one" />
-        <span className="jewel-ring jewel-ring--two" />
-        <i>IZ</i>
-      </div>
-      <p>Detalhes que contam histórias.</p>
-    </div>
-  );
-}
-
 export default function Home() {
   return (
     <main>
@@ -228,7 +140,7 @@ export default function Home() {
         </a>
 
         <nav className="main-nav" aria-label="Navegação principal">
-          <a href="#projetos">Projetos</a>
+          <a href="#projetos">Portfólio</a>
           <a href="#solucoes">Soluções</a>
           <a href="#sobre">Sobre</a>
           <a href="#analise">Análise</a>
@@ -266,15 +178,15 @@ export default function Home() {
         <div className="hero__copy">
           <p className="eyebrow">
             <span />
-            Tecnologia começa entendendo o problema
+            ALYSSON TECH / TECNOLOGIA PARA NEGÓCIOS
           </p>
           <h1>
-            O que seu negócio precisa <em>resolver hoje?</em>
+            Soluções que colocam seu negócio <em>em movimento.</em>
           </h1>
           <p className="hero__lead">
-            Você não precisa saber qual sistema, site ou tecnologia utilizar.
-            Conte o que está acontecendo no seu negócio e vamos encontrar uma
-            solução simples, viável e adequada ao momento da sua operação.
+            Placas QR e NFC, multilinks, catálogos inteligentes, sites,
+            sistemas, automação e tecnologia para restaurantes. Tudo pensado
+            para conectar sua empresa aos clientes e simplificar a operação.
           </p>
 
           <div className="hero__actions">
@@ -286,14 +198,14 @@ export default function Home() {
               <ArrowIcon />
             </a>
             <a className="button button--ghost" href="#projetos">
-              Conhecer projetos
+              Explorar soluções
             </a>
           </div>
 
           <div className="hero__facts" aria-label="Informações da Alysson Tech">
             <span>Maceió · AL</span>
-            <span>Atendimento humano</span>
-            <span>Soluções por etapas</span>
+            <span>QR + NFC</span>
+            <span>Sistemas e SaaS</span>
           </div>
         </div>
 
@@ -384,7 +296,7 @@ export default function Home() {
               Projetos e tecnologia
             </p>
             <h2>
-              Soluções construídas para diferentes momentos de um negócio.
+              Tecnologia real para cada etapa do seu negócio.
             </h2>
           </div>
           <p>
@@ -505,79 +417,7 @@ export default function Home() {
         </div>
 
         <div className="portfolio-group portfolio-group--own">
-          <div className="portfolio-group__heading">
-            <div>
-              <p className="portfolio-group__eyebrow">
-                Produtos e projetos próprios
-              </p>
-              <h3>Ideias que evoluem com uso e aprendizado.</h3>
-            </div>
-            <p>
-              Experimentos, produtos digitais e soluções desenvolvidas pela
-              Alysson Tech e pelo ecossistema IZALY.
-            </p>
-          </div>
-
-          <article className="featured-project featured-project--vitalyon featured-project--standalone">
-            <div className="featured-project__media">
-              <div className="pulse-ring pulse-ring--one" />
-              <div className="pulse-ring pulse-ring--two" />
-              <Image
-                src="/brand/vitalyon.jpeg"
-                alt="Símbolo VITALYON"
-                fill
-                unoptimized
-                sizes="(max-width: 900px) 100vw, 50vw"
-                className="featured-project__image featured-project__image--vitalyon"
-              />
-              <div className="project-status">{vitalyonProject.status}</div>
-            </div>
-            <div className="featured-project__content">
-              <p>{vitalyonProject.eyebrow}</p>
-              <h3>{vitalyonProject.name}</h3>
-              <span>{vitalyonProject.description}</span>
-              <a
-                href={vitalyonProject.href}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {vitalyonProject.linkLabel}
-                <ExternalIcon />
-              </a>
-            </div>
-          </article>
-
-          <div className="projects-grid">
-            {ownProjects.map((project) => (
-              <article
-                className={`project-card project-card--${project.tone}`}
-                key={project.name}
-              >
-                <ProjectVisual tone={project.tone} />
-                <div className="project-card__body">
-                  <div className="project-card__meta">
-                    <p>{project.eyebrow}</p>
-                    <span>{project.status}</span>
-                  </div>
-                  <h3>{project.name}</h3>
-                  <p className="project-card__description">
-                    {project.description}
-                  </p>
-                  {project.href ? (
-                    <a href={project.href} target="_blank" rel="noreferrer">
-                      {project.linkLabel}
-                      <ExternalIcon />
-                    </a>
-                  ) : (
-                    <span className="project-card__coming">
-                      Em construção
-                      <i />
-                    </span>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
+          <PortfolioExplorer />
         </div>
       </section>
 
