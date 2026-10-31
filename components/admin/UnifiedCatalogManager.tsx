@@ -56,6 +56,7 @@ export default function UnifiedCatalogManager(){
  const [preview,setPreview]=useState(false);
  const [search,setSearch]=useState("");
  const [uploading,setUploading]=useState(false);
+ const [verifiedPublication,setVerifiedPublication]=useState(false);
  const company=companies.find(c=>c.id===businessId);
  const loadCompanies=useCallback(async()=>{
   const r=await supabaseBrowser.from("smart_businesses").select("id,slug,name,category,whatsapp_number,logo_url,logo_initials,accent_color,brand_support_color,brand_background_color,brand_highlight_color").order("name");
@@ -123,12 +124,14 @@ export default function UnifiedCatalogManager(){
  async function saveSettings(status:Settings["status"]){
   if(!businessId||busy)return;
   if(status==="published"){
+   if(!verifiedPublication){setError("Confira os produtos, imagens, preços e WhatsApp e marque a confirmação antes de publicar.");return;}
    const digits=(company?.whatsapp_number??"").replace(/\D/g,"");
    if(!/^\d{12,13}$/.test(digits)){setError("Cadastre o WhatsApp real na área Empresas antes de publicar.");return;}
    if(!items.some(p=>p.is_active&&p.image_url)){setError("Antes de publicar, inclua pelo menos uma foto real em um produto ativo. Evite catálogos de demonstração.");return;}
    if(settings.delivery_enabled&&zones.filter(z=>z.is_active).length===0){setError("Cadastre pelo menos um bairro de entrega ou desative a entrega.");return;}
    if(!settings.delivery_enabled&&!settings.pickup_enabled){setError("Ative entrega ou retirada.");return;}
   }
+  if(status==="draft"&&settings.status==="published"&&!window.confirm("Retirar o catálogo publicado do ar e salvar como rascunho?"))return;
   setBusy(true);setError("");setMessage("");
   const r=await supabaseBrowser.from("smart_catalog_settings").upsert({business_id:businessId,...settings,status,updated_at:new Date().toISOString(),...(status==="published"?{published_at:new Date().toISOString()}:{})},{onConflict:"business_id"});
   if(r.error){setError(r.error.message);setBusy(false);return;}
@@ -145,7 +148,7 @@ export default function UnifiedCatalogManager(){
  return <div style={{display:"grid",gap:16}}>
   <div style={panel}>
    <h2 style={{fontSize:19,margin:"0 0 7px"}}>Catálogos integrados</h2><p style={muted}>A mesma empresa, identidade e produtos alimentam o catálogo e o Multilink. Não há HTML individual para publicar.</p>
-   <label style={{display:"grid",gap:7,fontSize:12,maxWidth:550}}>Empresa selecionada<select style={field} value={businessId} onChange={e=>{setBusinessId(e.target.value);setShowForm(false);setSearch("");}}><option value="">Selecione uma empresa</option>{companies.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+   <label style={{display:"grid",gap:7,fontSize:12,maxWidth:550}}>Empresa selecionada<select style={field} value={businessId} onChange={e=>{setBusinessId(e.target.value);setShowForm(false);setSearch("");setVerifiedPublication(false);}}><option value="">Selecione uma empresa</option>{companies.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
    {!companies.length&&<p style={muted}>Cadastre uma empresa em <Link href="/admin/empresas" style={{color:"#b0ff94"}}>Empresas</Link> para criar seu catálogo.</p>}
    {company&&<div style={{display:"flex",gap:9,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",marginTop:15}}>
     <span style={{fontSize:12,color:published?"#a5f49a":"#cfcb9a"}}>Situação: {published?"PUBLICADO":settings.status==="paused"?"PAUSADO":"RASCUNHO"} · {items.length} produtos</span>
@@ -205,6 +208,7 @@ export default function UnifiedCatalogManager(){
    <h2>Identidade e publicação</h2><p style={muted}>As cores e a logo vêm do cadastro único da empresa. Para alterá-las, abra <Link href="/admin/empresas" style={{color:"#a9ff98"}}>Empresas</Link>.</p>
    {([["headline","Título de destaque"],["subheadline","Descrição de destaque"],["announcement","Mensagem na faixa superior"]] as const).map(([key,label])=><label key={key} style={{display:"grid",gap:7,marginBottom:14,fontSize:12}}>{label}<textarea rows={2} style={field} value={settings[key]} onChange={e=>setSettings({...settings,[key]:e.target.value})}/></label>)}
    <label style={{display:"block",marginBottom:15}}><input type="checkbox" checked={settings.accept_inquiries} onChange={e=>setSettings({...settings,accept_inquiries:e.target.checked})}/> Permitir consultas individuais sobre produtos no WhatsApp</label>
+   <label style={{display:"block",marginBottom:15,fontSize:12,lineHeight:1.6,color:"#c8e0c8"}}><input type="checkbox" checked={verifiedPublication} onChange={e=>setVerifiedPublication(e.target.checked)}/> Conferi os produtos, fotos, informações e WhatsApp reais desta empresa antes de publicar.</label>
    <div style={{display:"flex",gap:10,flexWrap:"wrap"}}><button style={secondary} disabled={busy} onClick={()=>void saveSettings("draft")}>Salvar rascunho</button><button style={primary} disabled={busy} onClick={()=>void saveSettings("published")}>Publicar catálogo</button>{published&&<button style={secondary} disabled={busy} onClick={()=>void saveSettings("paused")}>Pausar publicação</button>}</div>
    <p style={muted}>Publicar não cria deploy da Vercel. Fotos e produtos são lidos do Supabase, e a rota da empresa permanece estável.</p>
   </section>}
