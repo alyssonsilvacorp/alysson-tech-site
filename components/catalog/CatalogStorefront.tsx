@@ -14,7 +14,7 @@ export type CatalogProduct = {
 export type DeliveryZone = {id:string;label:string;delivery_fee:number};
 export type CatalogBanner={image_url:string;title?:string;text?:string;eyebrow?:string};
 export type CatalogBrand = {
- name:string;slug:string;initials:string;category:string|null;logo:string|null;
+ name:string;slug:string;catalogKind?:"products"|"services";initials:string;category:string|null;logo:string|null;
  whatsapp:string|null;primary:string;support:string;background:string;highlight:string;
  headline:string|null;subheadline:string|null;announcement:string|null;bannerImage:string|null;bannerSlides?:CatalogBanner[];galleryImages?:string[];
  deliveryEnabled:boolean;pickupEnabled:boolean;acceptInquiries:boolean;
@@ -46,7 +46,7 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
  const [address,setAddress]=useState("");
  const [customer,setCustomer]=useState("");
  const phone=mobile(brand.whatsapp);
- const isService=/barbearia|servi[cç]os|sal[aã]o|est[eé]tica/i.test(brand.category??"");
+ const isService=brand.catalogKind==="services"||(!brand.catalogKind&&/barbearia|servi[cç]os|sal[aã]o|est[eé]tica/i.test(brand.category??""));
  const canDeliver=brand.deliveryEnabled&&zones.length>0;
  const canPickup=brand.pickupEnabled;
  const fallbackLogo=brand.slug==="otica-fenni"?"/fenni/logo-oficial-instagram.jpg":null;
@@ -160,7 +160,7 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
      <div className={styles.filters}>
       <div className={styles.filterGroups}>
        {!isService&&<div><span className={styles.filterLabel}>PÚBLICO</span><div className={styles.chips}>{categories.map(c=><button type="button" key={c} aria-pressed={category===c} className={category===c?styles.chipSelected:styles.chip} onClick={()=>setCategory(c)}>{c}</button>)}</div></div>}
-       <div><span className={styles.filterLabel}>{isService?"CATEGORIA":"TIPO DE ARMAÇÃO"}</span><div className={styles.chips}>{frameTypes.map(c=><button type="button" key={c} aria-pressed={frameType===c} className={frameType===c?styles.chipSelected:styles.chip} onClick={()=>setFrameType(c)}>{c}</button>)}</div></div>
+       <div><span className={styles.filterLabel}>{isService?"CATEGORIA":brand.category==="otica"?"TIPO DE ARMAÇÃO":"CATEGORIA DE PRODUTO"}</span><div className={styles.chips}>{frameTypes.map(c=><button type="button" key={c} aria-pressed={frameType===c} className={frameType===c?styles.chipSelected:styles.chip} onClick={()=>setFrameType(c)}>{c}</button>)}</div></div>
       </div><input aria-label="Buscar produtos" value={search} onChange={e=>setSearch(e.target.value)} placeholder={isService?"Buscar serviços...":"Buscar produtos..."}/>
      </div>
      {(category!=="Todos"||frameType!=="Todos")&&<div className={styles.activeFilters}><span>{isService?(frameType==="Todos"?"Todos os serviços":frameType):(category==="Todos"?"Todos os públicos":category)+" · "+(frameType==="Todos"?"Todos os tipos":frameType)}</span><button type="button" onClick={()=>{setCategory("Todos");setFrameType("Todos");}}>Limpar filtros</button></div>}
