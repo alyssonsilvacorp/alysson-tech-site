@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AdminShell from "./AdminShell";
 import AdminOfferings from "./AdminOfferings";
+import ConfirmDialog from "./ConfirmDialog";
 import { supabaseBrowser } from "../../lib/supabase-browser";
 
 type Company = { id:string;name:string;slug:string;category:string|null;short_description:string|null;whatsapp_number:string|null;instagram_url:string|null;is_published:boolean };
@@ -51,6 +52,7 @@ export default function ControlModules({module}: {module:Module}){
  const [productAvailability,setProductAvailability]=useState("disponivel");
  const [members,setMembers]=useState<{id:string;business_id:string;user_id:string;member_role:string;can_edit_profile:boolean;can_edit_catalog:boolean;can_edit_payment:boolean;is_active:boolean}[]>([]);
  const [inviteEmail,setInviteEmail]=useState("");
+ const [confirmMember,setConfirmMember]=useState<{id:string;active:boolean}|null>(null);
  const [inviteLink,setInviteLink]=useState("");
  const [inviteRole,setInviteRole]=useState("editor");
  const [editProfile,setEditProfile]=useState(true);
@@ -142,16 +144,33 @@ export default function ControlModules({module}: {module:Module}){
    setInviteLink("https://alyssontech.com.br/portal/convite/"+data);
    setMessage("Convite criado. Compartilhe o link com o responsável pelo WhatsApp ou e-mail. Validade: 14 dias.");
  }
- async function toggleMember(id:string,active:boolean){
-   if(!window.confirm((active?"Reativar":"Revogar")+" o acesso deste usuário?"))return;
-   setLoading(true);const r=await supabaseBrowser.from("smart_business_members").update({is_active:active}).eq("id",id);
-   setLoading(false);if(r.error){setError(r.error.message);return;}
-   setMessage(active?"Acesso reativado.":"Acesso revogado.");await loadMembers();
- }
- async function signOut(){await supabaseBrowser.auth.signOut();router.replace("/admin/login");}
+ async function toggleMember(){
+    if(!confirmMember||loading)return;
+    const {id,active}=confirmMember;
+    setLoading(true);setError("");
+    const r=await supabaseBrowser.from("smart_business_members").update({is_active:active}).eq("id",id);
+    setLoading(false);if(r.error){setError(r.error.message);return;}
+    setConfirmMember(null);
+    setMessage(active?"Acesso reativado.":"Acesso revogado.");await loadMembers();
+  }
+  async function signOut(){await supabaseBrowser.auth.signOut();router.replace("/admin/login");}
  if(gate==="checking")return <main style={{padding:40,background:"#050805",color:"white",minHeight:"100vh"}}>Verificando acesso administrativo...</main>;
  if(gate==="denied")return <main style={{padding:40,background:"#050805",color:"white",minHeight:"100vh"}}><h1>Acesso restrito</h1><p>Somente administradores podem acessar o Control Center.</p><Link href="/admin/login">Entrar com outra conta</Link></main>;
  return <AdminShell current={meta[module].current} onSignOut={signOut}>
+   <ConfirmDialog
+      open={confirmMember!==null}
+      title={confirmMember?.active?"Reativar acesso?":"Revogar acesso do usuário?"}
+      description={confirmMember?.active
+       ?"Este usuário recuperará as permissões anteriormente configuradas para sua empresa."
+       :"O usuário deixará de acessar o portal da empresa, sem excluir seus cadastros ou os conteúdos da loja."}
+      context={confirmMember ? "Usuário "+(members.find(m=>m.id===confirmMember.id)?.user_id.slice(0,8)??"") +"… · "+(companies.find(c=>c.id===members.find(m=>m.id===confirmMember.id)?.business_id)?.name??"Empresa") : undefined}
+      confirmLabel={confirmMember?.active?"Sim, reativar":"Sim, revogar acesso"}
+      tone={confirmMember?.active?"success":"danger"}
+      busy={loading}
+      error={error||undefined}
+      onCancel={()=>{if(!loading){setConfirmMember(null);setError("");}}}
+      onConfirm={()=>void toggleMember()}
+   />
   <header style={{marginBottom:25}}><p style={{fontSize:11,letterSpacing:2,color:"#71ff41"}}>ALYSSON TECH / CONTROL CENTER</p><h1 style={{fontSize:"clamp(28px,4vw,42px)",margin:"8px 0"}}>{meta[module].title}</h1><p style={{color:"#a9b7ac"}}>{meta[module].subtitle}</p></header>
   {message&&<p role="status" style={{...card,color:"#94fb87"}}>{message}</p>}
   {error&&<p role="alert" style={{...card,color:"#ff9999"}}>{error}</p>}
@@ -193,7 +212,7 @@ export default function ControlModules({module}: {module:Module}){
    </form>
    {inviteLink&&<div style={{...card,borderColor:"#71ff41"}}><strong>Link de convite criado</strong><p style={{fontSize:12,color:"#c0cfbe"}}>Válido por 14 dias, utilizável somente pelo e-mail informado.</p><input readOnly value={inviteLink} aria-label="Link de convite" onFocus={e=>e.target.select()} style={input}/><button type="button" style={{...secondary,marginTop:10}} onClick={()=>void navigator.clipboard.writeText(inviteLink)}>Copiar link</button></div>}
    <h2>Acessos vinculados</h2>
-   {members.filter(m=>!companyId||m.business_id===companyId).map(m=><article key={m.id} style={card}><strong>{m.member_role}</strong><p style={{fontSize:12,color:"#aab5ac"}}>Usuário {m.user_id.slice(0,8)}… · {companies.find(c=>c.id===m.business_id)?.name??m.business_id}</p><p style={{fontSize:12}}>Perfil: {m.can_edit_profile?"sim":"não"} · Catálogo: {m.can_edit_catalog?"sim":"não"} · Pix: {m.can_edit_payment?"sim":"não"}</p><p style={{fontSize:12,color:m.is_active?"#8ae98a":"#e5bcbc"}}>{m.is_active?"Acesso ativo":"Acesso revogado"}</p><button type="button" disabled={loading} style={secondary} onClick={()=>void toggleMember(m.id,!m.is_active)}>{m.is_active?"Revogar acesso":"Reativar acesso"}</button></article>)}
+   {members.filter(m=>!companyId||m.business_id===companyId).map(m=><article key={m.id} style={card}><strong>{m.member_role}</strong><p style={{fontSize:12,color:"#aab5ac"}}>Usuário {m.user_id.slice(0,8)}… · {companies.find(c=>c.id===m.business_id)?.name??m.business_id}</p><p style={{fontSize:12}}>Perfil: {m.can_edit_profile?"sim":"não"} · Catálogo: {m.can_edit_catalog?"sim":"não"} · Pix: {m.can_edit_payment?"sim":"não"}</p><p style={{fontSize:12,color:m.is_active?"#8ae98a":"#e5bcbc"}}>{m.is_active?"Acesso ativo":"Acesso revogado"}</p><button type="button" disabled={loading} style={secondary} onClick={()=>{setError("");setConfirmMember({id:m.id,active:!m.is_active});}}>{m.is_active?"Revogar acesso":"Reativar acesso"}</button></article>)}
    {members.length===0&&<p style={{color:"#aab5ac"}}>Nenhum acesso de cliente vinculado ainda.</p>}
   </>}
   {module==="assinaturas"&&<><p style={{color:"#a9b8a8"}}>Registro manual das mensalidades. Nenhuma cobrança automática é feita aqui.</p>{companies.map(c=>{const sub=subscriptions.find(x=>x.business_id===c.id);return <article key={c.id} style={card}><strong>{c.name}</strong><p style={{color:"#a9b8a8",fontSize:12}}>{sub?currency(Number(sub.monthly_amount))+" / mês · "+sub.status:"Sem assinatura cadastrada"}</p><div style={{display:"flex",gap:10,alignItems:"end",flexWrap:"wrap"}}><label><span style={label}>Modalidade</span><select id={"tier-"+c.id} defaultValue={sub?.plan_tier??"standard"} style={{...input,maxWidth:180}}><option value="low_ticket">Low ticket — manutenção</option><option value="standard">Padrão — gestão</option></select></label><label><span style={label}>Mensalidade (R$)</span><input aria-label={"Valor para "+c.name} id={"valor-"+c.id} type="number" min="0" step="0.01" defaultValue={sub?.monthly_amount??""} style={{...input,maxWidth:150}}/></label><label><span style={label}>Situação</span><select id={"status-"+c.id} defaultValue={sub?.status??"pending"} style={{...input,maxWidth:160}}><option value="pending">Pendente</option><option value="active">Ativa</option><option value="paused">Pausada</option><option value="cancelled">Cancelada</option></select></label><button style={secondary} onClick={()=>void(async()=>{const rawValue=(document.getElementById("valor-"+c.id) as HTMLInputElement)?.value?.trim()??"";const value=rawValue===""?NaN:Number(rawValue);const status=(document.getElementById("status-"+c.id) as HTMLSelectElement)?.value;const plan_tier=(document.getElementById("tier-"+c.id) as HTMLSelectElement)?.value as "low_ticket"|"standard";if(!Number.isFinite(value)||value<0)return setError("Valor inválido");const r=await supabaseBrowser.from("smart_business_subscriptions").upsert({business_id:c.id,monthly_amount:value,status,plan_tier});if(r.error)return setError(r.error.message);setSubscriptions(current=>[...current.filter(x=>x.business_id!==c.id),{business_id:c.id,monthly_amount:value,status,plan_tier}]);setError("");setMessage("Assinatura registrada internamente.");})()}>Salvar</button></div></article>;})}</>}

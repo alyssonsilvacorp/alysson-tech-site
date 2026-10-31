@@ -2771,3 +2771,26 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* Home 2026 — identidade premium Alysson Tech e portfólio interativo */
+.site-header {backdrop-filter: blur(18px);}
+.hero {isolation:isolate;position:relative;}
+.hero::before {
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse at 8% 20%,rgba(117,255,86,.075),transparent 54%);
+}
+.hero__copy .eyebrow {font-size:11px;letter-spacing:.14em;}
+.hero h1 {max-width:680px;letter-spacing:-.067em;}
+.hero__facts {color:#afc8b3;}
+.portfolio-group--own {margin-top:58px;}
+.portfolio-group--own::before {
+  content:"ALYSSON TECH  /  SOLUÇÕES CONECTADAS";
+  display:block;color:rgba(158,239,142,.45);
+  letter-spacing:.22em;font:10px var(--font-geist-mono),monospace;
+  border-top:1px solid rgba(180,233,176,.1);padding:19px 0 29px;
+}
+@media(max-width:760px) {
+  .portfolio-group--own {margin-top:36px;}
+  .portfolio-group--own::before {font-size:9px;letter-spacing:.12em;}
+}
