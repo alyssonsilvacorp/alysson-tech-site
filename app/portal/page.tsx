@@ -2,12 +2,13 @@
 import {useCallback,useEffect,useMemo,useState} from "react";
 import {useRouter} from "next/navigation";
 import {supabaseBrowser} from "../../lib/supabase-browser";
+import ConfirmDialog from "../../components/admin/ConfirmDialog";
 
 type Membership={business_id:string;member_role:string;can_edit_profile:boolean;can_edit_catalog:boolean;can_edit_payment:boolean};
-type Business={id:string;name:string;short_description:string|null;whatsapp_number:string|null;instagram_url:string|null;slug:string;is_published:boolean};
+type Business={id:string;name:string;short_description:string|null;whatsapp_number:string|null;instagram_url:string|null;slug:string;is_published:boolean;has_catalog:boolean};
 type Item={id:string;business_id:string;name:string;description:string|null;price:number|null;image_url:string|null;sku:string|null;audience:string|null;frame_type:string|null;availability:string;is_active:boolean;sort_order:number};
-const panel:React.CSSProperties={background:"#111914",border:"1px solid #25402d",borderRadius:16,padding:20,marginBottom:20};
-const field:React.CSSProperties={width:"100%",padding:13,border:"1px solid #39503c",borderRadius:10,color:"#f2fff2",background:"#0b100d",fontSize:14};
+const panel:React.CSSProperties={background:"#111914",border:"1px solid #25402d",borderRadius:16,padding:20,marginBottom:20,minWidth:0,boxSizing:"border-box"};
+const field:React.CSSProperties={width:"100%",minWidth:0,boxSizing:"border-box",padding:13,border:"1px solid #39503c",borderRadius:10,color:"#f2fff2",background:"#0b100d",fontSize:16};
 const button:React.CSSProperties={padding:"12px 18px",background:"#71ff41",color:"#092006",border:0,borderRadius:10,fontWeight:700,cursor:"pointer"};
 const button2:React.CSSProperties={...button,background:"#1e3023",color:"#ecf6ee",border:"1px solid #3c5942"};
 const mini:React.CSSProperties={display:"block",color:"#a8b6a9",fontSize:12,marginBottom:5};
@@ -19,6 +20,9 @@ export default function PortalHome(){
  const [businessId,setBusinessId]=useState("");
  const [business,setBusiness]=useState<Business|null>(null);
  const [items,setItems]=useState<Item[]>([]);
+ const [catalogStatus,setCatalogStatus]=useState("draft");
+ const [photoPreview,setPhotoPreview]=useState<string|null>(null);
+ const [pendingDelete,setPendingDelete]=useState<Item|null>(null);
  const [pix,setPix]=useState("");
  const [draftPix,setDraftPix]=useState("");
  const [contact,setContact]=useState({whatsapp:"",instagram:"",description:""});
@@ -35,6 +39,9 @@ export default function PortalHome(){
  const canProfile=!!access&&access.member_role!=="viewer"&&access.can_edit_profile;
  const canCatalog=!!access&&access.member_role!=="viewer"&&access.can_edit_catalog;
  const canPayment=!!access&&access.member_role!=="viewer"&&access.can_edit_payment;
+ const audienceOptions=useMemo(()=>Array.from(new Set(items.map(p=>p.audience?.trim()).filter((x):x is string=>Boolean(x)))).sort((a,b)=>a.localeCompare(b,"pt-BR")),[items]);
+ const typeOptions=useMemo(()=>Array.from(new Set(items.map(p=>p.frame_type?.trim()).filter((x):x is string=>Boolean(x)))).sort((a,b)=>a.localeCompare(b,"pt-BR")),[items]);
+ useEffect(()=>{if(!photo)return;const url=URL.createObjectURL(photo);setPhotoPreview(url);return()=>URL.revokeObjectURL(url);},[photo]);
 
  useEffect(()=>{
   let alive=true;
@@ -52,14 +59,16 @@ export default function PortalHome(){
   void init();return()=>{alive=false;};
  },[router]);
  const reload=useCallback(async(id:string)=>{
-  const [b,p,a]=await Promise.all([
-   supabaseBrowser.from("smart_businesses").select("id,name,slug,short_description,whatsapp_number,instagram_url,is_published").eq("id",id).maybeSingle(),
+  const [b,p,a,settings]=await Promise.all([
+   supabaseBrowser.from("smart_businesses").select("id,name,slug,short_description,whatsapp_number,instagram_url,is_published,has_catalog").eq("id",id).maybeSingle(),
    supabaseBrowser.from("smart_business_services").select("id,business_id,name,description,price,image_url,sku,audience,frame_type,availability,is_active,sort_order").eq("business_id",id).order("sort_order"),
-   supabaseBrowser.from("smart_business_actions").select("config").eq("business_id",id).eq("action_type","pix").maybeSingle()
+   supabaseBrowser.from("smart_business_actions").select("config").eq("business_id",id).eq("action_type","pix").maybeSingle(),
+   supabaseBrowser.from("smart_catalog_settings").select("status").eq("business_id",id).maybeSingle()
   ]);
   if(b.error){setError(b.error.message);return;}
   setBusiness(b.data as Business);
   setItems((p.data??[]) as Item[]);
+  setCatalogStatus(settings.data?.status??"draft");
   setContact({whatsapp:b.data?.whatsapp_number??"",instagram:b.data?.instagram_url??"",description:b.data?.short_description??""});
   const config=a.data?.config as Record<string,unknown>|undefined;
   const key=typeof config?.pix_key==="string"?config.pix_key:typeof config?.pix_copia_e_cola==="string"?config.pix_copia_e_cola:"";
@@ -70,7 +79,7 @@ export default function PortalHome(){
  function success(msg:string){setError("");setMessage(msg);}
  async function saveContact(e:React.FormEvent){e.preventDefault();if(!canProfile||!businessId)return;setBusy(true);setError("");const r=await supabaseBrowser.rpc("update_smart_business_contact",{p_business_id:businessId,p_whatsapp:contact.whatsapp,p_instagram:contact.instagram,p_description:contact.description});setBusy(false);if(r.error)setError(r.error.message);else{success("Informações atualizadas.");await reload(businessId);}}
  async function savePix(e:React.FormEvent){e.preventDefault();if(!canPayment||!businessId)return;setBusy(true);setError("");const r=await supabaseBrowser.rpc("update_smart_business_pix",{p_business_id:businessId,p_pix_key:draftPix.trim()});setBusy(false);if(r.error)setError(r.error.message);else{success("Chave Pix atualizada.");await reload(businessId);}}
- function begin(item?:Item){setEditId(item?.id??null);setName(item?.name??"");setDescription(item?.description??"");setPrice(item?.price==null?"":String(item.price));setImageUrl(item?.image_url??"");setAudience(item?.audience??"");setFrameType(item?.frame_type??"");setSku(item?.sku??"");setAvailability(!item?"disponivel":item.is_active?"disponivel":item.availability==="vendido"?"vendido":"oculto");setPhoto(null);setShowForm(true);}
+ function begin(item?:Item){setEditId(item?.id??null);setName(item?.name??"");setDescription(item?.description??"");setPrice(item?.price==null?"":String(item.price));setImageUrl(item?.image_url??"");setAudience(item?.audience??"");setFrameType(item?.frame_type??"");setSku(item?.sku??"");setAvailability(!item?"disponivel":item.is_active?"disponivel":item.availability==="vendido"?"vendido":"oculto");setPhoto(null);setPhotoPreview(null);setShowForm(true);}
  async function saveItem(e:React.FormEvent){e.preventDefault();if(!canCatalog||!businessId)return;setError("");setBusy(true);
   if(!editId&&!photo&&!imageUrl.trim()){setBusy(false);setError("Para cadastrar um item, anexe uma foto.");return;}
   let publicUrl=imageUrl.trim()||null;
@@ -82,13 +91,14 @@ export default function PortalHome(){
    if(up.error){setBusy(false);setError("Falha no envio da imagem: "+up.error.message);return;}
    publicUrl=supabaseBrowser.storage.from("business-media").getPublicUrl(path).data.publicUrl;
   }
-  const amount=price.trim()===""?null:Number(price.trim().replace(",","."));
+  const normalized=price.trim().replace(/\s/g,"").replace(/\.(?=\d{3}(\D|$))/g,"").replace(",",".");
+  const amount=normalized===""?null:Number(normalized);
   if(amount!==null&&(!Number.isFinite(amount)||amount<0)){setBusy(false);setError("Preço inválido.");return;}
   const record={name:name.trim(),description:description.trim()||null,price:amount,image_url:publicUrl,sku:sku.trim()||null,audience:audience.trim()||null,frame_type:frameType.trim()||null,is_active:availability==="disponivel",availability};
   const result=editId?await supabaseBrowser.from("smart_business_services").update(record).eq("id",editId).eq("business_id",businessId)
    :await supabaseBrowser.from("smart_business_services").insert({...record,business_id:businessId,sort_order:items.length});
   setBusy(false);if(result.error){setError(result.error.message);return;}
-  setShowForm(false);success("Catálogo salvo. Atualize o multilink para conferir.");await reload(businessId);
+  setShowForm(false);setPhoto(null);setPhotoPreview(null);success("Produto salvo. Se o catálogo estiver publicado, a atualização estará disponível sem novo deploy.");await reload(businessId);
  }
  async function changeAvailability(item:Item,available:boolean){if(!canCatalog)return;setError("");const r=await supabaseBrowser.from("smart_business_services").update({is_active:available,availability:available?"disponivel":"vendido"}).eq("id",item.id).eq("business_id",businessId);if(r.error)setError(r.error.message);else{success("Disponibilidade atualizada.");await reload(businessId);}}
  async function deleteItem(item:Item){
@@ -119,7 +129,7 @@ export default function PortalHome(){
     <section style={panel}><header style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}><div><h2>Meu catálogo</h2><p style={{color:"#a2b0a4",fontSize:12}}>Produtos, preços e disponibilidade.</p></div>{canCatalog&&<button style={button} onClick={()=>begin()}>+ Novo item</button>}</header>
      {canCatalog&&showForm&&<form onSubmit={saveItem} style={{...panel,background:"#0b120e",marginTop:12}}>
       <h3>{editId?"Editar item":"Cadastrar item"}</h3>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:13}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:13}}>
        <label><span style={mini}>Nome *</span><input style={field} required value={name} onChange={e=>setName(e.target.value)}/></label>
        <label><span style={mini}>Preço (R$)</span><input style={field} inputMode="decimal" value={price} onChange={e=>setPrice(e.target.value)}/></label>
        <label><span style={mini}>Categoria / público</span><input style={field} value={audience} onChange={e=>setAudience(e.target.value)}/></label>
