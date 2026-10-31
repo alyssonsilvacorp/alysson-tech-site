@@ -11,6 +11,8 @@
 - Não ativar cobrança automática nem inventar preços, frete, disponibilidade, fotos ou WhatsApp.
 
 ## Implementado nesta branch
+
+**Estado do banco:** a migration aditiva foi aplicada ao Supabase Alysson Tech com versão 20261031061132, após validações RLS positivas/negativas em transações revertidas. Todos os 100 códigos de catálogo estão disponíveis e nenhum catálogo está publicado. Código Next.js continua na PR Draft e NÃO foi publicado no domínio oficial.
 - Migration aditiva com 100 aliases distintos e RLS por empresa/admin.
 - Cadastro de empresa ampliado: logo, paleta derivada, sigla, segmento, WhatsApp.
 - Editor de catálogo único: produto, SKU, categoria, preço opcional, descrição, variações, imagem, lista rápida, fotos em lote com compressão, bairros e taxas, entrega/retirada, pré-visualização e publicação.
@@ -20,7 +22,7 @@
 
 ## Limites e pendências antes de homologar
 - Importação .xlsx/.csv/.pdf assistida do gerador original ainda deve ser portada/validada; não prometer essa função nesta fase (apenas cadastro rápido via lista).
-- Upload de lote associa por nome exato de SKU/produto, com revisão das associações não encontradas; fotos reais Fenni permanecem faltando até confirmação.
+- Upload de lote associa por nome exato de SKU/produto, com revisão das associações não encontradas. O Supabase Fenni já contém 32 URL de imagens, ainda sem confirmação visual de autenticidade neste fluxo.
 - Fluxo de carrinho com WhatsApp deve ser testado com número real e produtos de teste; nunca enviar pedidos de demonstração a clientes sem aprovação.
 - O gerador atual vive em outro projeto Vercel; **não** redirecionar usuários ou remover projeto antes da substituição validada.
 - Homologar visual e funcionalidade em iPhone, Android e desktop, bem como imports maiores, acessibilidade e textos de frete.
@@ -30,7 +32,7 @@
 
 ## Ordem de implantação
 1. Validar CI/Next e migração em transação com ROLLBACK.
-2. Aplicar migração aditiva sob autorização e backup.
+2. Migração aditiva aplicada com sucesso; validar novamente a integridade antes de uso real.
 3. Testar admin e storefront em preview e verificar rotas Fenni/Lima anteriores.
 4. Criar catálogo em rascunho Fenni usando os 32 registros existentes, preencher dados reais.
 5. Publicar um catálogo piloto validado e verificar o clique no Multilink, checkout e consulta individual por WhatsApp.
