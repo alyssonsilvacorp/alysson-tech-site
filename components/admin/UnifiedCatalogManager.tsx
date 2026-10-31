@@ -310,6 +310,13 @@ export default function UnifiedCatalogManager(){
   </section>}
   {activeTab==="settings"&&<section style={panel}>
    <h2>Identidade e publicação</h2><p style={muted}>As cores e a logo vêm do cadastro único da empresa. Para alterá-las, abra <Link href="/admin/empresas" style={{color:"#a9ff98"}}>Empresas</Link>.</p>
+   <label style={{display:"grid",gap:8,maxWidth:450,marginBottom:18,fontSize:13}}>Tipo de catálogo
+    <select style={field} value={settings.catalog_kind} onChange={e=>setSettings({...settings,catalog_kind:e.target.value as "products"|"services"})}>
+      <option value="products">Produtos · sacola e escolha de recebimento</option>
+      <option value="services">Serviços · consultas pelo WhatsApp</option>
+    </select>
+    <small style={muted}>Mesma apresentação premium para todas as empresas. O tipo só define como o cliente faz o contato.</small>
+   </label>
    {([["headline","Título de destaque"],["subheadline","Descrição de destaque"],["announcement","Mensagem na faixa superior"]] as const).map(([key,label])=><label key={key} style={{display:"grid",gap:7,marginBottom:14,fontSize:12}}>{label}<textarea rows={2} style={field} value={settings[key]} onChange={e=>setSettings({...settings,[key]:e.target.value})}/></label>)}
    <div style={{padding:18,border:"1px solid #3b5d42",borderRadius:14,marginBottom:18}}>
       <h3 style={{fontSize:16,margin:"0 0 7px"}}>Banners automáticos · 3 apresentações</h3>
