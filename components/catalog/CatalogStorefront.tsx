@@ -69,6 +69,7 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
  const shipping=zones.find(z=>z.id===zone);
  const subtotal=cart.reduce((sum,c)=>sum+(c.product.price??0)*c.quantity,0);
  const unknownPrices=cart.some(c=>c.product.price===null);
+ const pricedCount=cart.reduce((n,c)=>n+(c.product.price!==null?c.quantity:0),0);
  const total=subtotal+(fulfilment==="delivery"&&shipping?Number(shipping.delivery_fee):0);
  function openProduct(p:CatalogProduct){setDetail(p);setSelection({});}
  function variantsReady(p:CatalogProduct){return variationList(p.catalog_variants).every(v=>!!selection[v.name]);}
@@ -165,7 +166,7 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
      <div className={styles.drawerFooter}>
        <div className={styles.drawerPriceSummary} aria-live="polite">
          <span>{unknownPrices?"Subtotal dos itens com preço":"Subtotal dos produtos"}</span>
-         <strong>{brl(subtotal)}</strong>
+         <strong>{pricedCount===0?"—":brl(subtotal)}</strong>
          {unknownPrices&&<small>+ {cart.filter(l=>l.product.price===null).reduce((n,l)=>n+l.quantity,0)} item(ns) com valor sob consulta. Não é o total final.</small>}
          {fulfilment==="delivery"&&shipping&&<small>Taxa de entrega: {brl(Number(shipping.delivery_fee))}</small>}
          {!unknownPrices&&fulfilment==="delivery"&&shipping&&<strong className={styles.drawerGrandTotal}>Total estimado: {brl(total)}</strong>}
