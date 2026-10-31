@@ -111,7 +111,7 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
   const msg="Olá! Quero consultar este pedido do catálogo "+brand.name+":\n\n"+lines+"\n\n"+deliveryInfo+"\nNome: "+customer.trim()+"\n"+(unknownPrices?"Valores de alguns produtos sob consulta.":"Total estimado: "+brl(total))+"\n\nPode confirmar disponibilidade e valores?";
   window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(msg),"_blank","noopener,noreferrer");
  }
- return <div className={styles.root} style={palette}>
+ return <div className={styles.root} style={palette} data-catalog-kind={isService?"services":"products"}>
    {adminPreview&&<div className={styles.previewBanner}>PRÉ-VISUALIZAÇÃO ADMINISTRATIVA · Alterações não publicadas podem aparecer aqui.</div>}
    {brand.announcement&&<div className={styles.announcement}>{brand.announcement}</div>}
    <header className={styles.header}><div className={styles.headerInner}>
