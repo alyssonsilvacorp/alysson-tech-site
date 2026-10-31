@@ -30,23 +30,27 @@ export type SmartBusiness = {
   logoUrl: string | null;
   coverUrl: string | null;
   accentColor: string | null;
+  supportColor: string | null;
   whatsappNumber: string | null;
   instagramUrl: string | null;
   address: string | null;
   mapsUrl: string | null;
   actions: SmartBusinessAction[];
   services: SmartBusinessService[];
+  catalogUrl: string | null;
 };
 
 type BusinessRow = {
   id: string;
   slug: string;
   name: string;
+  has_catalog: boolean;
   category: string | null;
   short_description: string | null;
   logo_url: string | null;
   cover_url: string | null;
   accent_color: string | null;
+  brand_support_color: string | null;
   whatsapp_number: string | null;
   instagram_url: string | null;
   address: string | null;
@@ -88,7 +92,7 @@ export async function getSmartBusiness(
     await supabase
       .from("smart_businesses")
       .select(
-        "id,slug,name,category,short_description,logo_url,cover_url,accent_color,whatsapp_number,instagram_url,address,maps_url",
+        "id,slug,name,category,short_description,logo_url,cover_url,accent_color,brand_support_color,whatsapp_number,instagram_url,address,maps_url,has_catalog",
       )
       .eq("slug", normalizedSlug)
       .eq("is_published", true)
@@ -108,7 +112,7 @@ export async function getSmartBusiness(
 
   const business = businessData as BusinessRow;
 
-  const [actionsResult, servicesResult] = await Promise.all([
+  const [actionsResult, servicesResult, catalogResult] = await Promise.all([
     supabase
       .from("smart_business_actions")
       .select("action_type,label,url,config,sort_order")
@@ -123,7 +127,17 @@ export async function getSmartBusiness(
       .eq("business_id", business.id)
       .eq("is_active", true)
       .order("sort_order", { ascending: true }),
+    supabase
+      .from("smart_catalog_settings")
+      .select("status")
+      .eq("business_id", business.id)
+      .eq("status", "published")
+      .maybeSingle(),
   ]);
+
+  if (catalogResult.error) {
+    console.error("Falha ao consultar catálogo publicado:", catalogResult.error.message);
+  }
 
   if (actionsResult.error) {
     console.error(
@@ -154,6 +168,7 @@ export async function getSmartBusiness(
     logoUrl: business.logo_url,
     coverUrl: business.cover_url,
     accentColor: business.accent_color,
+    supportColor: business.brand_support_color,
     whatsappNumber: business.whatsapp_number,
     instagramUrl: business.instagram_url,
     address: business.address,
@@ -165,6 +180,7 @@ export async function getSmartBusiness(
       config: action.config ?? {},
       sortOrder: action.sort_order,
     })),
+    catalogUrl: business.has_catalog && catalogResult.data?.status === "published" ? `/p/${business.slug}/catalogo` : null,
     services: serviceRows.map((service) => ({
       sku: service.sku,
       audience: service.audience,

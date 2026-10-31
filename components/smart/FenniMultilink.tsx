@@ -165,9 +165,9 @@ export default function FenniMultilink({ business }: { business: SmartBusiness }
             />
             <AccessCard
               title="Catálogo de produtos"
-              subtitle={business.services.length ? "Conheça nossos produtos" : "Catálogo em preparação"}
+              subtitle={business.catalogUrl ? "Abra nosso catálogo completo" : business.services.length ? "Conheça nossos produtos" : "Catálogo em preparação"}
               symbol="catalogue"
-              href="#catalogo"
+              href={business.catalogUrl ?? "#catalogo"}
             />
             <AccessCard
               title="Chave Pix"
@@ -179,7 +179,7 @@ export default function FenniMultilink({ business }: { business: SmartBusiness }
         </section>
 
 
-        {business.services.length > 0 ? (
+        {business.catalogUrl ? null : business.services.length > 0 ? (
           <FenniProductGallery products={business.services} contactUrl={whatsapp} />
         ) : (
           <section id="catalogo" className={styles.catalog} aria-labelledby="fenni-catalog-coming">
