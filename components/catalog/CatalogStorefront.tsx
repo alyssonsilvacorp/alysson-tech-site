@@ -12,10 +12,11 @@ export type CatalogProduct = {
  catalog_badge:string|null;catalog_variants:unknown;sort_order:number;
 };
 export type DeliveryZone = {id:string;label:string;delivery_fee:number};
+export type CatalogBanner={image_url:string;title?:string;text?:string;eyebrow?:string};
 export type CatalogBrand = {
  name:string;slug:string;initials:string;category:string|null;logo:string|null;
  whatsapp:string|null;primary:string;support:string;background:string;highlight:string;
- headline:string|null;subheadline:string|null;announcement:string|null;bannerImage:string|null;
+ headline:string|null;subheadline:string|null;announcement:string|null;bannerImage:string|null;bannerSlides?:CatalogBanner[];galleryImages?:string[];
  deliveryEnabled:boolean;pickupEnabled:boolean;acceptInquiries:boolean;
 };
 type CartLine={key:string;product:CatalogProduct;quantity:number;selection:Record<string,string>};
@@ -45,6 +46,7 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
  const [address,setAddress]=useState("");
  const [customer,setCustomer]=useState("");
  const phone=mobile(brand.whatsapp);
+ const isService=/barbearia|servi[cç]os|sal[aã]o|est[eé]tica/i.test(brand.category??"");
  const canDeliver=brand.deliveryEnabled&&zones.length>0;
  const canPickup=brand.pickupEnabled;
  const fallbackLogo=brand.slug==="otica-fenni"?"/fenni/logo-oficial-instagram.jpg":null;
@@ -59,11 +61,23 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
   &&[p.name,p.description??"",p.sku??""].some(v=>v.toLocaleLowerCase("pt-BR").includes(search.trim().toLocaleLowerCase("pt-BR")))
  ),[products,category,frameType,search]);
  const promotions=useMemo(()=>products.filter(p=>/promo|oferta|destaque/i.test(p.catalog_badge??"")).slice(0,3),[products]);
- const slides=useMemo(()=>[
-  {eyebrow:"COLEÇÃO SELECIONADA",title:brand.headline||"Encontre o que procura.",text:brand.subheadline||"Peças escolhidas para acompanhar o seu estilo."},
-  {eyebrow:"IDENTIDADE E ESTILO",title:"Escolhas que combinam com você.",text:"Explore nossos modelos por público e tipo de armação. Encontre seus favoritos com facilidade."},
-  {eyebrow:promotions.length?"NOSSA CURADORIA":"ATENDIMENTO PERSONALIZADO",title:promotions.length?"Destaques da coleção.":"Seu próximo olhar começa aqui.",text:promotions.length?"Conheça os itens selecionados pela loja.":"Salve seus favoritos e tire suas dúvidas com nossa equipe pelo WhatsApp."}
- ],[brand.headline,brand.subheadline,promotions.length]);
+ const slideDefaults=isService?[
+  {eyebrow:"ATENDIMENTO COM IDENTIDADE",title:brand.headline||"Estilo feito para você.",text:brand.subheadline||"Conheça nossos serviços e escolha seu próximo atendimento."},
+  {eyebrow:"CUIDADO EM CADA DETALHE",title:"Cada corte tem sua história.",text:"Conheça os trabalhos, serviços e valores da nossa barbearia."},
+  {eyebrow:"SERVIÇOS E PLANOS",title:"Seu estilo, sua rotina.",text:"Corte, barba e opções mensais. Consulte a equipe para saber mais."}
+ ]:[
+  {eyebrow:"COLEÇÃO SELECIONADA",title:brand.headline||"Encontre o que procura.",text:brand.subheadline||"Peças escolhidas para acompanhar seu estilo."},
+  {eyebrow:"IDENTIDADE E ESTILO",title:"Escolhas que combinam com você.",text:"Explore modelos, compare opções e encontre seus favoritos."},
+  {eyebrow:promotions.length?"NOSSA CURADORIA":"ATENDIMENTO PERSONALIZADO",title:promotions.length?"Destaques da coleção.":"Seu próximo olhar começa aqui.",text:promotions.length?"Descubra os itens selecionados pela loja.":"Consulte os detalhes com nossa equipe pelo WhatsApp."}
+ ];
+ const slides=slideDefaults.map((fallback,i)=>({
+  eyebrow:brand.bannerSlides?.[i]?.eyebrow||fallback.eyebrow,
+  title:brand.bannerSlides?.[i]?.title||fallback.title,
+  text:brand.bannerSlides?.[i]?.text||fallback.text,
+  image:brand.bannerSlides?.[i]?.image_url||(i===0?brand.bannerImage:null)||null
+ }));
+ const showcase=brand.galleryImages?.length?brand.galleryImages:brand.slug==="barbearia-lima"?
+  Array.from({length:11},(_,i)=>"/lima/trabalhos/trabalho-"+String(i+1).padStart(2,"0")+".webp"):[];
  useEffect(()=>{const interval=window.setInterval(()=>setSlide(x=>(x+1)%3),6500);return()=>window.clearInterval(interval);},[]);
  useEffect(()=>{
    if(!adminPreview)return;
@@ -89,7 +103,7 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
  function variantsReady(p:CatalogProduct){return variationList(p.catalog_variants).every(v=>!!selection[v.name]);}
  function lineSummary(p:CatalogProduct,options:Record<string,string>){return [p.name,p.sku?"Código: "+p.sku:"",...Object.entries(options).map(([k,v])=>k+": "+v)].filter(Boolean).join(" — ");}
  function addCart(p:CatalogProduct){if(!variantsReady(p))return;const key=p.id+":"+JSON.stringify(Object.entries(selection).sort());setCart(current=>{const old=current.find(c=>c.key===key);return old?current.map(c=>c.key===key?{...c,quantity:c.quantity+1}:c):[...current,{key,product:p,quantity:1,selection:{...selection}}]});setDetail(null);}
- function consult(p:CatalogProduct){if(!variantsReady(p)||!phone)return;const msg="Olá! Vi este produto no catálogo da "+brand.name+" e gostaria de mais informações:\n\n"+lineSummary(p,selection)+"\nPreço: "+priceText(p)+"\n\nPoderia me ajudar?";window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(msg),"_blank","noopener,noreferrer");}
+ function consult(p:CatalogProduct){if(!variantsReady(p)||!phone)return;const msg="Olá! Vi este "+(isService?"serviço":"produto")+" no catálogo da "+brand.name+" e gostaria de mais informações:\n\n"+lineSummary(p,selection)+"\nPreço: "+priceText(p)+"\n\nPoderia me ajudar?";window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(msg),"_blank","noopener,noreferrer");}
  function changeQty(key:string,delta:number){setCart(current=>current.map(x=>x.key===key?{...x,quantity:x.quantity+delta}:x).filter(x=>x.quantity>0));}
  function submitWhatsApp(){if(!phone||!cart.length||!customer.trim()||!fulfilmentReady)return;
   const lines=cart.map(l=>"- "+l.quantity+"× "+lineSummary(l.product,l.selection)+" — "+priceText(l.product)).join("\n");
@@ -106,26 +120,34 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
      :<span>{brand.initials||brand.name.slice(0,2).toUpperCase()}</span>}</div>
     <div className={styles.brandText}><strong>{brand.name}</strong><small>{brand.category??"Catálogo de produtos"}</small></div>
     <nav className={styles.headerLinks}><a href="#produtos">Produtos</a><a href="#contato">Contato</a></nav>
-    <button type="button" className={styles.cartTrigger} onClick={()=>{setShowCart(true);setStep(1);}} aria-label={"Abrir sacola com "+cartCount+" itens"}>
+    {!isService&&<button type="button" className={styles.cartTrigger} onClick={()=>{setShowCart(true);setStep(1);}} aria-label={"Abrir sacola com "+cartCount+" itens"}>
       <ShoppingBag size={18} strokeWidth={1.8} aria-hidden="true"/><span>Sacola</span><b className={styles.cartBadge}>{cartCount}</b>
-    </button>
+    </button>}
    </div></header>
    <main className={styles.main}>
-    <section className={styles.hero} aria-label="Apresentação da coleção">
-     {brand.bannerImage&&<div className={styles.heroBackground} style={{backgroundImage:'url("'+brand.bannerImage.replace(/["()\\]/g,"")+'")'}} aria-hidden="true" />}
+    <section className={styles.hero} aria-label="Apresentação da coleção" style={isService?{background:"linear-gradient(113deg,#11140f 10%,#242218 57%,#5a4722 100%)"}:undefined}>
+     {slides[slide].image&&<div className={styles.heroBackground} style={{backgroundImage:'url("'+slides[slide].image!.replace(/["()\\]/g,"")+'")'}} aria-hidden="true" />}
      <div className={styles.heroGrain} aria-hidden="true" />
      <div className={styles.heroCopy} key={slide}>
       <span>{slides[slide].eyebrow}</span>
       <h1>{slides[slide].title}</h1>
       <p>{slides[slide].text}</p>
-      <a href="#produtos">Explorar coleção <ArrowUpRight size={16} strokeWidth={1.7} aria-hidden="true"/></a>
+      <a href="#produtos">{isService?"Ver serviços":"Explorar coleção"} <ArrowUpRight size={16} strokeWidth={1.7} aria-hidden="true"/></a>
      </div>
-     {!brand.bannerImage&&<div className={styles.heroVisual} aria-hidden="true">
-      <div className={styles.heroSignature}><span>{brand.slug==="otica-fenni"?"FN":brand.initials||brand.name.slice(0,1)}</span></div>
+     {!slides[slide].image&&<div className={styles.heroVisual} aria-hidden="true">
+      <div className={styles.heroSignature}><span>{brand.slug==="otica-fenni"?"FN":brand.initials||brand.name.slice(0,2).toUpperCase()}</span></div>
       <span className={styles.heroBrandLetter}>{brand.name}</span>
      </div>}
      <div className={styles.heroProgress} aria-hidden="true"><span key={slide}/></div>
     </section>
+    {showcase.length>0&&<section className={styles.showcaseSection} aria-labelledby="work-showcase-title">
+     <div className={styles.showcaseHeading}><span>TRABALHOS REAIS</span><h2 id="work-showcase-title">O cuidado em cada detalhe.</h2><p>Conheça nossa galeria em movimento.</p></div>
+     <div className={styles.showcaseViewport}><div className={styles.showcaseTrack}>
+      {[0,1].map(repeat=><div className={styles.showcaseGroup} key={repeat} aria-hidden={repeat===1?"true":undefined}>
+       {showcase.map((src,i)=><img key={i} src={src} loading={repeat===0&&i<2?"eager":"lazy"} alt={repeat===0?"Trabalho realizado — foto "+(i+1):""} />)}
+      </div>)}
+     </div></div>
+    </section>}
     {promotions.length>0&&<section className={styles.promoSection} aria-label="Produtos em destaque">
       <div className={styles.promoTitle}><span>SELEÇÃO ESPECIAL</span><h2>Produtos em destaque</h2></div>
       <div className={styles.promoGrid}>{promotions.map(p=><button type="button" key={p.id} className={styles.promoCard} onClick={()=>openProduct(p)}>
@@ -134,11 +156,11 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
       </button>)}</div>
     </section>}
     <section id="produtos" className={styles.products}>
-     <div className={styles.sectionTop}><div><span>NOSSA SELEÇÃO</span><h2>Explore os produtos</h2></div><small>{list.length} produto(s) encontrado(s)</small></div>
+     <div className={styles.sectionTop}><div><span>{isService?"ATENDIMENTOS E VALORES":"NOSSA SELEÇÃO"}</span><h2>{isService?"Conheça nossos serviços":"Explore os produtos"}</h2></div><small>{list.length} {isService?"serviço(s)":"produto(s)"} encontrado(s)</small></div>
      <div className={styles.filters}>
       <div className={styles.filterGroups}>
-       <div><span className={styles.filterLabel}>PÚBLICO</span><div className={styles.chips}>{categories.map(c=><button type="button" key={c} aria-pressed={category===c} className={category===c?styles.chipSelected:styles.chip} onClick={()=>setCategory(c)}>{c}</button>)}</div></div>
-       <div><span className={styles.filterLabel}>TIPO DE ARMAÇÃO</span><div className={styles.chips}>{frameTypes.map(c=><button type="button" key={c} aria-pressed={frameType===c} className={frameType===c?styles.chipSelected:styles.chip} onClick={()=>setFrameType(c)}>{c}</button>)}</div></div>
+       {!isService&&<div><span className={styles.filterLabel}>PÚBLICO</span><div className={styles.chips}>{categories.map(c=><button type="button" key={c} aria-pressed={category===c} className={category===c?styles.chipSelected:styles.chip} onClick={()=>setCategory(c)}>{c}</button>)}</div></div>}
+       <div><span className={styles.filterLabel}>{isService?"CATEGORIA":"TIPO DE ARMAÇÃO"}</span><div className={styles.chips}>{frameTypes.map(c=><button type="button" key={c} aria-pressed={frameType===c} className={frameType===c?styles.chipSelected:styles.chip} onClick={()=>setFrameType(c)}>{c}</button>)}</div></div>
       </div><input aria-label="Buscar produtos" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar produtos..."/>
      </div>
      {(category!=="Todos"||frameType!=="Todos")&&<div className={styles.activeFilters}><span>{category==="Todos"?"Todos os públicos":category} · {frameType==="Todos"?"Todos os tipos":frameType}</span><button type="button" onClick={()=>{setCategory("Todos");setFrameType("Todos");}}>Limpar filtros</button></div>}
@@ -146,10 +168,11 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
        <button className={styles.productImage} onClick={()=>openProduct(p)} aria-label={"Ver detalhes de "+p.name}>
         {p.image_url?<img src={p.image_url} loading="lazy" alt={p.name}/>:<div className={styles.placeholder}>{brand.initials||"◇"}</div>}
        </button>
-       <div className={styles.cardBody}><small>{audienceOf(p)} · {typeOf(p)} {p.catalog_badge?" · "+p.catalog_badge:""}</small><h3>{p.name}</h3>
+       <div className={styles.cardBody}><small>{isService?typeOf(p):audienceOf(p)+" · "+typeOf(p)} {p.catalog_badge?" · "+p.catalog_badge:""}</small><h3>{p.name}</h3>
         <strong>{priceText(p)}</strong>
+        {isService?<button type="button" className={styles.addButton} onClick={()=>{setSelection({});setDetail(p);}}>Consultar serviço ↗</button>:<>
         <button type="button" className={styles.consultLink} onClick={()=>openProduct(p)}>Ver detalhes / consultar ↗</button>
-        <button type="button" className={styles.addButton} onClick={()=>variationList(p.catalog_variants).length?openProduct(p):addCart(p)}>+ Adicionar ao carrinho</button>
+        <button type="button" className={styles.addButton} onClick={()=>variationList(p.catalog_variants).length?openProduct(p):addCart(p)}>+ Adicionar ao carrinho</button></>}
        </div>
       </article>)}</div>
      {!list.length&&<p className={styles.empty}>Nenhum produto encontrado. Experimente outra categoria ou pesquisa.</p>}
@@ -159,16 +182,16 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
     </section>
    </main>
    <footer className={styles.credit}><span>{brand.name} · Catálogo digital</span><Link href="/">Tecnologia Alysson Tech</Link></footer>
-   {cartCount>0&&!showCart&&<button type="button" className={styles.floatCart} aria-label={"Abrir sacola com "+cartCount+" itens"} onClick={()=>{setShowCart(true);setStep(1);}}>
+   {!isService&&cartCount>0&&!showCart&&<button type="button" className={styles.floatCart} aria-label={"Abrir sacola com "+cartCount+" itens"} onClick={()=>{setShowCart(true);setStep(1);}}>
     <ShoppingBag size={21} strokeWidth={1.8} aria-hidden="true"/><span className={styles.floatBadge}>{cartCount}</span>
    </button>}
    {detail&&<div className={styles.overlay} role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setDetail(null);}}><div className={styles.modal} role="dialog" aria-modal="true" aria-label={"Produto "+detail.name}>
      <button className={styles.close} onClick={()=>setDetail(null)} aria-label="Fechar">×</button>
      {detail.image_url&&<div className={styles.modalImage}><img src={detail.image_url} alt={detail.name}/></div>}
-     <span className={styles.tag}>{audienceOf(detail)} · {typeOf(detail)}</span><h2>{detail.name}</h2>{detail.sku&&<small>Código: {detail.sku}</small>}
+     <span className={styles.tag}>{isService?typeOf(detail):audienceOf(detail)+" · "+typeOf(detail)}</span><h2>{detail.name}</h2>{detail.sku&&<small>Código: {detail.sku}</small>}
      <p>{detail.description||"Consulte este item diretamente com a loja."}</p><h3>{priceText(detail)}</h3>
      {variationList(detail.catalog_variants).map(v=><label key={v.name} className={styles.variation}>{v.name}<select value={selection[v.name]||""} onChange={e=>setSelection({...selection,[v.name]:e.target.value})} required><option value="">Selecione</option>{v.options.map(o=><option key={o} value={o}>{o}</option>)}</select></label>)}
-     <div className={styles.modalActions}><button onClick={()=>addCart(detail)} disabled={!variantsReady(detail)}>Adicionar ao carrinho</button>{brand.acceptInquiries&&<button className={styles.outline} disabled={!phone||!variantsReady(detail)} onClick={()=>consult(detail)}>Consultar este produto</button>}</div>
+     <div className={styles.modalActions}>{!isService&&<button onClick={()=>addCart(detail)} disabled={!variantsReady(detail)}>Adicionar ao carrinho</button>}{brand.acceptInquiries&&<button className={isService?undefined:styles.outline} disabled={!phone||!variantsReady(detail)} onClick={()=>consult(detail)}>{isService?"Consultar serviço no WhatsApp":"Consultar este produto"}</button>}</div>
    </div></div>}
    {showCart&&<div className={styles.overlay} onMouseDown={e=>{if(e.target===e.currentTarget)setShowCart(false);}}><aside className={styles.drawer} role="dialog" aria-modal="true" aria-label="Meu pedido">
      <div className={styles.drawerHead}><div><span className={styles.drawerEyebrow}>SUA SELEÇÃO</span><h2>Minha sacola</h2><small>Revise seus itens e escolha como deseja receber.</small></div><button type="button" onClick={()=>setShowCart(false)} aria-label="Fechar sacola"><X size={20} strokeWidth={1.8}/></button></div>
