@@ -12,6 +12,7 @@ export default function ClaimInvitePage(){
  const router=useRouter();
  const [email,setEmail]=useState("");
  const [password,setPassword]=useState("");
+ const [repeatPassword,setRepeatPassword]=useState("");
  const [mode,setMode]=useState<"login"|"register">("register");
  const [busy,setBusy]=useState(false);
  const [currentUser,setCurrentUser]=useState(false);
@@ -38,7 +39,8 @@ export default function ClaimInvitePage(){
   e.preventDefault();if(busy)return;
   setBusy(true);setError("");setNote("");
   if(mode==="register"){
-   const result=await supabaseBrowser.auth.signUp({email:email.trim(),password});
+   if(password.length<10||password!==repeatPassword){setBusy(false);setError("Crie uma senha com pelo menos 10 caracteres e confirme-a corretamente.");return;}
+   const result=await supabaseBrowser.auth.signUp({email:email.trim().toLowerCase(),password,options:{emailRedirectTo:window.location.origin+"/portal/convite/"+token}});
    setBusy(false);
    if(result.error){setError(result.error.message);return;}
    if(result.data.session){setCurrentUser(true);setNote("Conta criada. Aceite o convite para entrar no seu painel.");}
@@ -68,8 +70,10 @@ export default function ClaimInvitePage(){
     </div>
     <form onSubmit={onSubmit}>
      <label>E-mail convidado<input autoComplete="email" type="email" required style={field} value={email} onChange={e=>setEmail(e.target.value)}/></label>
-     <label>Senha<input autoComplete={mode==="register"?"new-password":"current-password"} type="password" required minLength={6} style={field} value={password} onChange={e=>setPassword(e.target.value)}/></label>
-     <button style={green} disabled={busy}>{busy?"Aguarde...":mode==="register"?"Criar conta":"Entrar e continuar"}</button>
+     <label>Senha<input autoComplete={mode==="register"?"new-password":"current-password"} type="password" required minLength={mode==="register"?10:1} style={field} value={password} onChange={e=>setPassword(e.target.value)}/></label>
+     {mode==="register"&&<label>Confirme sua senha<input autoComplete="new-password" type="password" required minLength={10} style={field} value={repeatPassword} onChange={e=>setRepeatPassword(e.target.value)}/></label>}
+     {mode==="register"&&<p style={{fontSize:12,color:"#b6cab8",lineHeight:1.55,margin:"-4px 0 16px"}}>Use uma senha pessoal com pelo menos 10 caracteres. O e-mail de confirmação deverá trazer você de volta a esta página de convite.</p>}
+     <button style={green} disabled={busy}>{busy?"Aguarde...":mode==="register"?"Criar minha conta":"Entrar e continuar"}</button>
     </form>
    </>}
    <p style={{fontSize:12,marginTop:22,color:"#afc0b0"}}>O convite é individual, expira em 14 dias e só pode ser utilizado com o e-mail indicado.</p>
