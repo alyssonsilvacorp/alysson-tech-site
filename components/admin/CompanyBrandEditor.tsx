@@ -10,6 +10,7 @@ const empty:Fields={name:"",category:"",whatsapp_number:"",logo_initials:"",acce
 const panel:React.CSSProperties={padding:22,background:"#101a13",border:"1px solid #334739",borderRadius:16};
 const field:React.CSSProperties={width:"100%",border:"1px solid #415846",background:"#09130d",padding:12,borderRadius:10,color:"#eff8ee",fontSize:14};
 const btn:React.CSSProperties={background:"#9ef08a",color:"#11220e",border:"none",borderRadius:10,padding:"12px 16px",fontWeight:750,cursor:"pointer"};
+const secondary:React.CSSProperties={...btn,background:"#1b3020",color:"#d8f0d8",border:"1px solid #45624c"};
 const muted:React.CSSProperties={fontSize:12,color:"#a8b9aa",lineHeight:1.6};
 const slugify=(s:string)=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 const hex=(a:number[])=>"#"+a.map(x=>Math.min(255,Math.max(0,Math.round(x))).toString(16).padStart(2,"0")).join("");
@@ -84,6 +85,15 @@ export default function CompanyBrandEditor(){
   }
   setBusy(false);setLogoFile(null);setSuccess("Dados centralizados salvos. Os produtos e a identidade visual pertencem à mesma empresa.");await load();setSelected(id);
  }
+ async function toggleMultilink(){
+  const company=companies.find(c=>c.id===selected);if(!company||busy)return;
+  const shouldPublish=!company.is_published;
+  if(shouldPublish&&!company.whatsapp_number){setError("Cadastre o WhatsApp da empresa antes de publicar o Multilink.");return;}
+  if(!window.confirm(shouldPublish?"Publicar o Multilink da empresa? Ele ficará acessível em /p/"+company.slug:"Retirar o Multilink do ar? O catálogo independente não será afetado."))return;
+  setBusy(true);setError("");
+  const r=await supabaseBrowser.from("smart_businesses").update({is_published:shouldPublish}).eq("id",company.id);
+  setBusy(false);if(r.error){setError(r.error.message);return;}setPublished(shouldPublish);setSuccess(shouldPublish?"Multilink publicado.":"Multilink despublicado. O catálogo pode continuar independente.");await load();
+ }
  const selectedCompany=companies.find(c=>c.id===selected);
  return <div style={{display:"grid",gap:16}}>
   <section style={panel}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}}>
@@ -108,7 +118,7 @@ export default function CompanyBrandEditor(){
     {([["accent_color","Cor principal"],["brand_support_color","Cor de apoio"],["brand_background_color","Fundo"],["brand_highlight_color","Destaque"]] as const).map(([key,label])=><label key={key} style={{...panel,padding:10,display:"grid",gap:7,fontSize:12}}>{label}<input type="color" aria-label={label} value={values[key]} onChange={e=>setValues({...values,[key]:e.target.value})} style={{width:"100%",height:46,cursor:"pointer",border:0,background:"transparent"}}/><input aria-label={label+" em hexadecimal"} value={values[key]} maxLength={7} onChange={e=>{if(/^#[0-9a-fA-F]{0,6}$/.test(e.target.value))setValues({...values,[key]:e.target.value});}} style={{...field,padding:8,fontSize:11}}/></label>)}
    </div>
    <p style={muted}>As cores são compartilhadas com o catálogo e podem ser revisadas. Empresas novas começam como rascunho e não ativam automaticamente nenhuma placa.</p>
-   <div style={{display:"flex",alignItems:"center",gap:13,flexWrap:"wrap"}}><button disabled={busy} style={btn}>{busy?"Salvando...":selected==="new"?"Cadastrar empresa":"Salvar identidade da empresa"}</button>{selectedCompany&&<Link href="/admin/catalogos" style={{color:"#9ff68f",fontSize:13}}>Gerenciar catálogo ↗</Link>}</div>
+   <div style={{display:"flex",alignItems:"center",gap:13,flexWrap:"wrap"}}><button disabled={busy} style={btn}>{busy?"Salvando...":selected==="new"?"Cadastrar empresa":"Salvar identidade da empresa"}</button>{selectedCompany&&<Link href="/admin/catalogos" style={{color:"#9ff68f",fontSize:13}}>Gerenciar catálogo ↗</Link>}{selectedCompany&&<button type="button" style={secondary} onClick={()=>void toggleMultilink()} disabled={busy}>{published?"Despublicar Multilink":"Publicar Multilink"}</button>}</div>
   </form>
  </div>;
 }
