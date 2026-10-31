@@ -304,7 +304,7 @@ export default function UnifiedCatalogManager(){
    <p style={muted}>Publicar não cria deploy da Vercel. Fotos e produtos são lidos do Supabase, e a rota da empresa permanece estável.</p>
   </section>}
   {preview&&brand&&<div role="dialog" aria-modal="true" aria-label="Pré-visualização do catálogo" style={{position:"fixed",inset:0,zIndex:999,background:"#050906",overflow:"auto"}}>
-    <button type="button" style={{...primary,position:"fixed",zIndex:1001,top:12,right:15,boxShadow:"0 5px 25px #0009"}} onClick={()=>setPreview(false)}>← Fechar pré-visualização (somente administrador)</button>
+    <button type="button" style={{...primary,position:"fixed",zIndex:1001,bottom:16,left:16,boxShadow:"0 5px 25px #0009"}} onClick={()=>setPreview(false)}>← Fechar pré-visualização (somente administrador)</button>
     <CatalogStorefront brand={brand} products={items.filter(p=>p.is_active).map(p=>({...p,catalog_category:p.catalog_category||p.audience,audience:p.audience,frame_type:p.frame_type}))} zones={zones.filter(z=>z.is_active)} adminPreview/>
    </div>}
   </>}
