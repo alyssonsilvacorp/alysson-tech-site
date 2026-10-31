@@ -41,7 +41,7 @@ export default function PortalHome(){
  const canPayment=!!access&&access.member_role!=="viewer"&&access.can_edit_payment;
  const audienceOptions=useMemo(()=>Array.from(new Set(items.map(p=>p.audience?.trim()).filter((x):x is string=>Boolean(x)))).sort((a,b)=>a.localeCompare(b,"pt-BR")),[items]);
  const typeOptions=useMemo(()=>Array.from(new Set(items.map(p=>p.frame_type?.trim()).filter((x):x is string=>Boolean(x)))).sort((a,b)=>a.localeCompare(b,"pt-BR")),[items]);
- useEffect(()=>{if(!photo)return;const url=URL.createObjectURL(photo);setPhotoPreview(url);return()=>URL.revokeObjectURL(url);},[photo]);
+ useEffect(()=>{if(!photo)return;let active=true;const url=URL.createObjectURL(photo);void Promise.resolve().then(()=>{if(active)setPhotoPreview(url);});return()=>{active=false;URL.revokeObjectURL(url);};},[photo]);
 
  useEffect(()=>{
   let alive=true;
