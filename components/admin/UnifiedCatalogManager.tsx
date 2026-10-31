@@ -230,7 +230,7 @@ export default function UnifiedCatalogManager(){
     {published&&<a target="_blank" rel="noreferrer" href={"/p/"+company.slug+"/catalogo"} style={{...secondary,textDecoration:"none",display:"inline-flex"}}>Visualizar link publicado ↗</a>}
     </div>
    </div>}
-   {company&&<p style={muted}>Rota permanente: <strong>/p/{company.slug}/catalogo</strong>{alias?" · Código curto: /c/"+alias:" · Código curto reservado somente ao publicar"}</p>}
+   {company&&<p style={muted}>Rota permanente: <strong>/p/{company.slug}/catalogo</strong>{alias?" · Código curto: /c/CT-"+alias.slice(-3):" · Código curto reservado somente ao publicar"}</p>}
   </div>
   {error&&<div style={{...panel,borderColor:"#864f4f",color:"#ffadad"}} role="alert">{error}</div>}
   {message&&<div style={{...panel,color:"#b2fa9c"}} role="status">{message}</div>}
