@@ -3,6 +3,7 @@ import { type CSSProperties, type FormEvent, useEffect, useMemo, useState } from
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AdminShell from "../../../components/admin/AdminShell";
+import ConfirmDialog from "../../../components/admin/ConfirmDialog";
 import { supabaseBrowser } from "../../../lib/supabase-browser";
 
 type Plate = {
@@ -29,6 +30,7 @@ export default function PlatesPage(){
  const [filter,setFilter]=useState("all");
  const [page,setPage]=useState(0);
  const [selected,setSelected]=useState<Plate|null>(null);
+ const [confirmation,setConfirmation]=useState<{plate:Plate;action:"disable"|"reactivate"}|null>(null);
  const [type,setType]=useState<"smart"|"google_review">("google_review");
  const [businessId,setBusinessId]=useState("");
  const [businessName,setBusinessName]=useState("");
@@ -81,14 +83,15 @@ export default function PlatesPage(){
   if(saveError){setError(saveError.message);return;}
   setSelected(null);setMessage("Placa "+selected.code+" configurada. O QR e o NFC mantêm a mesma rota.");await refresh();
  }
- async function setStatus(plate:Plate,newAction:"disable"|"reactivate"){
-  if(busy)return;
-  if(!window.confirm(newAction==="disable"?"Desativar temporariamente "+plate.code+"? O QR/NFC deixará de redirecionar.":"Reativar "+plate.code+" com a configuração anterior?"))return;
-  setBusy(true);setError("");setMessage("");
-  const {error:statusError}=await supabaseBrowser.rpc("manage_review_plate",{p_code:plate.code,p_action:newAction});
-  setBusy(false);
-  if(statusError){setError(statusError.message);return;}
-  setMessage("Estado de "+plate.code+" atualizado.");await refresh();
+ async function setStatus(){
+   if(!confirmation||busy)return;
+   const {plate,action:newAction}=confirmation;
+   setBusy(true);setError("");setMessage("");
+   const {error:statusError}=await supabaseBrowser.rpc("manage_review_plate",{p_code:plate.code,p_action:newAction});
+   setBusy(false);
+   if(statusError){setError(statusError.message);return;}
+   setConfirmation(null);
+   setMessage("Estado de "+plate.code+" atualizado.");await refresh();
  }
  async function signOut(){await supabaseBrowser.auth.signOut();router.replace("/admin/login");}
  if(gate==="checking")return <main style={{minHeight:"100vh",background:"#070d08",color:"#fff",padding:32}}>Verificando acesso administrativo...</main>;
@@ -122,8 +125,8 @@ export default function PlatesPage(){
      <p title={p.destination_url??""} style={{color:"#a9c8ad",fontSize:11,overflowWrap:"anywhere",minHeight:38}}>{p.destination_url??"Sem destino cadastrado"}</p>
      <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
       {p.status!=="disabled"&&<button type="button" disabled={busy} style={action} onClick={()=>open(p)}>{p.status==="available"?"Ativar":"Editar"}</button>}
-      {p.status==="active"&&<button type="button" disabled={busy} style={secondary} onClick={()=>void setStatus(p,"disable")}>Desativar</button>}
-      {p.status==="disabled"&&<button type="button" disabled={busy} style={action} onClick={()=>void setStatus(p,"reactivate")}>Reativar</button>}
+      {p.status==="active"&&<button type="button" disabled={busy} style={secondary} onClick={()=>{setError("");setConfirmation({plate:p,action:"disable"});}}>Desativar</button>}
+      {p.status==="disabled"&&<button type="button" disabled={busy} style={action} onClick={()=>{setError("");setConfirmation({plate:p,action:"reactivate"});}}>Reativar</button>}
       <a href={"/r/"+p.code} target="_blank" rel="noreferrer" style={{...secondary,textDecoration:"none",fontSize:12}}>Testar link</a>
      </div>
     </article>)}
@@ -133,7 +136,22 @@ export default function PlatesPage(){
    <span style={muted}>Página {page+1} de {totalPages}</span>
    <button type="button" style={secondary} disabled={page+1>=totalPages} onClick={()=>setPage(p=>p+1)}>Próxima</button>
   </div>
-  {selected&&<div style={{position:"fixed",inset:0,zIndex:200,background:"rgba(0,0,0,.8)",display:"flex",alignItems:"center",justifyContent:"center",padding:12}}>
+  <ConfirmDialog
+    open={confirmation!==null}
+    tone={confirmation?.action==="disable"?"danger":"success"}
+    title={confirmation?.action==="disable"?"Desativar placa inteligente?":"Reativar placa inteligente?"}
+    description={confirmation?.action==="disable"
+     ?"O QR Code e a tag NFC continuam com o mesmo código, mas deixam de abrir o destino enquanto a placa estiver desativada."
+     :"A placa voltará a apontar para o destino anteriormente configurado, mantendo seu QR Code e NFC permanentes."}
+    context={confirmation ? confirmation.plate.code+" · "+(confirmation.plate.business_name??"Sem estabelecimento cadastrado") : undefined}
+    warning={confirmation?.action==="disable"?"Essa ação pode interromper o acesso dos clientes ao estabelecimento.":undefined}
+    confirmLabel={confirmation?.action==="disable"?"Sim, desativar placa":"Sim, reativar placa"}
+    busy={busy}
+    error={error||undefined}
+    onCancel={()=>{if(!busy){setConfirmation(null);setError("");}}}
+    onConfirm={()=>void setStatus()}
+   />
+   {selected&&<div style={{position:"fixed",inset:0,zIndex:200,background:"rgba(0,0,0,.8)",display:"flex",alignItems:"center",justifyContent:"center",padding:12}}>
    <div role="dialog" aria-modal="true" aria-label={"Gerenciar "+selected.code} style={{...panel,width:"100%",maxWidth:550,maxHeight:"92vh",overflowY:"auto",padding:24,boxShadow:"0 12px 50px #000"}}>
     <h2 style={{marginTop:0}}>{selected.status==="available"?"Ativar":"Editar"} {selected.code}</h2>
     <p style={muted}>O código permanente /r/{selected.code} nunca será alterado. Escolha o tipo correto antes de imprimir a placa.</p>
