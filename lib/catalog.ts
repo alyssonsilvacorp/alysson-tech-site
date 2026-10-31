@@ -2,7 +2,7 @@ import { supabase } from "./supabase";
 import type { CatalogBrand, CatalogProduct, DeliveryZone } from "../components/catalog/CatalogStorefront";
 
 type BusinessRow = {id:string;slug:string;name:string;category:string|null;logo_url:string|null;logo_initials:string|null;has_catalog:boolean;whatsapp_number:string|null;accent_color:string|null;brand_support_color:string|null;brand_background_color:string|null;brand_highlight_color:string|null};
-type SettingsRow = {status:string;headline:string|null;subheadline:string|null;announcement:string|null;delivery_enabled:boolean;pickup_enabled:boolean;accept_inquiries:boolean;banner_image_url:string|null;banner_slides:unknown;gallery_images:string[]|null};
+type SettingsRow = {status:string;catalog_kind:"products"|"services";headline:string|null;subheadline:string|null;announcement:string|null;delivery_enabled:boolean;pickup_enabled:boolean;accept_inquiries:boolean;banner_image_url:string|null;banner_slides:unknown;gallery_images:string[]|null};
 export type PublicCatalog={brand:CatalogBrand;products:CatalogProduct[];zones:DeliveryZone[]};
 
 export async function getPublicCatalog(slug:string):Promise<PublicCatalog|null>{
@@ -11,7 +11,7 @@ export async function getPublicCatalog(slug:string):Promise<PublicCatalog|null>{
  if(b.error)throw Error("Falha ao consultar a empresa do catálogo.");
  if(!b.data||!b.data.has_catalog)return null;
  const business=b.data as BusinessRow;
- const settings=await supabase.from("smart_catalog_settings").select("status,headline,subheadline,announcement,delivery_enabled,pickup_enabled,accept_inquiries,banner_image_url,banner_slides,gallery_images").eq("business_id",business.id).eq("status","published").maybeSingle();
+ const settings=await supabase.from("smart_catalog_settings").select("status,headline,subheadline,announcement,delivery_enabled,pickup_enabled,accept_inquiries,banner_image_url,banner_slides,gallery_images,catalog_kind").eq("business_id",business.id).eq("status","published").maybeSingle();
  if(settings.error)throw Error("Falha ao consultar a publicação do catálogo.");
  if(!settings.data)return null;
  const c=settings.data as SettingsRow;
@@ -22,7 +22,7 @@ export async function getPublicCatalog(slug:string):Promise<PublicCatalog|null>{
  if(p.error||z.error)throw Error("Falha ao consultar itens e modalidades do catálogo.");
  return {
    brand:{
-    name:business.name,slug:business.slug,initials:business.logo_initials??business.name.slice(0,2).toUpperCase(),category:business.category,
+    name:business.name,slug:business.slug,catalogKind:c.catalog_kind,initials:business.logo_initials??business.name.slice(0,2).toUpperCase(),category:business.category,
     logo:business.logo_url,whatsapp:business.whatsapp_number,primary:business.accent_color||"#6d293e",
     support:business.brand_support_color||(business.category==="barbearia"?"#272219":"#8d3b50"),background:business.brand_background_color||(business.category==="barbearia"?"#f9f7f1":"#faf8f9"),
     highlight:business.brand_highlight_color||(business.category==="barbearia"?"#f1e9d1":"#f2e6e9"),headline:c.headline,subheadline:c.subheadline,announcement:c.announcement,bannerImage:c.banner_image_url,
