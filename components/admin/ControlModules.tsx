@@ -54,6 +54,7 @@ export default function ControlModules({module}: {module:Module}){
  const [inviteEmail,setInviteEmail]=useState("");
  const [confirmMember,setConfirmMember]=useState<{id:string;active:boolean}|null>(null);
  const [inviteLink,setInviteLink]=useState("");
+ const [inviteRecipient,setInviteRecipient]=useState("");
  const [inviteRole,setInviteRole]=useState("editor");
  const [editProfile,setEditProfile]=useState(true);
  const [editCatalog,setEditCatalog]=useState(true);
@@ -142,6 +143,7 @@ export default function ControlModules({module}: {module:Module}){
    setLoading(false);
    if(inviteError||typeof data!=="string"){setError(inviteError?.message??"Falha ao gerar convite");return;}
    setInviteLink("https://alyssontech.com.br/portal/convite/"+data);
+   setInviteRecipient(inviteEmail.trim().toLowerCase());
    setMessage("Convite criado. Compartilhe o link com o responsável pelo WhatsApp ou e-mail. Validade: 14 dias.");
  }
  async function toggleMember(){
@@ -210,7 +212,16 @@ export default function ControlModules({module}: {module:Module}){
     <div style={{display:"flex",flexWrap:"wrap",gap:18,margin:"17px 0"}}>{([["Informações",editProfile,setEditProfile],["Catálogo",editCatalog,setEditCatalog],["Pix",editPayment,setEditPayment]] as const).map(([name,val,set])=><label key={name} style={{fontSize:13}}><input type="checkbox" checked={val} onChange={e=>set(e.target.checked)}/> {name}</label>)}</div>
     <button disabled={loading||!companyId} style={primary}>Gerar link de acesso</button>
    </form>
-   {inviteLink&&<div style={{...card,borderColor:"#71ff41"}}><strong>Link de convite criado</strong><p style={{fontSize:12,color:"#c0cfbe"}}>Válido por 14 dias, utilizável somente pelo e-mail informado.</p><input readOnly value={inviteLink} aria-label="Link de convite" onFocus={e=>e.target.select()} style={input}/><button type="button" style={{...secondary,marginTop:10}} onClick={()=>void navigator.clipboard.writeText(inviteLink)}>Copiar link</button></div>}
+   {inviteLink&&<div style={{...card,borderColor:"#71ff41"}}>
+    <strong>Convite individual gerado</strong>
+    <p style={{fontSize:12,color:"#c0cfbe",lineHeight:1.6}}>Válido por 14 dias, exclusivo para <strong>{inviteRecipient}</strong>. O responsável cria a própria senha, confirma o e-mail e acessa somente a empresa autorizada. O sistema gera o link; o envio da mensagem será feito por você.</p>
+    <input readOnly value={inviteLink} aria-label="Link de convite" onFocus={e=>e.target.select()} style={input}/>
+    <div style={{display:"flex",flexWrap:"wrap",gap:10,marginTop:12,alignItems:"center"}}>
+     <button type="button" style={secondary} onClick={()=>void navigator.clipboard.writeText(inviteLink)}>Copiar link</button>
+     <a href={"mailto:"+encodeURIComponent(inviteRecipient)+"?subject="+encodeURIComponent("Acesso exclusivo à sua empresa | Alysson Tech")+"&body="+encodeURIComponent("Olá!\n\nSeu acesso ao portal de sua empresa foi liberado pela Alysson Tech.\n\nUse o link abaixo para criar sua senha e confirmar seu e-mail:\n"+inviteLink+"\n\nO convite é individual e válido por 14 dias.\nApós confirmar, acesse https://alyssontech.com.br/portal/login")}
+        style={{...primary,display:"inline-flex",textDecoration:"none",alignItems:"center",minHeight:42}}>Preparar e-mail de convite</a>
+    </div>
+   </div>}
    <h2>Acessos vinculados</h2>
    {members.filter(m=>!companyId||m.business_id===companyId).map(m=><article key={m.id} style={card}><strong>{m.member_role}</strong><p style={{fontSize:12,color:"#aab5ac"}}>Usuário {m.user_id.slice(0,8)}… · {companies.find(c=>c.id===m.business_id)?.name??m.business_id}</p><p style={{fontSize:12}}>Perfil: {m.can_edit_profile?"sim":"não"} · Catálogo: {m.can_edit_catalog?"sim":"não"} · Pix: {m.can_edit_payment?"sim":"não"}</p><p style={{fontSize:12,color:m.is_active?"#8ae98a":"#e5bcbc"}}>{m.is_active?"Acesso ativo":"Acesso revogado"}</p><button type="button" disabled={loading} style={secondary} onClick={()=>{setError("");setConfirmMember({id:m.id,active:!m.is_active});}}>{m.is_active?"Revogar acesso":"Reativar acesso"}</button></article>)}
    {members.length===0&&<p style={{color:"#aab5ac"}}>Nenhum acesso de cliente vinculado ainda.</p>}
