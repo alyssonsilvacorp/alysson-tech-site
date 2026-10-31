@@ -254,3 +254,59 @@
 /* Override legacy selector that scaled every hero span into 82px */
 .heroVisual .heroSignature>span{font:normal clamp(70px,9vw,118px)/1 Georgia,"Times New Roman",serif;letter-spacing:-.07em;color:rgba(255,255,255,.26);padding-right:8px}
 .heroVisual .heroBrandLetter{font:700 9px/1.4 Arial,sans-serif;letter-spacing:.22em;color:rgba(255,255,255,.47);bottom:25px;right:32px}
+
+
+/* Mobile hardening: same content on Android/iOS, no horizontal clipping. */
+.root{width:100%;max-width:100%;overflow-x:clip;-webkit-text-size-adjust:100%}
+.root :where(button,a,input,select,textarea){-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.main,.filters,.filterGroups,.grid,.card,.cardBody,.headerInner,.brandText,.drawer,.drawerBody,.modal{min-width:0}
+.cardBody h3,.cardBody small,.cardBody strong,.cardBody button,.footer p,.drawerBody p{overflow-wrap:anywhere}
+#produtos,#contato{scroll-margin-top:125px}
+.modal{width:min(560px,calc(100vw - 26px));max-height:min(92dvh,760px);overflow-x:hidden;overscroll-behavior:contain}
+.modalActions>button{min-width:0;flex:1 1 180px}
+@media(max-width:720px){
+ .root{overflow-x:hidden;overflow-x:clip}
+ .headerInner{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;column-gap:9px;row-gap:8px;padding:9px 13px 7px}
+ .brandText{flex:1 1 auto;min-width:0}
+ .brandText strong{overflow-wrap:anywhere;display:block}
+ .headerLinks{display:flex;order:3;flex:1 0 100%;margin:0;padding:5px 0 1px;justify-content:center;align-items:center;gap:22px;border-top:1px solid #efeaeb}
+ .headerLinks a{font-size:11px;padding:5px 8px;min-height:32px;display:inline-flex;align-items:center}
+ .cartTrigger{flex:0 0 auto}
+ .hero{width:100%;grid-template-columns:minmax(0,1fr);overflow:hidden}
+ .heroCopy{min-width:0;padding-right:clamp(23px,6vw,42px)}
+ .hero h1{max-width:100%;overflow-wrap:break-word;text-wrap:balance}
+ .hero p{max-width:100%}
+ .heroVisual{pointer-events:none}
+ .filters{min-width:0;gap:14px}
+ .filterGroups,.chips{min-width:0;max-width:100%}
+ .chips{gap:7px}
+ .chips>button{max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:center;min-height:38px}
+ .filters>input{width:100%;min-width:0;font-size:16px}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+ .cardBody{min-width:0}
+ .cardBody strong{font-size:clamp(13px,3.8vw,16px)}
+ .cardBody button{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.4}
+ .drawerHead,.drawerBody,.drawerFooter{min-width:0}
+ .drawerFooter{max-height:45dvh}
+ .drawerActions>button{width:100%;white-space:normal}
+ .credit{flex-wrap:wrap;line-height:1.65}
+ #produtos,#contato{scroll-margin-top:154px}
+}
+@media(max-width:359px){
+ .headerInner{column-gap:6px}
+ .brandMark{width:38px;height:38px;flex-basis:38px}
+ .brandText strong{font-size:13px}
+ .cartTrigger{min-width:0;padding:7px 9px;gap:5px}
+ .cartTrigger>span{font-size:10px}
+ .grid{grid-template-columns:minmax(0,1fr)}
+ .productImage{height:260px}
+ .cardBody{padding:15px}
+ .heroCopy{padding:35px 22px 49px}
+ .hero h1{font-size:35px}
+ .drawerActions{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-height:620px) and (max-width:720px){
+ .drawerFooter{max-height:49dvh}
+ .drawerHead{min-height:60px}
+ .steps{padding:7px 9px}
+}
