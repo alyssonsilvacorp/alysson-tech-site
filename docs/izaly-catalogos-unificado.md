@@ -12,7 +12,7 @@
 
 ## Implementado nesta branch
 
-**Estado do banco:** a migration aditiva foi aplicada ao Supabase Alysson Tech com versão 20261031061132, após validações RLS positivas/negativas em transações revertidas. Todos os 100 códigos de catálogo estão disponíveis e nenhum catálogo está publicado. Código Next.js continua na PR Draft e NÃO foi publicado no domínio oficial.
+**Estado do banco:** as migrations aditivas 20261031061132 e 20261031062838 foram aplicadas ao Supabase Alysson Tech após testes de RLS e correspondência de numeração. Existem 100 códigos AT-C disponíveis, catálogo de demonstração nenhum publicado; Ótica Fenni marcada para preparação, não publicação. Código Next.js ainda está na PR Draft até revisão de CI e smoke.
 - Migration aditiva com 100 aliases distintos e RLS por empresa/admin.
 - Cadastro de empresa ampliado: logo, paleta derivada, sigla, segmento, WhatsApp.
 - Editor de catálogo único: produto, SKU, categoria, preço opcional, descrição, variações, imagem, lista rápida, fotos em lote com compressão, bairros e taxas, entrega/retirada, pré-visualização e publicação.
@@ -20,8 +20,16 @@
 - Multilink Fenni e genérico reconhecem catálogo publicado, sem duplicação da galeria da Fenni.
 - Aliases AT-C livres/reservados independentemente de AT-R.
 
+## Cadastro opcional e numeração
+- Campo **Ter catálogo? Sim/Não** no cadastro da empresa. Não oculta nem altera a publicação do Multilink.
+- Ao salvar **Sim**, abrir a edição em `/admin/catalogos?business={id}`. Cadastro de produtos não é necessário com **Não**.
+- Atribuição preferencial conforme placa vinculada: `AT-R004` → `AT-C004`, exposto ao público também em `/c/CT-004`. Caso o número já esteja ocupado, usa o primeiro código livre e informa o código efetivamente atribuído.
+- Final do fluxo: **Testar catálogo** (prévia admin), **Publicar**, **Visualizar link publicado**, **Pausar** e **Excluir catálogo** (remove configuração; preserva empresa, produtos e placa).
+- Importação já disponível: **CSV padrão (compatível com Excel)**, cabeçalho `SKU;Nome;Categoria;Preço;Descrição;Disponibilidade`, até 300 produtos por arquivo; verificação de SKU duplicado. Fotografias até 30 por lote por correspondência de SKU, processadas em JPEG quando suportadas pelo navegador.
+
 ## Limites e pendências antes de homologar
-- Importação .xlsx/.csv/.pdf assistida do gerador original ainda deve ser portada/validada; não prometer essa função nesta fase (apenas cadastro rápido via lista).
+- Importação CSV padrão implementada; **.xlsx nativo e PDF** ainda requerem portabilidade do gerador original/QA. No Excel, exportar CSV UTF-8 antes de importar.
+- Fotos HEIC/HEIF e outros formatos dependem do decodificador do navegador; quando não decodificados, o usuário precisará convertê-las para JPEG/PNG.
 - Upload de lote associa por nome exato de SKU/produto, com revisão das associações não encontradas. O Supabase Fenni já contém 32 URL de imagens, ainda sem confirmação visual de autenticidade neste fluxo.
 - Fluxo de carrinho com WhatsApp deve ser testado com número real e produtos de teste; nunca enviar pedidos de demonstração a clientes sem aprovação.
 - O gerador atual vive em outro projeto Vercel; **não** redirecionar usuários ou remover projeto antes da substituição validada.
