@@ -342,3 +342,13 @@
  .showcaseTrack{animation:none;will-change:auto}
  .heroCopy{animation:none}
 }
+
+
+/* Brand palette: contrast-safe gold and graphite for service tenants. */
+.root[data-catalog-kind="services"] .chipSelected{background:#29251b;color:#f7e2ad;border-color:#c3a35c}
+.root[data-catalog-kind="services"] .addButton{background:#25231f;color:#f9e7b3;border-color:#bc9a50}
+.root[data-catalog-kind="services"] .addButton:hover{background:#343026;filter:none}
+.root[data-catalog-kind="services"] .sectionTop>div>span,
+.root[data-catalog-kind="services"] .showcaseHeading>span{color:#77601f}
+.root[data-catalog-kind="services"] .headerLinks a:hover{color:#8f7228}
+.root[data-catalog-kind="services"] .promoCard em{color:#68551e}
