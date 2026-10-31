@@ -77,7 +77,7 @@ export default function UnifiedCatalogManager(){
   setItems((p.data??[]) as ProductRow[]);setZones((z.data??[]) as ZoneRow[]);setAlias(a.data?.code??"");
  },[]);
  useEffect(()=>{void Promise.resolve().then(loadCompanies);},[loadCompanies]);
- useEffect(()=>{if(!businessId)return;void Promise.resolve().then(()=>load(businessId));setShowForm(false);setSearch("");},[businessId,load]);
+ useEffect(()=>{if(!businessId)return;void Promise.resolve().then(()=>load(businessId));},[businessId,load]);
  const filtered=useMemo(()=>items.filter(p=>(p.name+" "+(p.sku??"")+" "+(p.catalog_category??"")).toLowerCase().includes(search.toLowerCase())),[items,search]);
  const brand:CatalogBrand|undefined=company?{name:company.name,slug:company.slug,initials:company.logo_initials||company.name.slice(0,2).toUpperCase(),category:company.category,logo:company.logo_url,whatsapp:company.whatsapp_number,primary:company.accent_color||"#6d293e",support:company.brand_support_color||"#8d3b50",background:company.brand_background_color||"#faf8f9",highlight:company.brand_highlight_color||"#f1e5e7",headline:settings.headline,subheadline:settings.subheadline,announcement:settings.announcement,deliveryEnabled:settings.delivery_enabled,pickupEnabled:settings.pickup_enabled,acceptInquiries:settings.accept_inquiries}:undefined;
  function begin(p?:ProductRow){setEditing(p?.id??null);setForm(p?{name:p.name,sku:p.sku??"",description:p.description??"",price:p.price===null?"":String(p.price),catalog_category:p.catalog_category??p.audience??"",catalog_badge:p.catalog_badge??"",variants:variantsToText(p.catalog_variants),availability:p.is_active?"disponivel":p.availability==="vendido"?"vendido":"oculto",image_url:p.image_url??""}:blank);setPhoto(null);setShowForm(true);setError("");}
@@ -145,7 +145,7 @@ export default function UnifiedCatalogManager(){
  return <div style={{display:"grid",gap:16}}>
   <div style={panel}>
    <h2 style={{fontSize:19,margin:"0 0 7px"}}>Catálogos integrados</h2><p style={muted}>A mesma empresa, identidade e produtos alimentam o catálogo e o Multilink. Não há HTML individual para publicar.</p>
-   <label style={{display:"grid",gap:7,fontSize:12,maxWidth:550}}>Empresa selecionada<select style={field} value={businessId} onChange={e=>setBusinessId(e.target.value)}><option value="">Selecione uma empresa</option>{companies.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+   <label style={{display:"grid",gap:7,fontSize:12,maxWidth:550}}>Empresa selecionada<select style={field} value={businessId} onChange={e=>{setBusinessId(e.target.value);setShowForm(false);setSearch("");}}><option value="">Selecione uma empresa</option>{companies.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
    {!companies.length&&<p style={muted}>Cadastre uma empresa em <Link href="/admin/empresas" style={{color:"#b0ff94"}}>Empresas</Link> para criar seu catálogo.</p>}
    {company&&<div style={{display:"flex",gap:9,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",marginTop:15}}>
     <span style={{fontSize:12,color:published?"#a5f49a":"#cfcb9a"}}>Situação: {published?"PUBLICADO":settings.status==="paused"?"PAUSADO":"RASCUNHO"} · {items.length} produtos</span>
