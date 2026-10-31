@@ -101,24 +101,31 @@ export default function PortalHome(){
   setShowForm(false);setPhoto(null);setPhotoPreview(null);success("Produto salvo. Se o catálogo estiver publicado, a atualização estará disponível sem novo deploy.");await reload(businessId);
  }
  async function changeAvailability(item:Item,available:boolean){if(!canCatalog)return;setError("");const r=await supabaseBrowser.from("smart_business_services").update({is_active:available,availability:available?"disponivel":"vendido"}).eq("id",item.id).eq("business_id",businessId);if(r.error)setError(r.error.message);else{success("Disponibilidade atualizada.");await reload(businessId);}}
- async function deleteItem(item:Item){
-  if(!canCatalog||!businessId)return;
-  if(!window.confirm(`Excluir permanentemente "${item.name}" do catálogo? Essa ação não poderá ser desfeita.`))return;
-  setBusy(true);setError("");
+ async function deleteItem(){
+  if(!canCatalog||!businessId||!pendingDelete||busy)return;
+  const item=pendingDelete;setBusy(true);setError("");
   const result=await supabaseBrowser.from("smart_business_services").delete().eq("id",item.id).eq("business_id",businessId);
   setBusy(false);
   if(result.error){setError(result.error.message);return;}
-  success("Item excluído do catálogo.");await reload(businessId);
+  setPendingDelete(null);success("Produto excluído do catálogo.");await reload(businessId);
  }
  async function logOut(){await supabaseBrowser.auth.signOut();router.replace("/portal/login");}
  if(checking)return <main style={{minHeight:"100vh",background:"#050805",color:"white",padding:32}}>Carregando seu acesso...</main>;
- return <main style={{background:"#050805",color:"#f2f7f2",minHeight:"100vh",padding:"24px 16px"}}>
+ return <main style={{background:"#050805",color:"#f2f7f2",minHeight:"100vh",padding:"24px 12px",maxWidth:"100vw",overflowX:"hidden"}}>
+  <ConfirmDialog open={pendingDelete!==null} title="Excluir produto permanentemente?" description="O produto será removido. Para apenas interromper a venda, prefira Marcar vendido, que permite voltar a disponibilizá-lo depois." context={pendingDelete?.name} confirmLabel="Sim, excluir produto" tone="danger" busy={busy} onCancel={()=>{if(!busy)setPendingDelete(null);}} onConfirm={()=>void deleteItem()}/>
   <div style={{maxWidth:1040,margin:"0 auto"}}>
    <header style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,flexWrap:"wrap",marginBottom:25}}><div><p style={{fontSize:12,letterSpacing:2,color:"#71ff41"}}>ALYSSON TECH / PORTAL</p><h1 style={{margin:"5px 0"}}>Minha empresa</h1><p style={{fontSize:12,color:"#a3b0a5"}}>Seu ambiente de edição, sem mexer no código do site.</p></div><button onClick={()=>void logOut()} style={button2}>Sair</button></header>
    {error&&<p role="alert" style={{...panel,color:"#ffb2b2"}}>{error}</p>}{message&&<p role="status" style={{...panel,color:"#b0ffa1"}}>{message}</p>}
    {memberships.length===0?<section style={panel}><h2>Sem empresa vinculada</h2><p>Peça ao administrador da Alysson Tech para vincular este e-mail ao seu estabelecimento.</p></section>:<>
     {memberships.length>1&&<label style={{display:"block",marginBottom:20}}><span style={mini}>Empresa</span><select style={field} value={businessId} onChange={e=>setBusinessId(e.target.value)}>{memberships.map(m=><option key={m.business_id} value={m.business_id}>{m.business_id}</option>)}</select></label>}
-    {business&&<section style={panel}><h2>{business.name}</h2><p style={{color:"#a1ae9f"}}>{business.is_published?"Multilink publicado":"Rascunho"} · /p/{business.slug}</p><a href={"/p/"+business.slug} target="_blank" rel="noreferrer" style={{color:"#71ff41"}}>Visualizar meu multilink</a></section>}
+    {business&&<section style={panel}><h2>{business.name}</h2>
+      <p style={{color:"#a1ae9f",fontSize:13,lineHeight:1.65}}>{business.is_published?"Multilink publicado":"Multilink em preparação"} · Acesso exclusivo aos dados da sua empresa.</p>
+      <div style={{display:"flex",gap:11,flexWrap:"wrap"}}>
+       <a href={"/p/"+business.slug} target="_blank" rel="noopener noreferrer" style={{...button2,textDecoration:"none",display:"inline-flex",alignItems:"center",fontSize:13}}>Abrir meu Multilink ↗</a>
+       {business.has_catalog&&catalogStatus==="published"&&<a href={"/p/"+business.slug+"/catalogo"} target="_blank" rel="noopener noreferrer" style={{...button2,textDecoration:"none",display:"inline-flex",alignItems:"center",fontSize:13}}>Abrir meu catálogo ↗</a>}
+      </div>
+      {business.has_catalog&&catalogStatus!=="published"&&<p style={{color:"#dccb9e",fontSize:12,margin:"14px 0 0"}}>Catálogo em preparação: você já pode cadastrar e atualizar os itens. A Alysson Tech ainda precisa liberar o endereço público.</p>}
+     </section>}
     {canProfile&&<section style={panel}><h2>Informações comerciais</h2><form onSubmit={saveContact}>
       <label style={{display:"block",marginBottom:12}}><span style={mini}>WhatsApp</span><input style={field} value={contact.whatsapp} onChange={e=>setContact({...contact,whatsapp:e.target.value})}/></label>
       <label style={{display:"block",marginBottom:12}}><span style={mini}>Link do Instagram</span><input style={field} value={contact.instagram} onChange={e=>setContact({...contact,instagram:e.target.value})} placeholder="https://instagram.com/..."/></label>
@@ -126,25 +133,32 @@ export default function PortalHome(){
       <button disabled={busy} style={button}>Salvar informações</button>
     </form></section>}
     {canPayment&&<section style={panel}><h2>Chave Pix</h2><form onSubmit={savePix}><label style={{display:"block",marginBottom:12}}><span style={mini}>Chave atual: {pix?"Configurada":"Ainda não configurada"}</span><input style={field} value={draftPix} onChange={e=>setDraftPix(e.target.value)} placeholder="Digite sua chave Pix"/></label><button disabled={busy} style={button}>Atualizar Pix</button></form></section>}
-    <section style={panel}><header style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}><div><h2>Meu catálogo</h2><p style={{color:"#a2b0a4",fontSize:12}}>Produtos, preços e disponibilidade.</p></div>{canCatalog&&<button style={button} onClick={()=>begin()}>+ Novo item</button>}</header>
+    <section style={panel}><header style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}><div><h2>Meu catálogo</h2><p style={{color:"#a2b0a4",fontSize:12}}>Produtos, fotos, preços e disponibilidade. Uma categoria nova aparecerá automaticamente no catálogo publicado.</p></div>{canCatalog&&<button style={button} onClick={()=>begin()}>+ Novo item</button>}</header>
      {canCatalog&&showForm&&<form onSubmit={saveItem} style={{...panel,background:"#0b120e",marginTop:12}}>
       <h3>{editId?"Editar item":"Cadastrar item"}</h3>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:13}}>
        <label><span style={mini}>Nome *</span><input style={field} required value={name} onChange={e=>setName(e.target.value)}/></label>
        <label><span style={mini}>Preço (R$)</span><input style={field} inputMode="decimal" value={price} onChange={e=>setPrice(e.target.value)}/></label>
-       <label><span style={mini}>Categoria / público</span><input style={field} value={audience} onChange={e=>setAudience(e.target.value)}/></label>
-       <label><span style={mini}>Tipo</span><input style={field} value={frameType} onChange={e=>setFrameType(e.target.value)}/></label>
+       <label><span style={mini}>Público</span><input list="portal-audiences" style={field} placeholder="Ex.: Feminino ou Masculino" value={audience} onChange={e=>setAudience(e.target.value)}/><datalist id="portal-audiences">{audienceOptions.map(v=><option value={v} key={v}/>)}</datalist></label>
+       <label><span style={mini}>Tipo / categoria</span><input list="portal-frame-types" style={field} placeholder="Ex.: Metal ou Acetato" value={frameType} onChange={e=>setFrameType(e.target.value)}/><datalist id="portal-frame-types">{typeOptions.map(v=><option value={v} key={v}/>)}</datalist></label>
        <label><span style={mini}>Código do item</span><input style={field} value={sku} onChange={e=>setSku(e.target.value)}/></label>
        <label><span style={mini}>Disponibilidade</span><select style={field} value={availability} onChange={e=>setAvailability(e.target.value)}><option value="disponivel">Disponível</option><option value="vendido">Vendido</option><option value="oculto">Oculto</option></select></label>
       </div>
       <label style={{display:"block",marginTop:15}}><span style={mini}>Descrição</span><textarea style={{...field,minHeight:65}} value={description} onChange={e=>setDescription(e.target.value)}/></label>
-      <label style={{display:"block",marginTop:14}}><span style={mini}>Foto do produto *</span><input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setPhoto(e.target.files?.[0]??null)}/></label>
+      <div style={{marginTop:15,padding:16,border:"1px dashed #5c8f63",borderRadius:13,background:"#17251b"}}>
+       <label style={{display:"grid",gap:8,color:"#d9f4d6",fontSize:14,fontWeight:700}}>Adicionar ou substituir a foto
+        <input type="file" accept="image/jpeg,image/png,image/webp" style={{maxWidth:"100%",fontSize:14}} onChange={e=>{setPhoto(e.target.files?.[0]??null);setPhotoPreview(null);}}/>
+       </label>
+       <p style={{color:"#b0c1b1",fontSize:12,lineHeight:1.65}}>JPG, PNG ou WebP de até 3 MB. Confira nome, público e tipo antes de salvar. A classificação por IA a partir da foto ainda não está habilitada.</p>
+       {photo&&<p style={{fontSize:12,color:"#a2fc9b",overflowWrap:"anywhere"}}>Arquivo selecionado: {photo.name}</p>}
+       {(photoPreview||(!photo&&imageUrl))&&<img src={photoPreview||imageUrl} alt="Prévia da foto do produto" style={{width:160,maxWidth:"100%",height:145,objectFit:"contain",background:"white",borderRadius:12,padding:8}}/>}
+      </div>
       {editId&&<label style={{display:"block",marginTop:12}}><span style={mini}>URL da imagem atual</span><input style={field} value={imageUrl} onChange={e=>setImageUrl(e.target.value)}/></label>}
       <div style={{display:"flex",gap:10,marginTop:18}}><button disabled={busy} style={button}>Salvar item</button><button type="button" style={button2} onClick={()=>setShowForm(false)}>Cancelar</button></div>
      </form>}
      {items.map(p=><article key={p.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,borderTop:"1px solid #2e4232",padding:"16px 0",flexWrap:"wrap"}}>
       <div style={{display:"flex",gap:12,alignItems:"center"}}>{p.image_url&&<img src={p.image_url} alt="" width={60} height={60} style={{objectFit:"cover",borderRadius:9}}/>}<div><strong>{p.name}</strong><p style={{fontSize:12,color:"#aeb7ad"}}>{p.price==null?"Sob consulta":Number(p.price).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})} · {p.is_active?"Disponível":p.availability==="vendido"?"Vendido":"Oculto"}</p></div></div>
-      {canCatalog&&<div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={button2} onClick={()=>begin(p)}>Editar</button><button disabled={busy} style={button2} onClick={()=>void changeAvailability(p,!p.is_active)}>{p.is_active?"Marcar vendido":"Reativar"}</button><button disabled={busy} style={button2} onClick={()=>void deleteItem(p)}>Excluir item</button></div>}
+      {canCatalog&&<div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={button2} onClick={()=>begin(p)}>Editar</button><button disabled={busy} style={button2} onClick={()=>void changeAvailability(p,!p.is_active)}>{p.is_active?"Marcar vendido":"Reativar"}</button><button disabled={busy} style={button2} onClick={()=>setPendingDelete(p)}>Excluir item</button></div>}
      </article>)}
      {items.length===0&&<p style={{color:"#a2b0a4"}}>Nenhum item cadastrado.</p>}
     </section>
