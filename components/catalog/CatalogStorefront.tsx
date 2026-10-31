@@ -107,6 +107,13 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
      </div>
     </section>
     <div className={styles.features}><div><strong>Catálogo atualizado</strong><small>Confira nossa seleção</small></div><div><strong>Escolha com facilidade</strong><small>Pesquise e personalize</small></div><div><strong>Pedido pelo WhatsApp</strong><small>Converse diretamente com a loja</small></div></div>
+    {promotions.length>0&&<section className={styles.promoSection} aria-label="Produtos em destaque">
+      <div className={styles.promoTitle}><span>SELEÇÃO ESPECIAL</span><h2>Produtos em destaque</h2></div>
+      <div className={styles.promoGrid}>{promotions.map(p=><button type="button" key={p.id} className={styles.promoCard} onClick={()=>openProduct(p)}>
+        {p.image_url&&<img src={p.image_url} alt="" loading="lazy"/>}
+        <span><small>{p.catalog_badge||"Destaque"}</small><strong>{p.name}</strong><em>Ver detalhes ↗</em></span>
+      </button>)}</div>
+    </section>}
     <section id="produtos" className={styles.products}>
      <div className={styles.sectionTop}><div><span>NOSSA SELEÇÃO</span><h2>Explore os produtos</h2></div><small>{list.length} produto(s) encontrado(s)</small></div>
      <div className={styles.filters}>
