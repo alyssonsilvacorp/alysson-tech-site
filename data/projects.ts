@@ -4,13 +4,13 @@ export const izalyPlatform = {
   name: "IZALY Platform",
   eyebrow: "Ecossistema criado pela Alysson Tech",
   description:
-    "Plataforma modular em evolução para levar ferramentas digitais e de gestão a empresas. Os módulos têm estágios diferentes de implantação e homologação.",
-  status: "Plataforma em evolução",
+    "Ecossistema digital da Alysson Tech com soluções comerciais para restaurantes, atendimento e gestão, contratadas conforme a necessidade da empresa.",
+  status: "Soluções disponíveis",
   href: "https://izaly-platform.vercel.app/",
   linkLabel: "Conhecer o ecossistema",
   modules: [
-    { name: "IZALY Food", status: "Implantação piloto" },
-    { name: "IZALY CRM IA", status: "Em homologação" },
+    { name: "IZALY Food", status: "Disponível" },
+    { name: "IZALY CRM IA", status: "Disponível" },
   ],
 } as const;
 
@@ -19,9 +19,11 @@ export const clientProjects = [
     client: "LS Log",
     category: "Sistema personalizado",
     title: "Portal de Motoristas e Gestão Operacional",
-    status: "Em desenvolvimento",
+    status: "Projeto entregue",
     description:
-      "Projeto desenvolvido a partir das necessidades da operação da LS Log, com áreas e acessos pensados para diferentes perfis envolvidos na rotina da empresa.",
-    note: "Projeto em desenvolvimento. O case completo será apresentado após a evolução da implantação.",
+      "Sistema operacional desenvolvido e entregue para a LS Log, com portal de motoristas e gestão por perfis. A utilização em campo depende do cliente.",
+    note: "Entrega realizada. Aguardando retorno do cliente sobre utilização e validação operacional.",
+    href: "https://llslog.com.br/",
+    linkLabel: "Conhecer a LS Log",
   },
 ] as const;
