@@ -1,15 +1,15 @@
 import { supabase } from "./supabase";
 import type { CatalogBrand, CatalogProduct, DeliveryZone } from "../components/catalog/CatalogStorefront";
 
-type BusinessRow = {id:string;slug:string;name:string;category:string|null;logo_url:string|null;logo_initials:string|null;whatsapp_number:string|null;accent_color:string|null;brand_support_color:string|null;brand_background_color:string|null;brand_highlight_color:string|null};
+type BusinessRow = {id:string;slug:string;name:string;category:string|null;logo_url:string|null;logo_initials:string|null;has_catalog:boolean;whatsapp_number:string|null;accent_color:string|null;brand_support_color:string|null;brand_background_color:string|null;brand_highlight_color:string|null};
 type SettingsRow = {status:string;headline:string|null;subheadline:string|null;announcement:string|null;delivery_enabled:boolean;pickup_enabled:boolean;accept_inquiries:boolean};
 export type PublicCatalog={brand:CatalogBrand;products:CatalogProduct[];zones:DeliveryZone[]};
 
 export async function getPublicCatalog(slug:string):Promise<PublicCatalog|null>{
  if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)||slug.length>90)return null;
- const b=await supabase.from("smart_businesses").select("id,slug,name,category,logo_url,logo_initials,whatsapp_number,accent_color,brand_support_color,brand_background_color,brand_highlight_color").eq("slug",slug).maybeSingle();
+ const b=await supabase.from("smart_businesses").select("id,slug,name,category,logo_url,logo_initials,has_catalog,whatsapp_number,accent_color,brand_support_color,brand_background_color,brand_highlight_color").eq("slug",slug).maybeSingle();
  if(b.error)throw Error("Falha ao consultar a empresa do catálogo.");
- if(!b.data)return null;
+ if(!b.data||!b.data.has_catalog)return null;
  const business=b.data as BusinessRow;
  const settings=await supabase.from("smart_catalog_settings").select("status,headline,subheadline,announcement,delivery_enabled,pickup_enabled,accept_inquiries").eq("business_id",business.id).eq("status","published").maybeSingle();
  if(settings.error)throw Error("Falha ao consultar a publicação do catálogo.");
