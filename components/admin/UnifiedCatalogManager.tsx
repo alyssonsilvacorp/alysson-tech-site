@@ -5,7 +5,7 @@ import Link from "next/link";
 import CatalogStorefront,{type CatalogProduct,type DeliveryZone,type CatalogBrand} from "../catalog/CatalogStorefront";
 import {supabaseBrowser} from "../../lib/supabase-browser";
 
-type Company={id:string;slug:string;name:string;category:string|null;whatsapp_number:string|null;logo_url:string|null;logo_initials:string|null;accent_color:string|null;brand_support_color:string|null;brand_background_color:string|null;brand_highlight_color:string|null};
+type Company={id:string;slug:string;name:string;category:string|null;whatsapp_number:string|null;logo_url:string|null;logo_initials:string|null;accent_color:string|null;brand_support_color:string|null;brand_background_color:string|null;brand_highlight_color:string|null;has_catalog:boolean};
 type Settings={status:"draft"|"published"|"paused";headline:string;subheadline:string;announcement:string;delivery_enabled:boolean;pickup_enabled:boolean;accept_inquiries:boolean};
 type ProductRow=CatalogProduct & {business_id:string;is_active:boolean;audience:string|null;frame_type:string|null};
 type ZoneRow=DeliveryZone & {is_active:boolean};
@@ -59,9 +59,10 @@ export default function UnifiedCatalogManager(){
  const [verifiedPublication,setVerifiedPublication]=useState(false);
  const company=companies.find(c=>c.id===businessId);
  const loadCompanies=useCallback(async()=>{
-  const r=await supabaseBrowser.from("smart_businesses").select("id,slug,name,category,whatsapp_number,logo_url,logo_initials,accent_color,brand_support_color,brand_background_color,brand_highlight_color").order("name");
+  const r=await supabaseBrowser.from("smart_businesses").select("id,slug,name,category,whatsapp_number,logo_url,logo_initials,accent_color,brand_support_color,brand_background_color,brand_highlight_color,has_catalog").order("name");
   if(r.error){setError(r.error.message);return;}
-  const list=(r.data??[]) as Company[];setCompanies(list);setBusinessId(x=>x||list[0]?.id||"");
+  const list=(r.data??[]) as Company[];setCompanies(list);const intended=new URLSearchParams(window.location.search).get("business");
+  const available=list.filter(c=>c.has_catalog);setBusinessId(x=>x||available.find(c=>c.id===intended)?.id||available[0]?.id||"");
  },[]);
  const load=useCallback(async(id:string)=>{
   if(!id)return;setLoading(true);setError("");
@@ -122,6 +123,7 @@ export default function UnifiedCatalogManager(){
   setUploading(false);setBatchFiles([]);setMessage(count+" fotos associadas.");if(failures.length)setError("Não vinculadas: "+failures.slice(0,8).join("; "));await load(businessId);
  }
  async function saveSettings(status:Settings["status"]){
+  if(!company?.has_catalog){setError("Habilite esta empresa para ter catálogo antes de editar ou publicar.");return;}
   if(!businessId||busy)return;
   if(status==="published"){
    if(!verifiedPublication){setError("Confira os produtos, imagens, preços e WhatsApp e marque a confirmação antes de publicar.");return;}
@@ -138,6 +140,19 @@ export default function UnifiedCatalogManager(){
   if(status==="published"&&!alias){const a=await supabaseBrowser.rpc("allocate_smart_catalog_code",{p_business_id:businessId});if(a.error)setError("Catálogo publicado na rota canônica, mas sem código curto: "+a.error.message);else setAlias(a.data??"");}
   setBusy(false);setSettings(v=>({...v,status}));setMessage(status==="published"?"Catálogo publicado. Atualizações dos produtos aparecem sem novo deploy.":"Configurações salvas como "+status+".");await load(businessId);
  }
+ async function deleteCatalog(){
+  if(!businessId||busy)return;
+  if(!window.confirm("Excluir a CONFIGURAÇÃO do catálogo de "+company?.name+"? O link ficará indisponível, mas produtos, fotos, Multilink, empresa e placa serão preservados."))return;
+  setBusy(true);setError("");setMessage("");
+  const disabled=await supabaseBrowser.rpc("disable_smart_catalog",{p_business_id:businessId});
+  if(disabled.error){setBusy(false);setError(disabled.error.message);return;}
+  const response=await supabaseBrowser.from("smart_catalog_settings").delete().eq("business_id",businessId);
+  setBusy(false);
+  if(response.error){setError("Catálogo pausado, mas não foi possível remover configurações: "+response.error.message);return;}
+  setSettings(defaultSettings);setVerifiedPublication(false);
+  setMessage("Configuração excluída e link suspenso. Empresa, Multilink, fotos e produtos mantidos para evitar perda de dados.");
+  await load(businessId);
+ }
  async function addZone(e:FormEvent){e.preventDefault();if(!businessId||!zoneName.trim())return;const fee=Number(zoneFee.replace(",","."));if(!Number.isFinite(fee)||fee<0){setError("Taxa de entrega inválida");return;}
   setBusy(true);const r=await supabaseBrowser.from("smart_catalog_delivery_zones").insert({business_id:businessId,label:zoneName.trim(),delivery_fee:fee,sort_order:zones.length,is_active:true});
   setBusy(false);if(r.error){setError(r.error.message);return;}setZoneFee("");setZoneName("");await load(businessId);
@@ -148,13 +163,13 @@ export default function UnifiedCatalogManager(){
  return <div style={{display:"grid",gap:16}}>
   <div style={panel}>
    <h2 style={{fontSize:19,margin:"0 0 7px"}}>Catálogos integrados</h2><p style={muted}>A mesma empresa, identidade e produtos alimentam o catálogo e o Multilink. Não há HTML individual para publicar.</p>
-   <label style={{display:"grid",gap:7,fontSize:12,maxWidth:550}}>Empresa selecionada<select style={field} value={businessId} onChange={e=>{setBusinessId(e.target.value);setShowForm(false);setSearch("");setVerifiedPublication(false);}}><option value="">Selecione uma empresa</option>{companies.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
-   {!companies.length&&<p style={muted}>Cadastre uma empresa em <Link href="/admin/empresas" style={{color:"#b0ff94"}}>Empresas</Link> para criar seu catálogo.</p>}
+   <label style={{display:"grid",gap:7,fontSize:12,maxWidth:550}}>Empresa selecionada<select style={field} value={businessId} onChange={e=>{setBusinessId(e.target.value);setShowForm(false);setSearch("");setVerifiedPublication(false);}}><option value="">Selecione uma empresa</option>{companies.filter(c=>c.has_catalog).map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+   {!companies.some(c=>c.has_catalog)&&<p style={muted}>Nenhuma empresa está habilitada para catálogo. Acesse <Link href="/admin/empresas" style={{color:"#b0ff94"}}>Empresas</Link>, marque "Sim, criar catálogo" e salve para continuar.</p>}
    {company&&<div style={{display:"flex",gap:9,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",marginTop:15}}>
     <span style={{fontSize:12,color:published?"#a5f49a":"#cfcb9a"}}>Situação: {published?"PUBLICADO":settings.status==="paused"?"PAUSADO":"RASCUNHO"} · {items.length} produtos</span>
     <div style={{display:"flex",gap:9,flexWrap:"wrap"}}>
-    <button type="button" onClick={()=>setPreview(true)} style={secondary}>Pré-visualizar</button>
-    {published&&<a target="_blank" rel="noreferrer" href={"/p/"+company.slug+"/catalogo"} style={{...secondary,textDecoration:"none",display:"inline-flex"}}>Abrir catálogo ↗</a>}
+    <button type="button" onClick={()=>setPreview(true)} style={secondary}>Testar catálogo</button>
+    {published&&<a target="_blank" rel="noreferrer" href={"/p/"+company.slug+"/catalogo"} style={{...secondary,textDecoration:"none",display:"inline-flex"}}>Visualizar link publicado ↗</a>}
     </div>
    </div>}
    {company&&<p style={muted}>Rota permanente: <strong>/p/{company.slug}/catalogo</strong>{alias?" · Código curto: /c/"+alias:" · Código curto reservado somente ao publicar"}</p>}
@@ -209,7 +224,7 @@ export default function UnifiedCatalogManager(){
    {([["headline","Título de destaque"],["subheadline","Descrição de destaque"],["announcement","Mensagem na faixa superior"]] as const).map(([key,label])=><label key={key} style={{display:"grid",gap:7,marginBottom:14,fontSize:12}}>{label}<textarea rows={2} style={field} value={settings[key]} onChange={e=>setSettings({...settings,[key]:e.target.value})}/></label>)}
    <label style={{display:"block",marginBottom:15}}><input type="checkbox" checked={settings.accept_inquiries} onChange={e=>setSettings({...settings,accept_inquiries:e.target.checked})}/> Permitir consultas individuais sobre produtos no WhatsApp</label>
    <label style={{display:"block",marginBottom:15,fontSize:12,lineHeight:1.6,color:"#c8e0c8"}}><input type="checkbox" checked={verifiedPublication} onChange={e=>setVerifiedPublication(e.target.checked)}/> Conferi os produtos, fotos, informações e WhatsApp reais desta empresa antes de publicar.</label>
-   <div style={{display:"flex",gap:10,flexWrap:"wrap"}}><button style={secondary} disabled={busy} onClick={()=>void saveSettings("draft")}>Salvar rascunho</button><button style={primary} disabled={busy} onClick={()=>void saveSettings("published")}>Publicar catálogo</button>{published&&<button style={secondary} disabled={busy} onClick={()=>void saveSettings("paused")}>Pausar publicação</button>}</div>
+   <div style={{display:"flex",gap:10,flexWrap:"wrap"}}><button style={secondary} disabled={busy} onClick={()=>void saveSettings("draft")}>Salvar rascunho</button><button style={primary} disabled={busy} onClick={()=>void saveSettings("published")}>Publicar catálogo</button>{published&&<button style={secondary} disabled={busy} onClick={()=>void saveSettings("paused")}>Pausar catálogo</button>}<button style={{...secondary,color:"#ffc2be",borderColor:"#6f4544"}} disabled={busy} onClick={()=>void deleteCatalog()}>Excluir catálogo</button></div>
    <p style={muted}>Publicar não cria deploy da Vercel. Fotos e produtos são lidos do Supabase, e a rota da empresa permanece estável.</p>
   </section>}
   {preview&&brand&&<div role="dialog" aria-modal="true" aria-label="Pré-visualização do catálogo" style={{position:"fixed",inset:0,zIndex:999,background:"#050906",overflow:"auto"}}>
