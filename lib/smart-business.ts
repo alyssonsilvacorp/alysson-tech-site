@@ -30,6 +30,7 @@ export type SmartBusiness = {
   logoUrl: string | null;
   coverUrl: string | null;
   accentColor: string | null;
+  supportColor: string | null;
   whatsappNumber: string | null;
   instagramUrl: string | null;
   address: string | null;
@@ -49,6 +50,7 @@ type BusinessRow = {
   logo_url: string | null;
   cover_url: string | null;
   accent_color: string | null;
+  brand_support_color: string | null;
   whatsapp_number: string | null;
   instagram_url: string | null;
   address: string | null;
@@ -90,7 +92,7 @@ export async function getSmartBusiness(
     await supabase
       .from("smart_businesses")
       .select(
-        "id,slug,name,category,short_description,logo_url,cover_url,accent_color,whatsapp_number,instagram_url,address,maps_url,has_catalog",
+        "id,slug,name,category,short_description,logo_url,cover_url,accent_color,brand_support_color,whatsapp_number,instagram_url,address,maps_url,has_catalog",
       )
       .eq("slug", normalizedSlug)
       .eq("is_published", true)
@@ -166,6 +168,7 @@ export async function getSmartBusiness(
     logoUrl: business.logo_url,
     coverUrl: business.cover_url,
     accentColor: business.accent_color,
+    supportColor: business.brand_support_color,
     whatsappNumber: business.whatsapp_number,
     instagramUrl: business.instagram_url,
     address: business.address,
