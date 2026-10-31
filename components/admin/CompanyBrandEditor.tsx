@@ -1,6 +1,6 @@
 "use client";
 
-import {useCallback,useEffect,useState,type FormEvent} from "react";
+import {useCallback,useEffect,useRef,useState,type FormEvent} from "react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {supabaseBrowser} from "../../lib/supabase-browser";
@@ -45,6 +45,7 @@ export default function CompanyBrandEditor(){
  const [selected,setSelected]=useState<string>("new");
  const [values,setValues]=useState<Fields>(empty);
  const [logoFile,setLogoFile]=useState<File|null>(null);
+ const logoInputRef=useRef<HTMLInputElement>(null);
  const [logoSrc,setLogoSrc]=useState<string|null>(null);
  const [busy,setBusy]=useState(false);
  const [error,setError]=useState("");
@@ -115,10 +116,21 @@ export default function CompanyBrandEditor(){
     {([["name","Nome da empresa *"],["whatsapp_number","WhatsApp (55 + DDD + número)"],["category","Tipo de loja / segmento *"],["logo_initials","Sigla para quando não houver logo"],["instagram_url","Instagram (URL)"]] as const).map(([key,title])=><label key={key} style={{display:"grid",gap:7,fontSize:12,color:"#b7d0ba"}}>{title}<input style={field} required={key==="name"||key==="category"} value={values[key]} onChange={e=>setValues({...values,[key]:e.target.value})}/></label>)}
    </div>
    <label style={{display:"grid",gap:7,fontSize:12,color:"#b7d0ba",marginTop:15}}>Descrição da empresa<textarea style={{...field,minHeight:85}} value={values.short_description} onChange={e=>setValues({...values,short_description:e.target.value})}/></label>
-   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",alignItems:"center",gap:15,marginTop:17}}>
-    <label style={{display:"grid",gap:7,fontSize:12,color:"#b7d0ba"}}>Enviar logo (até 3 MB)<input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>void chooseLogo(e.target.files?.[0]??null)}/></label>
-    {logoSrc&&<div style={{display:"flex",gap:12,alignItems:"center"}}><img src={logoSrc} alt="Prévia da logo" style={{width:66,height:66,borderRadius:11,objectFit:"contain",background:"white",padding:5}}/><span style={muted}>Paleta identificada automaticamente. Ajuste abaixo se necessário.</span></div>}
-   </div>
+   <section aria-label="Logo da empresa" style={{border:"1px solid #4a704c",borderRadius:14,padding:17,marginTop:19,background:"linear-gradient(135deg,#182c1c,#101a13)"}}>
+     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:18,flexWrap:"wrap"}}>
+       <div style={{display:"grid",gap:7,flex:"1 1 245px"}}>
+         <strong style={{fontSize:15,color:"#effbef"}}>Logo oficial da empresa</strong>
+         <span style={{...muted,marginBottom:2}}>PNG, JPG ou WebP · até 3 MB. A logo personaliza o Multilink e o catálogo.</span>
+         <input ref={logoInputRef} type="file" accept="image/png,image/jpeg,image/webp" aria-label="Escolher arquivo de logo da empresa" tabIndex={-1} style={{position:"absolute",width:1,height:1,opacity:0,overflow:"hidden",pointerEvents:"none"}} onChange={e=>{void chooseLogo(e.target.files?.[0]??null);e.target.value="";}}/>
+         <button type="button" onClick={()=>logoInputRef.current?.click()} style={{...btn,display:"inline-flex",alignItems:"center",justifyContent:"center",gap:10,alignSelf:"start",minWidth:205,minHeight:47,border:"1px solid #b9ffa8",boxShadow:"0 5px 20px #0004"}}><span aria-hidden="true" style={{fontSize:19}}>▣</span>{logoSrc?"Alterar logo da empresa":"Escolher logo da empresa"}</button>
+         <span style={{...muted,overflowWrap:"anywhere",color:logoFile?"#b5ffa0":"#b2c7b5"}}>{logoFile?"Arquivo selecionado: "+logoFile.name+" — clique em Salvar para enviar.":logoSrc?"Logo cadastrada. Use o botão acima para substituir.":"Nenhum arquivo selecionado."}</span>
+       </div>
+       {logoSrc?<div style={{display:"flex",alignItems:"center",gap:13,flex:"0 1 255px"}}>
+         <img src={logoSrc} alt="Prévia da logo" style={{width:84,height:84,flexShrink:0,borderRadius:13,objectFit:"contain",background:"white",padding:7,border:"2px solid #b9ffa8"}}/>
+         <span style={muted}>Prévia da imagem. As cores sugeridas aparecem logo abaixo.</span>
+       </div>:<div aria-hidden="true" style={{height:84,width:84,border:"1px dashed #6e9375",borderRadius:13,display:"grid",placeItems:"center",color:"#a4c2a6",fontSize:30}}>▧</div>}
+     </div>
+   </section>
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:12,marginTop:19}}>
     {([["accent_color","Cor principal"],["brand_support_color","Cor de apoio"],["brand_background_color","Fundo"],["brand_highlight_color","Destaque"]] as const).map(([key,label])=><label key={key} style={{...panel,padding:10,display:"grid",gap:7,fontSize:12}}>{label}<input type="color" aria-label={label} value={values[key]} onChange={e=>setValues({...values,[key]:e.target.value})} style={{width:"100%",height:46,cursor:"pointer",border:0,background:"transparent"}}/><input aria-label={label+" em hexadecimal"} value={values[key]} maxLength={7} onChange={e=>{if(/^#[0-9a-fA-F]{0,6}$/.test(e.target.value))setValues({...values,[key]:e.target.value});}} style={{...field,padding:8,fontSize:11}}/></label>)}
    </div>
