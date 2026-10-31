@@ -23,8 +23,11 @@ function currency(value:number|null){return value==null?"Sob consulta":Number(va
 type ProductForm={name:string;sku:string;description:string;price:string;catalog_category:string;catalog_badge:string;variants:string;availability:string;image_url:string};
 const blank:ProductForm={name:"",sku:"",description:"",price:"",catalog_category:"",catalog_badge:"",variants:"",availability:"disponivel",image_url:""};
 async function prepareImage(file:File):Promise<File>{
- if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>15*1024*1024)throw Error("Envie JPG, PNG ou WebP de até 15 MB.");
- const bitmap=await createImageBitmap(file);const scale=Math.min(1,1280/Math.max(bitmap.width,bitmap.height));
+ const supported=["image/jpeg","image/png","image/webp","image/avif","image/heic","image/heif","image/gif","image/bmp"];
+ if(!supported.includes(file.type)&&!/\.(jpe?g|png|webp|avif|heic|heif|gif|bmp)$/i.test(file.name))throw Error("Envie uma fotografia em JPEG, PNG, WebP ou formato de imagem do celular.");
+ if(file.size>15*1024*1024)throw Error("Imagem maior que 15 MB. Reduza o arquivo antes de enviar.");
+ let bitmap:ImageBitmap;
+ try{bitmap=await createImageBitmap(file);}catch{throw Error("Este navegador não conseguiu converter a foto. No celular, exporte como JPEG/PNG e tente novamente.");}const scale=Math.min(1,1280/Math.max(bitmap.width,bitmap.height));
  const canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
  const context=canvas.getContext("2d");if(!context)throw Error("Processamento de imagem indisponível");
  context.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();
@@ -248,14 +251,14 @@ export default function UnifiedCatalogManager(){
       <label style={{display:"grid",gap:7,marginTop:13,fontSize:12}}>Descrição<textarea rows={2} style={field} value={form.description} onChange={e=>setForm({...form,description:e.target.value})}/></label>
       <label style={{display:"grid",gap:7,marginTop:13,fontSize:12}}>Variações (uma por linha; exemplo: Tamanho: P,M,G)<textarea rows={2} style={field} value={form.variants} onChange={e=>setForm({...form,variants:e.target.value})}/></label>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(225px,1fr))",gap:12,marginTop:13}}>
-       <label style={{display:"grid",gap:7,fontSize:12}}>Foto JPG, PNG ou WebP (compressão automática)<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setPhoto(e.target.files?.[0]??null)}/></label>
+       <label style={{display:"grid",gap:7,fontSize:12}}>Foto JPG, PNG ou WebP (compressão automática)<input type="file" accept="image/*,.heic,.heif" onChange={e=>setPhoto(e.target.files?.[0]??null)}/></label>
        <label style={{display:"grid",gap:7,fontSize:12}}>Ou URL da imagem existente<input style={field} value={form.image_url} onChange={e=>setForm({...form,image_url:e.target.value})}/></label>
       </div>
       <div style={{display:"flex",gap:8,marginTop:17}}><button disabled={busy} style={primary}>{busy?"Salvando...":"Salvar produto"}</button><button type="button" style={secondary} onClick={()=>setShowForm(false)}>Cancelar</button></div>
     </form>}
     <div style={{marginTop:17,padding:14,border:"1px solid #395442",borderRadius:12}}>
       <strong style={{fontSize:13}}>Fotografias em lote</strong><p style={muted}>Para importar por planilha, use o arquivo CSV padrão e fotos com o mesmo SKU (ex.: FEN-001.jpg). PNG, JPEG, WebP e formatos compatíveis do celular serão convertidos para JPEG. Até 30 fotos por lote; fotos sem correspondência são sinalizadas.</p>
-      <input type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={e=>setBatchFiles(Array.from(e.target.files??[]))}/>
+      <input type="file" multiple accept="image/*,.heic,.heif" onChange={e=>setBatchFiles(Array.from(e.target.files??[]))}/>
       <button type="button" style={{...secondary,marginLeft:12}} disabled={uploading||!batchFiles.length} onClick={()=>void uploadBatch()}>{uploading?"Vinculando fotos...":"Aplicar fotos ("+batchFiles.length+")"}</button>
     </div>
     <input style={{...field,margin:"16px 0"}} placeholder="Buscar produto, SKU ou categoria" aria-label="Buscar produtos" value={search} onChange={e=>setSearch(e.target.value)}/>
