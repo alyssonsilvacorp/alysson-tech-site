@@ -6,10 +6,11 @@ import CatalogStorefront,{type CatalogProduct,type DeliveryZone,type CatalogBran
 import {supabaseBrowser} from "../../lib/supabase-browser";
 
 type Company={id:string;slug:string;name:string;category:string|null;whatsapp_number:string|null;logo_url:string|null;logo_initials:string|null;accent_color:string|null;brand_support_color:string|null;brand_background_color:string|null;brand_highlight_color:string|null;has_catalog:boolean};
-type Settings={status:"draft"|"published"|"paused";headline:string;subheadline:string;announcement:string;delivery_enabled:boolean;pickup_enabled:boolean;accept_inquiries:boolean;banner_image_url:string|null};
+type SlideAsset={image_url:string;title?:string;text?:string;eyebrow?:string};
+type Settings={status:"draft"|"published"|"paused";catalog_kind:"products"|"services";headline:string;subheadline:string;announcement:string;delivery_enabled:boolean;pickup_enabled:boolean;accept_inquiries:boolean;banner_image_url:string|null;banner_slides:SlideAsset[];gallery_images:string[]};
 type ProductRow=CatalogProduct & {business_id:string;is_active:boolean;audience:string|null;frame_type:string|null};
 type ZoneRow=DeliveryZone & {is_active:boolean};
-const defaultSettings:Settings={status:"draft",headline:"Encontre o que procura.",subheadline:"Escolha os produtos e consulte diretamente pelo WhatsApp.",announcement:"",delivery_enabled:false,pickup_enabled:true,accept_inquiries:true,banner_image_url:null};
+const defaultSettings:Settings={status:"draft",catalog_kind:"products",headline:"Encontre o que procura.",subheadline:"Escolha os produtos e consulte diretamente pelo WhatsApp.",announcement:"",delivery_enabled:false,pickup_enabled:true,accept_inquiries:true,banner_image_url:null,banner_slides:[],gallery_images:[]};
 const panel:React.CSSProperties={border:"1px solid #304638",background:"#101a13",padding:20,borderRadius:16};
 const field:React.CSSProperties={padding:12,border:"1px solid #3c5542",background:"#0b150f",color:"#f2f9f1",borderRadius:10,width:"100%",fontSize:13};
 const primary:React.CSSProperties={background:"#9bea83",color:"#12230c",padding:"11px 15px",fontWeight:750,border:0,borderRadius:10,cursor:"pointer"};
@@ -51,7 +52,8 @@ export default function UnifiedCatalogManager(){
  const [editing,setEditing]=useState<string|null>(null);
  const [form,setForm]=useState<ProductForm>(blank);
  const [photo,setPhoto]=useState<File|null>(null);
- const [bannerFile,setBannerFile]=useState<File|null>(null);
+ const [slideFiles,setSlideFiles]=useState<(File|null)[]>([null,null,null]);
+ const [galleryFiles,setGalleryFiles]=useState<File[]>([]);
  const [batchFiles,setBatchFiles]=useState<File[]>([]);
  const [bulk,setBulk]=useState("");
  const [showBulk,setShowBulk]=useState(false);
@@ -71,7 +73,7 @@ export default function UnifiedCatalogManager(){
  const load=useCallback(async(id:string)=>{
   if(!id)return;setLoading(true);setError("");
   const [s,p,z,a]=await Promise.all([
-   supabaseBrowser.from("smart_catalog_settings").select("status,headline,subheadline,announcement,delivery_enabled,pickup_enabled,accept_inquiries,banner_image_url").eq("business_id",id).maybeSingle(),
+   supabaseBrowser.from("smart_catalog_settings").select("status,headline,subheadline,announcement,delivery_enabled,pickup_enabled,accept_inquiries,banner_image_url,banner_slides,gallery_images,catalog_kind").eq("business_id",id).maybeSingle(),
    supabaseBrowser.from("smart_business_services").select("id,business_id,name,description,price,price_label,image_url,sku,audience,frame_type,availability,is_active,sort_order,catalog_category,catalog_badge,catalog_variants").eq("business_id",id).order("sort_order"),
    supabaseBrowser.from("smart_catalog_delivery_zones").select("id,label,delivery_fee,is_active").eq("business_id",id).order("sort_order"),
    supabaseBrowser.from("smart_catalog_routes").select("code").eq("business_id",id).maybeSingle(),
@@ -79,13 +81,13 @@ export default function UnifiedCatalogManager(){
   setLoading(false);
   const err=[s,p,z,a].map(x=>x.error?.message).filter(Boolean);if(err.length){setError(err.join(" · "));return;}
   const data=s.data;
-  setSettings(data?{status:data.status,headline:data.headline??"",subheadline:data.subheadline??"",announcement:data.announcement??"",delivery_enabled:data.delivery_enabled,pickup_enabled:data.pickup_enabled,accept_inquiries:data.accept_inquiries,banner_image_url:data.banner_image_url??null}:defaultSettings);
+  setSettings(data?{status:data.status,catalog_kind:data.catalog_kind==="services"?"services":"products",headline:data.headline??"",subheadline:data.subheadline??"",announcement:data.announcement??"",delivery_enabled:data.delivery_enabled,pickup_enabled:data.pickup_enabled,accept_inquiries:data.accept_inquiries,banner_image_url:data.banner_image_url??null,banner_slides:Array.isArray(data.banner_slides)?data.banner_slides as SlideAsset[]:[],gallery_images:Array.isArray(data.gallery_images)?data.gallery_images:[]}:defaultSettings);
   setItems((p.data??[]) as ProductRow[]);setZones((z.data??[]) as ZoneRow[]);setAlias(a.data?.code??"");
  },[]);
  useEffect(()=>{void Promise.resolve().then(loadCompanies);},[loadCompanies]);
  useEffect(()=>{if(!businessId)return;void Promise.resolve().then(()=>load(businessId));},[businessId,load]);
- const filtered=useMemo(()=>items.filter(p=>(p.name+" "+(p.sku??"")+" "+(p.catalog_category??"")).toLowerCase().includes(search.toLowerCase())),[items,search]);
- const brand:CatalogBrand|undefined=company?{name:company.name,slug:company.slug,initials:company.logo_initials||company.name.slice(0,2).toUpperCase(),category:company.category,logo:company.logo_url,whatsapp:company.whatsapp_number,primary:company.accent_color||"#6d293e",support:company.brand_support_color||"#8d3b50",background:company.brand_background_color||"#faf8f9",highlight:company.brand_highlight_color||"#f1e5e7",headline:settings.headline,subheadline:settings.subheadline,announcement:settings.announcement,bannerImage:settings.banner_image_url,deliveryEnabled:settings.delivery_enabled,pickupEnabled:settings.pickup_enabled,acceptInquiries:settings.accept_inquiries}:undefined;
+ const filtered=useMemo(()=>items.filter(p=>(p.name+" "+(p.sku??"")+" "+(p.catalog_category??"")+" "+(p.audience??"")+" "+(p.frame_type??"")).toLowerCase().includes(search.toLowerCase())),[items,search]);
+ const brand:CatalogBrand|undefined=company?{name:company.name,slug:company.slug,catalogKind:settings.catalog_kind,initials:company.logo_initials||company.name.slice(0,2).toUpperCase(),category:company.category,logo:company.logo_url,whatsapp:company.whatsapp_number,primary:company.accent_color||"#6d293e",support:company.brand_support_color||(company.category==="barbearia"?"#272219":"#8d3b50"),background:company.brand_background_color||(company.category==="barbearia"?"#f9f7f1":"#faf8f9"),highlight:company.brand_highlight_color||(company.category==="barbearia"?"#f1e9d1":"#f1e5e7"),headline:settings.headline,subheadline:settings.subheadline,announcement:settings.announcement,bannerImage:settings.banner_image_url,bannerSlides:settings.banner_slides,galleryImages:settings.gallery_images,deliveryEnabled:settings.delivery_enabled,pickupEnabled:settings.pickup_enabled,acceptInquiries:settings.accept_inquiries}:undefined;
  function begin(p?:ProductRow){setEditing(p?.id??null);setForm(p?{name:p.name,sku:p.sku??"",description:p.description??"",price:p.price===null?"":String(p.price),catalog_category:p.audience??p.catalog_category??"",frame_type:p.frame_type??"",catalog_badge:p.catalog_badge??"",variants:variantsToText(p.catalog_variants),availability:p.is_active?"disponivel":p.availability==="vendido"?"vendido":"oculto",image_url:p.image_url??""}:blank);setPhoto(null);setShowForm(true);setError("");}
  async function addPhoto(file:File,identifier:string){
   const prepared=await prepareImage(file);
@@ -190,25 +192,36 @@ export default function UnifiedCatalogManager(){
    if(!/^\d{12,13}$/.test(digits)){setError("Cadastre o WhatsApp real na área Empresas antes de publicar.");return;}
    if(!items.some(p=>p.is_active&&p.image_url)){setError("Antes de publicar, inclua pelo menos uma foto real em um produto ativo. Evite catálogos de demonstração.");return;}
    if(settings.delivery_enabled&&zones.filter(z=>z.is_active).length===0){setError("Cadastre pelo menos um bairro de entrega ou desative a entrega.");return;}
-   if(!settings.delivery_enabled&&!settings.pickup_enabled){setError("Ative entrega ou retirada.");return;}
+   if(!settings.delivery_enabled&&!settings.pickup_enabled&&settings.catalog_kind!=="services"){setError("Ative entrega ou retirada.");return;}
   }
   if(status==="draft"&&settings.status==="published"&&!window.confirm("Retirar o catálogo publicado do ar e salvar como rascunho?"))return;
   setBusy(true);setError("");setMessage("");
-  let nextBanner=settings.banner_image_url;
-  if(bannerFile){
-   try{
-    if(!["image/jpeg","image/png","image/webp"].includes(bannerFile.type)||bannerFile.size>4*1024*1024)throw Error("Use JPEG, PNG ou WebP de até 4 MB");
-    const ext=bannerFile.type==="image/png"?"png":bannerFile.type==="image/webp"?"webp":"jpg";
-    const path=businessId+"/banners/"+crypto.randomUUID()+"."+ext;
-    const uploaded=await supabaseBrowser.storage.from("business-media").upload(path,bannerFile,{upsert:false,contentType:bannerFile.type});
-    if(uploaded.error)throw Error(uploaded.error.message);
-    nextBanner=supabaseBrowser.storage.from("business-media").getPublicUrl(path).data.publicUrl;
-   }catch(e){setBusy(false);setError("Não foi possível enviar o banner: "+String(e));return;}
-  }
-  const r=await supabaseBrowser.from("smart_catalog_settings").upsert({business_id:businessId,...settings,banner_image_url:nextBanner,status,updated_at:new Date().toISOString(),...(status==="published"?{published_at:new Date().toISOString()}:{})},{onConflict:"business_id"});
+  const nextSlides=Array.from({length:3},(_,i)=>settings.banner_slides[i]??{image_url:""});
+  const nextGallery=[...settings.gallery_images];
+  const nextBanner=settings.banner_image_url;
+  try{
+   for(let i=0;i<3;i++){
+    const file=slideFiles[i];
+    if(!file)continue;
+    const image=await prepareImage(file);
+    const key=businessId+"/banners/slide-"+(i+1)+"-"+crypto.randomUUID()+".jpg";
+    const u=await supabaseBrowser.storage.from("business-media").upload(key,image,{upsert:false,contentType:"image/jpeg"});
+    if(u.error)throw Error("Banner "+(i+1)+": "+u.error.message);
+    nextSlides[i]={...nextSlides[i],image_url:supabaseBrowser.storage.from("business-media").getPublicUrl(key).data.publicUrl};
+   }
+   if(nextGallery.length+galleryFiles.length>30)throw Error("A galeria aceita até 30 imagens");
+   for(const file of galleryFiles){
+    const image=await prepareImage(file);
+    const key=businessId+"/work-gallery/"+crypto.randomUUID()+".jpg";
+    const u=await supabaseBrowser.storage.from("business-media").upload(key,image,{upsert:false,contentType:"image/jpeg"});
+    if(u.error)throw Error("Galeria: "+u.error.message);
+    nextGallery.push(supabaseBrowser.storage.from("business-media").getPublicUrl(key).data.publicUrl);
+   }
+  }catch(e){setBusy(false);setError("Falha ao enviar mídias: "+String(e));return;}
+  const r=await supabaseBrowser.from("smart_catalog_settings").upsert({business_id:businessId,...settings,banner_image_url:nextBanner,banner_slides:nextSlides,gallery_images:nextGallery,status,updated_at:new Date().toISOString(),...(status==="published"?{published_at:new Date().toISOString()}:{})},{onConflict:"business_id"});
   if(r.error){setError(r.error.message);setBusy(false);return;}
   if(status==="published"&&!alias){const a=await supabaseBrowser.rpc("allocate_smart_catalog_code",{p_business_id:businessId});if(a.error)setError("Catálogo publicado na rota canônica, mas sem código curto: "+a.error.message);else setAlias(a.data??"");}
-  setBusy(false);setBannerFile(null);setSettings(v=>({...v,status,banner_image_url:nextBanner}));setMessage(status==="published"?"Catálogo publicado. Atualizações dos produtos aparecem sem novo deploy.":"Configurações salvas como "+status+".");await load(businessId);
+  setBusy(false);setSlideFiles([null,null,null]);setGalleryFiles([]);setSettings(v=>({...v,status,banner_image_url:nextBanner,banner_slides:nextSlides,gallery_images:nextGallery}));setMessage(status==="published"?"Catálogo publicado. Atualizações dos produtos aparecem sem novo deploy.":"Configurações salvas como "+status+".");await load(businessId);
  }
  async function deleteCatalog(){
   if(!businessId||busy)return;
@@ -247,7 +260,7 @@ export default function UnifiedCatalogManager(){
   {error&&<div style={{...panel,borderColor:"#864f4f",color:"#ffadad"}} role="alert">{error}</div>}
   {message&&<div style={{...panel,color:"#b2fa9c"}} role="status">{message}</div>}
   {company&&<><div style={{display:"flex",gap:9,flexWrap:"wrap"}}>
-   {([["products","Produtos e categorias"],["delivery","Entrega e retirada"],["settings","Visual e publicação"]] as const).map(([tab,name])=><button key={tab} type="button" style={activeTab===tab?primary:secondary} onClick={()=>setActiveTab(tab)}>{name}</button>)}
+   {([["products",settings.catalog_kind==="services"?"Serviços e categorias":"Produtos e categorias"],["delivery","Entrega e retirada"],["settings","Visual e publicação"]] as const).filter(([tab])=>tab!=="delivery"||settings.catalog_kind!=="services").map(([tab,name])=><button key={tab} type="button" style={activeTab===tab?primary:secondary} onClick={()=>setActiveTab(tab)}>{name}</button>)}
   </div>
   {activeTab==="products"&&<section style={panel}>
     <div style={{display:"flex",gap:8,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}><h2 style={{fontSize:18,margin:0}}>Produtos</h2><div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
@@ -256,8 +269,9 @@ export default function UnifiedCatalogManager(){
     {showBulk&&<div style={{marginTop:14,padding:15,border:"1px solid #48634c",borderRadius:12}}><h3>Adicionar vários produtos</h3><p style={muted}>Uma linha por produto: Nome; Categoria; Preço; SKU. Preço vazio = sob consulta.</p><textarea rows={7} style={field} placeholder={"Armação modelo 01; Feminino; ; FEN-001\nArmação modelo 02; Masculino; 129,90; FEN-002"} value={bulk} onChange={e=>setBulk(e.target.value)}/><button style={primary} type="button" onClick={()=>void importList()} disabled={busy}>Importar produtos da lista</button></div>}
     {showForm&&<form onSubmit={saveProduct} style={{marginTop:15,padding:18,border:"1px solid #547253",borderRadius:12}}>
       <h3>{editing?"Editar produto":"Novo produto"}</h3>
+      <p style={muted}>Para aparecer nos três destaques abaixo do banner, informe <strong>Promoção</strong> ou <strong>Destaque</strong> no campo do selo. Sem esse selo, a seção fica oculta.</p>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:13}}>
-       {([["name","Nome *"],["sku","Código SKU"],["catalog_category","Público (Masculino, Feminino, Infantil)"],["frame_type","Tipo de armação (Metal, Acetato, Nylon...)"],["catalog_badge","Selo opcional"]] as const).map(([key,title])=><label style={{display:"grid",gap:6,fontSize:12}} key={key}>{title}<input style={field} value={form[key]} onChange={e=>setForm({...form,[key]:e.target.value})} required={key==="name"}/></label>)}
+       {([["name","Nome *"],["sku","Código SKU"],["catalog_category",settings.catalog_kind==="services"?"Grupo / público (opcional)":"Público (Masculino, Feminino, Infantil)"],["frame_type",settings.catalog_kind==="services"?"Categoria (Cortes e barba, Planos mensais)":company?.category==="otica"?"Tipo de armação (Metal, Acetato, Nylon...)":"Categoria do produto"],["catalog_badge","Destaque (Promoção / Destaque)"]] as const).map(([key,title])=><label style={{display:"grid",gap:6,fontSize:12}} key={key}>{title}<input style={field} value={form[key]} onChange={e=>setForm({...form,[key]:e.target.value})} required={key==="name"}/></label>)}
        <label style={{display:"grid",gap:6,fontSize:12}}>Disponibilidade<select style={field} value={form.availability} onChange={e=>setForm({...form,availability:e.target.value})}><option value="disponivel">Disponível</option><option value="vendido">Vendido</option><option value="oculto">Oculto</option></select></label>
       </div>
       <div style={{marginTop:15,padding:15,border:"1px solid #537a56",borderRadius:11,background:"#17291a"}}>
@@ -286,7 +300,7 @@ export default function UnifiedCatalogManager(){
      <button type="button" style={{...secondary,padding:8}} onClick={()=>begin(p)}>Editar</button><button type="button" style={{...secondary,padding:8}} onClick={()=>void removeProduct(p)}>×</button>
     </article>)}</div>{loading&&<p style={muted}>Carregando...</p>}
   </section>}
-  {activeTab==="delivery"&&<section style={panel}>
+  {activeTab==="delivery"&&settings.catalog_kind!=="services"&&<section style={panel}>
    <h2>Entrega e retirada</h2>
    <p style={muted}>As taxas são cadastradas por bairro. O catálogo não executa pagamento nem valida cobertura por endereço automaticamente.</p>
    <label style={{display:"block",marginBottom:13}}><input type="checkbox" checked={settings.delivery_enabled} onChange={e=>setSettings({...settings,delivery_enabled:e.target.checked})}/> Oferecer entrega</label>
@@ -297,13 +311,35 @@ export default function UnifiedCatalogManager(){
   </section>}
   {activeTab==="settings"&&<section style={panel}>
    <h2>Identidade e publicação</h2><p style={muted}>As cores e a logo vêm do cadastro único da empresa. Para alterá-las, abra <Link href="/admin/empresas" style={{color:"#a9ff98"}}>Empresas</Link>.</p>
+   <label style={{display:"grid",gap:8,maxWidth:450,marginBottom:18,fontSize:13}}>Tipo de catálogo
+    <select style={field} value={settings.catalog_kind} onChange={e=>setSettings({...settings,catalog_kind:e.target.value as "products"|"services"})}>
+      <option value="products">Produtos · sacola e escolha de recebimento</option>
+      <option value="services">Serviços · consultas pelo WhatsApp</option>
+    </select>
+    <small style={muted}>Mesma apresentação premium para todas as empresas. O tipo só define como o cliente faz o contato.</small>
+   </label>
    {([["headline","Título de destaque"],["subheadline","Descrição de destaque"],["announcement","Mensagem na faixa superior"]] as const).map(([key,label])=><label key={key} style={{display:"grid",gap:7,marginBottom:14,fontSize:12}}>{label}<textarea rows={2} style={field} value={settings[key]} onChange={e=>setSettings({...settings,[key]:e.target.value})}/></label>)}
-   <div style={{padding:15,border:"1px solid #38533e",borderRadius:12,marginBottom:18}}>
-    <strong>Banner de destaque da loja</strong>
-    <p style={muted}>O catálogo alterna 3 slides automaticamente. Imagem recomendada: 1600 × 640 px (desktop). Deixe o assunto central para recorte em celular. Sem upload, o banner usa logo e produtos.</p>
-    <label style={{display:"grid",gap:7,fontSize:12}}>Enviar banner personalizado<input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>setBannerFile(e.target.files?.[0]??null)}/></label>
-    {settings.banner_image_url&&<div style={{marginTop:10,display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}><img src={settings.banner_image_url} alt="Banner atual" style={{width:180,height:74,objectFit:"cover",borderRadius:8}}/><button style={secondary} type="button" onClick={()=>setSettings(v=>({...v,banner_image_url:null}))}>Remover banner</button></div>}
-   </div>
+   <div style={{padding:18,border:"1px solid #3b5d42",borderRadius:14,marginBottom:18}}>
+      <h3 style={{fontSize:16,margin:"0 0 7px"}}>Banners automáticos · 3 apresentações</h3>
+      <p style={muted}>As três apresentações alternam a cada 6,5 segundos, sem controles manuais. Personalize cada uma com imagem JPG/PNG/WebP (recomendação: 1600 × 640 px), título e texto. Sem imagem, o visual usa a identidade da empresa.</p>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,240px),1fr))",gap:13}}>
+       {[0,1,2].map(i=><div key={i} style={{border:"1px solid #304f39",borderRadius:12,padding:14,display:"grid",gap:10,minWidth:0}}>
+        <strong style={{fontSize:13}}>Banner {i+1}</strong>
+        {settings.banner_slides[i]?.image_url&&<img src={settings.banner_slides[i].image_url} alt={"Banner atual "+(i+1)} style={{width:"100%",aspectRatio:"2.5",objectFit:"cover",borderRadius:8}}/>}
+        <label style={{display:"grid",gap:5,fontSize:12}}>Selecionar imagem<input type="file" accept="image/*,.heic,.heif" style={{width:"100%",minWidth:0}} onChange={e=>setSlideFiles(old=>old.map((f,j)=>j===i?e.target.files?.[0]??null:f))}/></label>
+        {slideFiles[i]&&<small style={{color:"#b3ffa5",overflowWrap:"anywhere"}}>Pronto para enviar: {slideFiles[i]?.name}</small>}
+        <label style={{display:"grid",gap:5,fontSize:12}}>Título opcional<input style={field} maxLength={110} value={settings.banner_slides[i]?.title??""} onChange={e=>setSettings(v=>({...v,banner_slides:Array.from({length:3},(_,j)=>j===i?{...v.banner_slides[j],image_url:v.banner_slides[j]?.image_url??"",title:e.target.value}:v.banner_slides[j]??{image_url:""})}))}/></label>
+        <label style={{display:"grid",gap:5,fontSize:12}}>Descrição opcional<textarea style={field} rows={2} maxLength={220} value={settings.banner_slides[i]?.text??""} onChange={e=>setSettings(v=>({...v,banner_slides:Array.from({length:3},(_,j)=>j===i?{...v.banner_slides[j],image_url:v.banner_slides[j]?.image_url??"",text:e.target.value}:v.banner_slides[j]??{image_url:""})}))}/></label>
+        {settings.banner_slides[i]?.image_url&&<button type="button" style={secondary} onClick={()=>setSettings(v=>({...v,banner_slides:Array.from({length:3},(_,j)=>j===i?{...v.banner_slides[j],image_url:""}:v.banner_slides[j]??{image_url:""})}))}>Remover imagem</button>}
+       </div>)}
+      </div>
+      <h3 style={{fontSize:16,margin:"25px 0 6px"}}>Galeria animada · trabalhos reais</h3>
+      <p style={muted}>As fotos deslizam continuamente sem interrupção entre os banners. A Barbearia Lima aproveita automaticamente as 11 fotografias já existentes; outras lojas podem enviar as próprias imagens.</p>
+      <label style={{display:"grid",gap:7,fontSize:12}}>Adicionar fotos à galeria (máximo 30)<input type="file" multiple accept="image/*,.heic,.heif" style={{maxWidth:"100%"}} onChange={e=>setGalleryFiles(Array.from(e.target.files??[]))}/></label>
+      {galleryFiles.length>0&&<p style={{color:"#b3ffa5",fontSize:12}}>{galleryFiles.length} nova(s) foto(s) selecionada(s)</p>}
+      {settings.gallery_images.length>0&&<div style={{display:"flex",gap:9,overflowX:"auto",marginTop:14,paddingBottom:8}}>{settings.gallery_images.map((url,i)=><div key={url} style={{flex:"0 0 96px",display:"grid",gap:5}}><img src={url} alt={"Foto "+(i+1)} style={{width:96,height:110,objectFit:"cover",borderRadius:8}}/><button type="button" style={{...secondary,fontSize:10,padding:6}} onClick={()=>setSettings(v=>({...v,gallery_images:v.gallery_images.filter((_,j)=>j!==i)}))}>Remover</button></div>)}</div>}
+      <button type="button" disabled={busy} style={{...primary,marginTop:18}} onClick={()=>void saveSettings(settings.status)}>Salvar banners e galeria</button>
+     </div>
    <label style={{display:"block",marginBottom:15}}><input type="checkbox" checked={settings.accept_inquiries} onChange={e=>setSettings({...settings,accept_inquiries:e.target.checked})}/> Permitir consultas individuais sobre produtos no WhatsApp</label>
    <label style={{display:"block",marginBottom:15,fontSize:12,lineHeight:1.6,color:"#c8e0c8"}}><input type="checkbox" checked={verifiedPublication} onChange={e=>setVerifiedPublication(e.target.checked)}/> Conferi os produtos, fotos, informações e WhatsApp reais desta empresa antes de publicar.</label>
    <div style={{display:"flex",gap:10,flexWrap:"wrap"}}><button style={secondary} disabled={busy} onClick={()=>void saveSettings("draft")}>Salvar rascunho</button><button style={primary} disabled={busy} onClick={()=>void saveSettings("published")}>Publicar catálogo</button>{published&&<button style={secondary} disabled={busy} onClick={()=>void saveSettings("paused")}>Pausar catálogo</button>}<button style={{...secondary,color:"#ffc2be",borderColor:"#6f4544"}} disabled={busy} onClick={()=>void deleteCatalog()}>Excluir catálogo</button></div>

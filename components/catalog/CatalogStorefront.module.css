@@ -310,3 +310,45 @@
  .drawerHead{min-height:60px}
  .steps{padding:7px 9px}
 }
+
+
+/* Universal storefront: continuously scrolling authentic works, isolated from 6.5-second hero slides. */
+.showcaseSection{padding:42px 0 8px;overflow:hidden;width:100%;max-width:100%}
+.showcaseHeading{padding:0 2px 22px}
+.showcaseHeading>span{display:inline-block;font-size:10px;letter-spacing:.18em;font-weight:800;color:var(--cat-primary);margin-bottom:10px}
+.showcaseHeading h2{font:400 clamp(29px,3.5vw,43px)/1.12 Georgia,"Times New Roman",serif;letter-spacing:-.045em;color:var(--cat-ink);margin:0 0 8px}
+.showcaseHeading p{font-size:12px;color:#657269;margin:0}
+.showcaseViewport{position:relative;overflow:hidden;max-width:100%;border-radius:17px}
+.showcaseViewport:before,.showcaseViewport:after{content:"";position:absolute;z-index:2;top:0;bottom:0;width:45px;pointer-events:none}
+.showcaseViewport:before{left:0;background:linear-gradient(90deg,var(--cat-background),transparent)}
+.showcaseViewport:after{right:0;background:linear-gradient(270deg,var(--cat-background),transparent)}
+.showcaseTrack{display:flex;align-items:stretch;width:max-content;animation:catalogGalleryLoop 75s linear infinite;will-change:transform}
+.showcaseGroup{display:flex;flex:0 0 auto;gap:13px;padding-right:13px}
+.showcaseGroup img{display:block;flex:0 0 190px;width:190px;height:250px;border-radius:12px;object-fit:cover;border:1px solid rgba(22,22,18,.08);background:#232321}
+@keyframes catalogGalleryLoop{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.heroBackground{transition:none}
+.heroCopy{animation:catSlideFade .45s ease both}
+.heroProgress>span{animation:fenniProgress 6.5s linear}
+@media(max-width:720px){
+ .showcaseSection{padding:35px 0 0}
+ .showcaseHeading{padding-bottom:17px}
+ .showcaseGroup img{width:146px;height:192px;flex-basis:146px;border-radius:9px}
+ .showcaseGroup{gap:9px;padding-right:9px}
+ .showcaseTrack{animation-duration:62s}
+ .showcaseViewport:before,.showcaseViewport:after{width:24px}
+}
+@media(prefers-reduced-motion:reduce){
+ .showcaseViewport{overflow-x:auto;overscroll-behavior-x:contain}
+ .showcaseTrack{animation:none;will-change:auto}
+ .heroCopy{animation:none}
+}
+
+
+/* Brand palette: contrast-safe gold and graphite for service tenants. */
+.root[data-catalog-kind="services"] .chipSelected{background:#29251b;color:#f7e2ad;border-color:#c3a35c}
+.root[data-catalog-kind="services"] .addButton{background:#25231f;color:#f9e7b3;border-color:#bc9a50}
+.root[data-catalog-kind="services"] .addButton:hover{background:#343026;filter:none}
+.root[data-catalog-kind="services"] .sectionTop>div>span,
+.root[data-catalog-kind="services"] .showcaseHeading>span{color:#77601f}
+.root[data-catalog-kind="services"] .headerLinks a:hover{color:#8f7228}
+.root[data-catalog-kind="services"] .promoCard em{color:#68551e}
