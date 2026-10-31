@@ -383,7 +383,7 @@ export default function Home() {
               </div>
               <div className="client-project__visual" aria-hidden="true">
                 <div className="client-case-brand">
-                  <div className="client-case-brand__mark" aria-label="LS Log">LS<span>LOG</span></div>
+                  <div className="client-case-brand__official" aria-hidden="true" /><div className="client-case-brand__mark" aria-label="LS Log">LS<span>LOG</span></div>
                   <span>LOGÍSTICA E GESTÃO</span>
                   <strong>Portal de Motoristas</strong>
                   <small>Projeto desenvolvido e entregue pela Alysson Tech.</small>
