@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { BriefcaseBusiness, Plus, Search, Pencil, Power, RotateCw, Wallet, PackageCheck } from "lucide-react";
 import { supabaseBrowser } from "../../lib/supabase-browser";
+import ConfirmDialog from "./ConfirmDialog";
 import styles from "./AdminOfferings.module.css";
 
 type Offering = {
@@ -29,6 +30,7 @@ export default function AdminOfferings() {
   const [filter, setFilter] = useState<"all" | "active" | "inactive">("all");
   const [editing, setEditing] = useState<string | null>(null);
   const [formOpen, setFormOpen] = useState(false);
+  const [confirmOffering, setConfirmOffering] = useState<Offering | null>(null);
   const [form, setForm] = useState(blank);
 
   const load = useCallback(async () => {
@@ -89,19 +91,35 @@ export default function AdminOfferings() {
     await load();
   }
 
-  async function toggle(item: Offering) {
+  async function toggle() {
+    const item = confirmOffering;
+    if (!item || busy) return;
     const next = !item.is_active;
-    if (busy || !window.confirm(`${next ? "Reativar" : "Arquivar"} "${item.name}"? Essa ação não altera contratos existentes.`)) return;
     setBusy(true); setError(""); setMessage("");
     const result = await supabaseBrowser.from("at_service_offerings")
       .update({ is_active: next, updated_at: new Date().toISOString() }).eq("id", item.id);
     setBusy(false);
     if (result.error) { setError(result.error.message); return; }
+    setConfirmOffering(null);
     setMessage(next ? "Serviço reativado." : "Serviço arquivado; o registro foi preservado.");
     await load();
   }
 
   return <div className={styles.root}>
+    <ConfirmDialog
+      open={confirmOffering !== null}
+      title={confirmOffering?.is_active ? "Arquivar serviço?" : "Reativar serviço?"}
+      description={confirmOffering?.is_active
+        ? "O serviço será retirado da lista de ofertas ativas, mas o cadastro será preservado. Contratos anteriores não serão modificados."
+        : "O serviço voltará a aparecer como uma oferta ativa da Alysson Tech."}
+      context={confirmOffering?.name}
+      confirmLabel={confirmOffering?.is_active ? "Sim, arquivar" : "Sim, reativar"}
+      tone={confirmOffering?.is_active ? "danger" : "success"}
+      busy={busy}
+      error={error || undefined}
+      onCancel={() => { if (!busy) { setConfirmOffering(null); setError(""); } }}
+      onConfirm={() => void toggle()}
+    />
     <div className={styles.summary}>
       <div><PackageCheck aria-hidden="true" /><span>Serviços ativos</span><strong>{loading ? "—" : items.filter(x => x.is_active).length}</strong></div>
       <div><BriefcaseBusiness aria-hidden="true" /><span>Total cadastrados</span><strong>{loading ? "—" : items.length}</strong></div>
@@ -133,7 +151,7 @@ export default function AdminOfferings() {
         <div className={styles.cardHeader}><span className={styles.category}>{item.category}</span><span className={item.is_active ? styles.active : styles.inactive}>{item.is_active ? "Ativo" : "Arquivado"}</span></div>
         <h3>{item.name}</h3><p className={styles.descriptionText}>{item.description || "Sem descrição cadastrada."}</p>
         <div className={styles.price}><strong>{money(item.reference_price)}</strong><small>{item.billing_type === "monthly" ? "por mês (referência)" : "venda / serviço"}</small></div>
-        <div className={styles.cardActions}><button type="button" onClick={() => start(item)}><Pencil size={15} /> Editar</button><button type="button" disabled={busy} onClick={() => void toggle(item)}><Power size={15} /> {item.is_active ? "Arquivar" : "Reativar"}</button></div>
+        <div className={styles.cardActions}><button type="button" onClick={() => start(item)}><Pencil size={15} /> Editar</button><button type="button" disabled={busy} onClick={() => { setError(""); setConfirmOffering(item); }}><Power size={15} /> {item.is_active ? "Arquivar" : "Reativar"}</button></div>
       </article>)}
     </div>
     {!loading && visible.length === 0 && <div className={styles.empty}>Nenhum serviço encontrado. Ajuste os filtros ou cadastre uma nova oferta.</div>}
