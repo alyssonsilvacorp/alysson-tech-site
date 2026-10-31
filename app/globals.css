@@ -2794,3 +2794,14 @@ a {
   .portfolio-group--own {margin-top:36px;}
   .portfolio-group--own::before {font-size:9px;letter-spacing:.12em;}
 }
+
+/* LS Log — marca tipográfica provisória até asset oficial ser adicionado */
+.client-case-brand{height:100%;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:radial-gradient(circle at 50% 45%,rgba(132,233,111,.18),transparent 65%);border:1px solid rgba(153,226,148,.15);border-radius:16px;position:relative;overflow:hidden}
+.client-case-brand__mark{font-size:clamp(35px,5vw,64px);font-weight:850;letter-spacing:-.09em;color:#dff8de;line-height:1}
+.client-case-brand__mark span{margin-left:9px;color:#95ef80}
+.client-case-brand>span{font-size:10px;letter-spacing:.18em;color:#a3bea5;font-weight:750}
+.client-case-brand>strong{font-size:19px;color:#eef7ed}
+.client-case-brand>small{font-size:11px;color:#a8c2ab;text-align:center}
+.client-case-brand__lines{display:flex;gap:7px;margin-top:13px}.client-case-brand__lines i{width:35px;height:3px;border-radius:99px;background:#96f485}.client-case-brand__lines i:nth-child(2){opacity:.45}.client-case-brand__lines i:nth-child(3){opacity:.2}
+.client-case-link{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(155,236,148,.34);border-radius:10px;padding:11px 15px;text-decoration:none;color:#a8ef9d;font-weight:700;font-size:12px;margin-top:14px}
+.client-case-link:hover{background:rgba(137,229,128,.09)}
