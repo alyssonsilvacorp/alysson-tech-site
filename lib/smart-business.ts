@@ -43,6 +43,7 @@ type BusinessRow = {
   id: string;
   slug: string;
   name: string;
+  has_catalog: boolean;
   category: string | null;
   short_description: string | null;
   logo_url: string | null;
@@ -89,7 +90,7 @@ export async function getSmartBusiness(
     await supabase
       .from("smart_businesses")
       .select(
-        "id,slug,name,category,short_description,logo_url,cover_url,accent_color,whatsapp_number,instagram_url,address,maps_url",
+        "id,slug,name,category,short_description,logo_url,cover_url,accent_color,whatsapp_number,instagram_url,address,maps_url,has_catalog",
       )
       .eq("slug", normalizedSlug)
       .eq("is_published", true)
@@ -176,7 +177,7 @@ export async function getSmartBusiness(
       config: action.config ?? {},
       sortOrder: action.sort_order,
     })),
-    catalogUrl: catalogResult.data?.status === "published" ? `/p/${business.slug}/catalogo` : null,
+    catalogUrl: business.has_catalog && catalogResult.data?.status === "published" ? `/p/${business.slug}/catalogo` : null,
     services: serviceRows.map((service) => ({
       sku: service.sku,
       audience: service.audience,
