@@ -112,6 +112,61 @@ export default function UnifiedCatalogManager(){
   setBusy(true);setError("");const r=await supabaseBrowser.from("smart_business_services").insert(records);setBusy(false);
   if(r.error){setError(r.error.message);return;}setBulk("");setShowBulk(false);setMessage(records.length+" produtos cadastrados.");await load(businessId);
  }
+ function downloadTemplate(){
+  const example=[["SKU","Nome","Categoria","Preço","Descrição","Disponibilidade"],["FEN-001","Armação feminina 01","Feminino","","Sob consulta","disponivel"],["FEN-002","Armação masculina 02","Masculino","129,90","Modelo demonstrativo","disponivel"]];
+  const quote=(s:string)=>'"'+s.replace(/"/g,'""')+'"';
+  const csv="\uFEFF"+example.map(row=>row.map(quote).join(";")).join("\r\n");
+  const u=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+  const a=document.createElement("a");a.href=u;a.download="modelo-izaly-catalogos.csv";a.click();URL.revokeObjectURL(u);
+ }
+ function splitCsv(text:string):string[][]{
+  const records:string[][]=[];let row:string[]=[],cell="",quoted=false;
+  const source=text.replace(/^\uFEFF/,"");
+  for(let i=0;i<source.length;i++){const ch=source[i];
+   if(ch==='"'){if(quoted&&source[i+1]==='"'){cell+='"';i++;}else quoted=!quoted;}
+   else if(ch===";"&&!quoted){row.push(cell.trim());cell="";}
+   else if((ch==="\n"||ch==="\r")&&!quoted){if(ch==="\r"&&source[i+1]==="\n")i++;row.push(cell.trim());if(row.some(x=>x))records.push(row);row=[];cell="";}
+   else cell+=ch;
+  }
+  if(quoted)throw Error("Planilha CSV com aspas não fechadas.");
+  row.push(cell.trim());if(row.some(x=>x))records.push(row);
+  return records;
+ }
+ async function importCsv(file:File|null){
+  if(!file)return;if(!businessId||busy)return;
+  if(!file.name.toLowerCase().endsWith(".csv")||file.size>2*1024*1024){setError("Importe o modelo CSV (até 2 MB), salvo com separador ponto e vírgula.");return;}
+  setError("");let rows:string[][];
+  try{rows=splitCsv(await file.text());}catch(e){setError(String(e));return;}
+  const expected=["sku","nome","categoria","preço","descrição","disponibilidade"];
+  const headers=rows.shift()?.map(x=>x.toLocaleLowerCase("pt-BR"));
+  if(!headers||expected.some((h,i)=>headers[i]!==h)){setError("Cabeçalho inválido. Baixe e preencha a planilha padrão deste sistema.");return;}
+  if(!rows.length||rows.length>300){setError("O arquivo deve conter entre 1 e 300 produtos.");return;}
+  const errors:string[]=[];
+  const existing=new Set(items.map(x=>x.sku?.toLocaleLowerCase("pt-BR")).filter(Boolean));
+  const incoming=new Set<string>();
+  const records=rows.map((r,i)=>{
+   const [sku,name,category,price,description,status]=r;
+   if(!sku||!name){errors.push("Linha "+(i+2)+": SKU e nome são obrigatórios.");}
+   const key=(sku??"").toLocaleLowerCase("pt-BR");
+   if(existing.has(key)||incoming.has(key))errors.push("SKU duplicado ou já existente: "+sku);
+   incoming.add(key);
+   const num=price?Number(price.replace(",", ".")):null;
+   if(num!==null&&(!Number.isFinite(num)||num<0))errors.push("Preço inválido no SKU "+sku);
+   const visibility=status?.trim().toLocaleLowerCase("pt-BR")||"disponivel";
+   if(!["disponivel","oculto","vendido"].includes(visibility))errors.push("Disponibilidade inválida no SKU "+sku);
+   return {business_id:businessId,sku:sku?.trim(),name:name?.trim(),catalog_category:category?.trim()||null,
+    audience:category?.trim()||null,description:description?.trim()||null,price:num,price_label:num===null?"Sob consulta":null,
+    is_active:visibility==="disponivel",availability:visibility,sort_order:items.length+i};
+  });
+  if(errors.length){setError(errors.slice(0,10).join(" · "));return;}
+  if(!window.confirm("Importar "+records.length+" itens para "+company?.name+"? Depois envie as fotos com o mesmo SKU no nome do arquivo."))return;
+  setBusy(true);
+  const r=await supabaseBrowser.from("smart_business_services").insert(records);
+  setBusy(false);
+  if(r.error){setError("Falha na importação: "+r.error.message);return;}
+  setMessage(records.length+" produtos importados. Agora envie imagens nomeadas pelo SKU (por exemplo, FEN-001.jpg).");
+  await load(businessId);
+ }
  async function uploadBatch(){if(!businessId||busy||!batchFiles.length)return;
   setUploading(true);setError("");let count=0;const failures:string[]=[];
   for(const file of batchFiles.slice(0,30)){
@@ -181,7 +236,7 @@ export default function UnifiedCatalogManager(){
   </div>
   {activeTab==="products"&&<section style={panel}>
     <div style={{display:"flex",gap:8,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}><h2 style={{fontSize:18,margin:0}}>Produtos</h2><div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
-     <button style={secondary} onClick={()=>setShowBulk(v=>!v)}>Cadastro rápido por lista</button><button style={primary} onClick={()=>begin()}>+ Adicionar produto</button>
+     <button type="button" style={secondary} onClick={downloadTemplate}>Baixar planilha padrão</button><label style={{...secondary,cursor:"pointer"}}>Importar CSV<input type="file" accept=".csv,text/csv" style={{display:"none"}} onChange={e=>{void importCsv(e.target.files?.[0]??null);e.target.value="";}}/></label><button style={secondary} onClick={()=>setShowBulk(v=>!v)}>Cadastro rápido</button><button style={primary} onClick={()=>begin()}>+ Adicionar produto</button>
     </div></div>
     {showBulk&&<div style={{marginTop:14,padding:15,border:"1px solid #48634c",borderRadius:12}}><h3>Adicionar vários produtos</h3><p style={muted}>Uma linha por produto: Nome; Categoria; Preço; SKU. Preço vazio = sob consulta.</p><textarea rows={7} style={field} placeholder={"Armação modelo 01; Feminino; ; FEN-001\nArmação modelo 02; Masculino; 129,90; FEN-002"} value={bulk} onChange={e=>setBulk(e.target.value)}/><button style={primary} type="button" onClick={()=>void importList()} disabled={busy}>Importar produtos da lista</button></div>}
     {showForm&&<form onSubmit={saveProduct} style={{marginTop:15,padding:18,border:"1px solid #547253",borderRadius:12}}>
@@ -199,7 +254,7 @@ export default function UnifiedCatalogManager(){
       <div style={{display:"flex",gap:8,marginTop:17}}><button disabled={busy} style={primary}>{busy?"Salvando...":"Salvar produto"}</button><button type="button" style={secondary} onClick={()=>setShowForm(false)}>Cancelar</button></div>
     </form>}
     <div style={{marginTop:17,padding:14,border:"1px solid #395442",borderRadius:12}}>
-      <strong style={{fontSize:13}}>Fotografias em lote</strong><p style={muted}>Associe automaticamente por nome do arquivo igual ao SKU ou nome do produto. Até 30 fotos por lote; imagens grandes são compactadas antes do upload.</p>
+      <strong style={{fontSize:13}}>Fotografias em lote</strong><p style={muted}>Para importar por planilha, use o arquivo CSV padrão e fotos com o mesmo SKU (ex.: FEN-001.jpg). PNG, JPEG, WebP e formatos compatíveis do celular serão convertidos para JPEG. Até 30 fotos por lote; fotos sem correspondência são sinalizadas.</p>
       <input type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={e=>setBatchFiles(Array.from(e.target.files??[]))}/>
       <button type="button" style={{...secondary,marginLeft:12}} disabled={uploading||!batchFiles.length} onClick={()=>void uploadBatch()}>{uploading?"Vinculando fotos...":"Aplicar fotos ("+batchFiles.length+")"}</button>
     </div>
