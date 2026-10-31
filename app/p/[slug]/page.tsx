@@ -244,7 +244,8 @@ export default async function SmartBusinessPage({ params }: PageProps) {
     ? business.accentColor
     : "#D7AE68";
 
-  const theme = { "--portal-accent": accent } as CSSProperties;
+  const support = business.supportColor && /^#[0-9a-fA-F]{6}$/.test(business.supportColor) ? business.supportColor : accent;
+  const theme = { "--portal-accent": accent, "--portal-support": support } as CSSProperties;
   const initials = business.name
     .split(/\s+/)
     .slice(0, 2)
