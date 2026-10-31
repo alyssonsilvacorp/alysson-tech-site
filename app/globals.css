@@ -2805,3 +2805,5 @@ a {
 .client-case-brand__lines{display:flex;gap:7px;margin-top:13px}.client-case-brand__lines i{width:35px;height:3px;border-radius:99px;background:#96f485}.client-case-brand__lines i:nth-child(2){opacity:.45}.client-case-brand__lines i:nth-child(3){opacity:.2}
 .client-case-link{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(155,236,148,.34);border-radius:10px;padding:11px 15px;text-decoration:none;color:#a8ef9d;font-weight:700;font-size:12px;margin-top:14px}
 .client-case-link:hover{background:rgba(137,229,128,.09)}
+
+.client-case-brand__official{height:92px;width:138px;max-width:80%;background:url("https://llslog.com.br/lslog-mark-premium.png") center/contain no-repeat;filter:drop-shadow(0 8px 18px rgba(0,0,0,.2))}
