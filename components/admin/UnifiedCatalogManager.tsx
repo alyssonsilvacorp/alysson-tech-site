@@ -222,7 +222,7 @@ export default function UnifiedCatalogManager(){
   <div style={panel}>
    <h2 style={{fontSize:19,margin:"0 0 7px"}}>Catálogos integrados</h2><p style={muted}>A mesma empresa, identidade e produtos alimentam o catálogo e o Multilink. Não há HTML individual para publicar.</p>
    <label style={{display:"grid",gap:7,fontSize:12,maxWidth:550}}>Empresa selecionada<select style={field} value={businessId} onChange={e=>{setBusinessId(e.target.value);setShowForm(false);setSearch("");setVerifiedPublication(false);}}><option value="">Selecione uma empresa</option>{companies.filter(c=>c.has_catalog).map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
-   {!companies.some(c=>c.has_catalog)&&<p style={muted}>Nenhuma empresa está habilitada para catálogo. Acesse <Link href="/admin/empresas" style={{color:"#b0ff94"}}>Empresas</Link>, marque "Sim, criar catálogo" e salve para continuar.</p>}
+   {!companies.some(c=>c.has_catalog)&&<p style={muted}>Nenhuma empresa está habilitada para catálogo. Acesse <Link href="/admin/empresas" style={{color:"#b0ff94"}}>Empresas</Link>, marque &ldquo;Sim, criar catálogo&rdquo; e salve para continuar.</p>}
    {company&&<div style={{display:"flex",gap:9,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",marginTop:15}}>
     <span style={{fontSize:12,color:published?"#a5f49a":"#cfcb9a"}}>Situação: {published?"PUBLICADO":settings.status==="paused"?"PAUSADO":"RASCUNHO"} · {items.length} produtos</span>
     <div style={{display:"flex",gap:9,flexWrap:"wrap"}}>
