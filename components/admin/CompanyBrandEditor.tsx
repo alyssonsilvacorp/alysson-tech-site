@@ -76,18 +76,19 @@ export default function CompanyBrandEditor(){
    const response=await supabaseBrowser.from("smart_businesses").update(payload).eq("id",id);
    if(response.error){setError("Não foi possível atualizar: "+response.error.message);setBusy(false);return;}
   }
+  let logoSaved=true;
   if(logoFile){
    const ext=logoFile.type==="image/png"?"png":logoFile.type==="image/webp"?"webp":"jpg";
    const path=id+"/logos/"+crypto.randomUUID()+"."+ext;
    const upload=await supabaseBrowser.storage.from("business-media").upload(path,logoFile,{upsert:false,contentType:logoFile.type});
-   if(upload.error){setError("Empresa salva, mas a logo não foi enviada: "+upload.error.message);}else{
+   if(upload.error){logoSaved=false;setError("Empresa salva, mas a logo não foi enviada: "+upload.error.message);}else{
     const logoUrl=supabaseBrowser.storage.from("business-media").getPublicUrl(path).data.publicUrl;
     const update=await supabaseBrowser.from("smart_businesses").update({logo_url:logoUrl}).eq("id",id);
-    if(update.error)setError("Empresa salva, mas não foi possível vincular a logo: "+update.error.message);
+    if(update.error){logoSaved=false;setError("Empresa salva, mas não foi possível vincular a logo: "+update.error.message);}
    }
   }
   setBusy(false);setLogoFile(null);setSuccess(hasCatalog?"Empresa salva. Continue com a criação do catálogo.":"Empresa salva sem necessidade de catálogo.");await load();setSelected(id);
-   if(hasCatalog)router.push("/admin/catalogos?business="+encodeURIComponent(id));
+   if(hasCatalog&&logoSaved)router.push("/admin/catalogos?business="+encodeURIComponent(id));
  }
  async function toggleMultilink(){
   const company=companies.find(c=>c.id===selected);if(!company||busy)return;
