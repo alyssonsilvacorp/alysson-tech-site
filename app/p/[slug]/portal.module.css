@@ -13,7 +13,7 @@
 .dot { height: 6px; width: 6px; background: var(--portal-accent); border-radius: 999px; flex: 0 0 auto; box-shadow: 0 0 11px var(--portal-accent); }
 .topBarLine { flex: 1; height: 1px; background: #37302a; margin: 0 9px; }
 
-.hero { position: relative; isolation: isolate; overflow: hidden; min-height: 310px; padding: 38px 25px 22px; border: 1px solid #393027; border-radius: 26px; background: radial-gradient(ellipse at 88% 24%, rgba(204, 151, 70, .15), transparent 48%), linear-gradient(142deg, #201d19 0%, #121316 53%, #151312 100%); box-shadow: 0 20px 60px #0007; }
+.hero { position: relative; isolation: isolate; overflow: hidden; min-height: 310px; padding: 38px 25px 22px; border: 1px solid #393027; border-radius: 26px; background: radial-gradient(ellipse at 88% 24%, color-mix(in srgb,var(--portal-support),transparent 83%), transparent 48%), linear-gradient(142deg, #201d19 0%, #121316 53%, #151312 100%); box-shadow: 0 20px 60px #0007; }
 .hero:after { content: ""; position: absolute; inset: 12px; border: 1px solid #ffffff10; border-radius: 17px; pointer-events: none; z-index: -1; }
 .cover { position: absolute; inset: 0; z-index: -2; }
 .cover:after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #121316f2, #101115c7 54%, #141418a1); }
