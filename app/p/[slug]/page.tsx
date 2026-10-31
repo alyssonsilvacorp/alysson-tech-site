@@ -102,7 +102,10 @@ function whatsappLink(phone: string | null, businessName: string) {
 
 function actionUrl(action: SmartBusinessAction, business: SmartBusiness) {
   if (action.actionType === "pix") return null;
-  if (action.actionType === "services" || action.actionType === "catalog") {
+  if (action.actionType === "catalog") {
+    return business.catalogUrl ?? (business.services.length ? "#servicos" : null);
+  }
+  if (action.actionType === "services") {
     return business.services.length ? "#servicos" : null;
   }
   if (action.actionType === "whatsapp" || action.actionType === "booking") {
