@@ -107,7 +107,17 @@ export default function CompanyBrandEditor(){
    <button type="button" onClick={()=>choose("new")} style={btn}>+ Nova empresa</button></div>
    <label style={{display:"block",marginTop:17,fontSize:12,color:"#c5dbc8"}}>Empresa para editar<select style={{...field,marginTop:6}} value={selected} onChange={e=>choose(e.target.value)}>
     <option value="new">Cadastrar nova empresa</option>{companies.map(c=><option value={c.id} key={c.id}>{c.name}</option>)}</select></label>
-   {selectedCompany&&<p style={muted}>Rota do Multilink: /p/{selectedCompany.slug} {published?"· publicado":"· rascunho"} {selectedCompany.has_catalog?"· Catálogo: /p/"+selectedCompany.slug+"/catalogo":"· Sem catálogo contratado"}</p>}
+   {selectedCompany&&<div style={{marginTop:15,display:"grid",gap:9}}>
+      <p style={{...muted,margin:0}}>Rotas automáticas da empresa · Multilink: {published?"publicado":"rascunho"} · Catálogo: {selectedCompany.has_catalog?"habilitado (publicação independente)":"não contratado"}</p>
+      <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:9}}>
+       <a href={"/p/"+selectedCompany.slug} target="_blank" rel="noopener noreferrer" style={{...secondary,textDecoration:"none",display:"inline-flex"}}>Abrir Multilink ↗</a>
+       <button type="button" style={secondary} onClick={()=>void navigator.clipboard.writeText("https://alyssontech.com.br/p/"+selectedCompany.slug)}>Copiar URL do Multilink</button>
+       {selectedCompany.has_catalog&&<>
+         <button type="button" style={secondary} onClick={()=>void navigator.clipboard.writeText("https://alyssontech.com.br/p/"+selectedCompany.slug+"/catalogo")}>Copiar rota do catálogo</button>
+         <Link href={"/admin/catalogos?business="+encodeURIComponent(selectedCompany.id)} style={{color:"#aafa9a",fontSize:13}}>Configurar e publicar catálogo ↗</Link>
+       </>}
+      </div>
+     </div>}
   </section>
   {error&&<p role="alert" style={{...panel,borderColor:"#9f5050",color:"#ffb5b5"}}>{error}</p>}
   {success&&<p role="status" style={{...panel,color:"#aafa9a"}}>{success}</p>}
@@ -126,12 +136,17 @@ export default function CompanyBrandEditor(){
          <span style={{...muted,overflowWrap:"anywhere",color:logoFile?"#b5ffa0":"#b2c7b5"}}>{logoFile?"Arquivo selecionado: "+logoFile.name+" — clique em Salvar para enviar.":logoSrc?"Logo cadastrada. Use o botão acima para substituir.":"Nenhum arquivo selecionado."}</span>
        </div>
        {logoSrc?<div style={{display:"flex",alignItems:"center",gap:13,flex:"0 1 255px"}}>
-         <img src={logoSrc} alt="Prévia da logo" style={{width:84,height:84,flexShrink:0,borderRadius:13,objectFit:"contain",background:"white",padding:7,border:"2px solid #b9ffa8"}}/>
+         <img src={logoSrc} alt="Prévia da logo" style={{width:84,height:84,flexShrink:0,borderRadius:13,objectFit:"contain",background:values.brand_background_color,padding:7,border:"2px solid #b9ffa8"}}/>
          <span style={muted}>Prévia da imagem. As cores sugeridas aparecem logo abaixo.</span>
        </div>:<div aria-hidden="true" style={{height:84,width:84,border:"1px dashed #6e9375",borderRadius:13,display:"grid",placeItems:"center",color:"#a4c2a6",fontSize:30}}>▧</div>}
      </div>
    </section>
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:12,marginTop:19}}>
+    <div style={{gridColumn:"1 / -1",margin:"0 0 7px",display:"flex",alignItems:"center",flexWrap:"wrap",gap:10}}>
+      <span style={{...muted,flex:"0 1 100%"}}>Escolha uma base visual e ajuste as cores manualmente abaixo. A paleta escolhida é compartilhada pelo Multilink e catálogo; a logo original não é alterada.</span>
+      <button type="button" style={secondary} onClick={()=>setValues(v=>({...v,brand_support_color:"#27231b",brand_background_color:"#0b0c0d",brand_highlight_color:"#222018"}))}>Aplicar tema escuro premium</button>
+      <button type="button" style={secondary} onClick={()=>setValues(v=>({...v,brand_support_color:v.accent_color,brand_background_color:"#faf9f7",brand_highlight_color:"#f2ede7"}))}>Aplicar tema claro minimalista</button>
+    </div>
     {([["accent_color","Cor principal"],["brand_support_color","Cor de apoio"],["brand_background_color","Fundo"],["brand_highlight_color","Destaque"]] as const).map(([key,label])=><label key={key} style={{...panel,padding:10,display:"grid",gap:7,fontSize:12}}>{label}<input type="color" aria-label={label} value={values[key]} onChange={e=>setValues({...values,[key]:e.target.value})} style={{width:"100%",height:46,cursor:"pointer",border:0,background:"transparent"}}/><input aria-label={label+" em hexadecimal"} value={values[key]} maxLength={7} onChange={e=>{if(/^#[0-9a-fA-F]{0,6}$/.test(e.target.value))setValues({...values,[key]:e.target.value});}} style={{...field,padding:8,fontSize:11}}/></label>)}
    </div>
    <div style={{...panel,marginTop:18,background:"#14231a"}}>

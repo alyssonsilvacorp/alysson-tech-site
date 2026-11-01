@@ -106,7 +106,7 @@ function actionUrl(action: SmartBusinessAction, business: SmartBusiness) {
     return business.catalogUrl ?? (business.services.length ? "#servicos" : null);
   }
   if (action.actionType === "services") {
-    return business.services.length ? "#servicos" : null;
+    return business.catalogUrl ?? (business.services.length ? "#servicos" : null);
   }
   if (action.actionType === "whatsapp" || action.actionType === "booking") {
     return safeUrl(action.url) ?? whatsappLink(business.whatsappNumber, business.name);
@@ -273,6 +273,7 @@ export default async function SmartBusinessPage({ params }: PageProps) {
   const reviewAction = business.actions.find(a => a.actionType === "google_review");
   const reviewUrl = reviewAction ? actionUrl(reviewAction, business) : null;
   const isOptica = business.category === "otica";
+  const catalogLabel = business.catalogKind === "services" ? "Catálogo de serviços" : "Catálogo de produtos";
   const categoryLabel = labels[business.category?.toLowerCase() ?? ""] ??
     (business.category ?? "NEGÓCIO LOCAL").toUpperCase();
 
@@ -326,7 +327,7 @@ export default async function SmartBusinessPage({ params }: PageProps) {
           <ActionLink
             featured
             icon={isOptica ? "▦" : "✂"}
-            label={business.catalogUrl ? "Catálogo de produtos" : isOptica ? "Catálogo de produtos" : "Serviços e valores"}
+            label={business.catalogUrl ? catalogLabel : isOptica ? "Catálogo de produtos" : "Serviços e valores"}
             detail={business.catalogUrl ? "Abrir catálogo completo" : business.services.length ? "Conheça nossos serviços" : "Catálogo em preparação"}
             href={business.catalogUrl ?? (business.services.length ? "#servicos" : null)}
           />
