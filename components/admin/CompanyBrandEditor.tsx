@@ -132,6 +132,11 @@ export default function CompanyBrandEditor(){
      </div>
    </section>
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:12,marginTop:19}}>
+    <div style={{margin:"14px 0 12px",display:"flex",alignItems:"center",flexWrap:"wrap",gap:10}}>
+      <span style={{...muted,flex:"0 1 100%"}}>Escolha uma base visual e ajuste as cores manualmente abaixo. A paleta escolhida é compartilhada pelo Multilink e catálogo; a logo original não é alterada.</span>
+      <button type="button" style={secondary} onClick={()=>setValues(v=>({...v,brand_support_color:"#27231b",brand_background_color:"#0b0c0d",brand_highlight_color:"#222018"}))}>Aplicar tema escuro premium</button>
+      <button type="button" style={secondary} onClick={()=>setValues(v=>({...v,brand_support_color:v.accent_color,brand_background_color:"#faf9f7",brand_highlight_color:"#f2ede7"}))}>Aplicar tema claro minimalista</button>
+    </div>
     {([["accent_color","Cor principal"],["brand_support_color","Cor de apoio"],["brand_background_color","Fundo"],["brand_highlight_color","Destaque"]] as const).map(([key,label])=><label key={key} style={{...panel,padding:10,display:"grid",gap:7,fontSize:12}}>{label}<input type="color" aria-label={label} value={values[key]} onChange={e=>setValues({...values,[key]:e.target.value})} style={{width:"100%",height:46,cursor:"pointer",border:0,background:"transparent"}}/><input aria-label={label+" em hexadecimal"} value={values[key]} maxLength={7} onChange={e=>{if(/^#[0-9a-fA-F]{0,6}$/.test(e.target.value))setValues({...values,[key]:e.target.value});}} style={{...field,padding:8,fontSize:11}}/></label>)}
    </div>
    <div style={{...panel,marginTop:18,background:"#14231a"}}>
