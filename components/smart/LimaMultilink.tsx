@@ -242,13 +242,16 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
           </section>
         )}
 
+        <section className={styles.serviceSection} aria-label="Trabalhos reais da Barbearia Lima">
+          <LimaWorkShowcase />
+        </section>
+
         {!business.catalogUrl && <section className={styles.serviceSection} id="servicos" aria-labelledby="lima-services-heading">
           <div className={styles.serviceHeading}>
             <span className={styles.kicker}>01 / SERVIÇOS</span>
             <h2 id="lima-services-heading">Cuide do seu estilo.</h2>
           </div>
 
-          <LimaWorkShowcase />
           {business.services.length ? (
             <div className={styles.offerGroups}>
               {[
