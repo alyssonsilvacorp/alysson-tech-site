@@ -50,7 +50,10 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
  const canDeliver=brand.deliveryEnabled&&zones.length>0;
  const canPickup=brand.pickupEnabled;
  const fallbackLogo=brand.slug==="otica-fenni"?"/fenni/logo-oficial-instagram.jpg":null;
- const palette={"--cat-primary":safeHex(brand.primary),"--cat-support":safeHex(brand.support),"--cat-background":safeHex(brand.background),"--cat-highlight":safeHex(brand.highlight)} as React.CSSProperties;
+ const backgroundHex=safeHex(brand.background);
+ const channels=[1,3,5].map(i=>parseInt(backgroundHex.slice(i,i+2),16));
+ const isDarkTone=(.2126*channels[0]+.7152*channels[1]+.0722*channels[2])<108;
+ const palette={"--cat-primary":safeHex(brand.primary),"--cat-support":safeHex(brand.support),"--cat-background":backgroundHex,"--cat-highlight":safeHex(brand.highlight)} as React.CSSProperties;
  const audienceOf=(p:CatalogProduct)=>p.audience??p.catalog_category??"Geral";
  const typeOf=(p:CatalogProduct)=>p.frame_type??(p.audience?p.catalog_category:null)??"Outros";
  const categories=useMemo(()=>["Todos",...Array.from(new Set(products.map(audienceOf))).sort((a,b)=>a.localeCompare(b,"pt-BR"))],[products]);
@@ -111,7 +114,7 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
   const msg="Olá! Quero consultar este pedido do catálogo "+brand.name+":\n\n"+lines+"\n\n"+deliveryInfo+"\nNome: "+customer.trim()+"\n"+(unknownPrices?"Valores de alguns produtos sob consulta.":"Total estimado: "+brl(total))+"\n\nPode confirmar disponibilidade e valores?";
   window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(msg),"_blank","noopener,noreferrer");
  }
- return <div className={styles.root} style={palette} data-catalog-kind={isService?"services":"products"}>
+ return <div className={styles.root} style={palette} data-catalog-kind={isService?"services":"products"} data-catalog-tone={isDarkTone?"dark":"light"}>
    {adminPreview&&<div className={styles.previewBanner}>PRÉ-VISUALIZAÇÃO ADMINISTRATIVA · Alterações não publicadas podem aparecer aqui.</div>}
    {brand.announcement&&<div className={styles.announcement}>{brand.announcement}</div>}
    <header className={styles.header}><div className={styles.headerInner}>
