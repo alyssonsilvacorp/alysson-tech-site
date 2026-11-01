@@ -352,3 +352,127 @@
 .root[data-catalog-kind="services"] .showcaseHeading>span{color:#77601f}
 .root[data-catalog-kind="services"] .headerLinks a:hover{color:#8f7228}
 .root[data-catalog-kind="services"] .promoCard em{color:#68551e}
+
+
+/* Shared premium catalog dark palette — opt in through the company's background color.
+ * Reuses the same storefront and editorial layout, never hardcodes the Lima slug.
+ * Values for Lima originate in smart_businesses and are shared with its Multilink. */
+.root[data-catalog-tone="dark"]{
+ --cat-ink:#f8f1e5;
+ --cat-border:rgba(212,175,55,.22);
+ background:
+   radial-gradient(ellipse 65% 28% at 88% -3%,color-mix(in srgb,var(--cat-primary) 11%,transparent),transparent 78%),
+   radial-gradient(ellipse 48% 30% at -10% 65%,color-mix(in srgb,var(--cat-primary) 6%,transparent),transparent 82%),
+   linear-gradient(180deg,#101113,var(--cat-background) 48%,#070809);
+ color:#f4efe6;
+ -webkit-font-smoothing:antialiased;
+}
+.root[data-catalog-tone="dark"] .header{
+ background:#101112;
+ border-bottom:1px solid rgba(212,175,55,.22);
+ box-shadow:0 10px 34px rgba(0,0,0,.16)
+}
+.root[data-catalog-tone="dark"] .brandMark{
+ background:transparent;
+ border:1px solid rgba(212,175,55,.28);
+ box-shadow:0 0 0 3px rgba(212,175,55,.035);
+ border-radius:12px
+}
+.root[data-catalog-tone="dark"] .brandMark img{background:transparent;padding:0;object-fit:contain}
+.root[data-catalog-tone="dark"] .brandText strong{color:#fff9ed}
+.root[data-catalog-tone="dark"] .brandText small{color:#c1ab7d}
+.root[data-catalog-tone="dark"] .headerLinks a{color:#e6d6b8}
+.root[data-catalog-tone="dark"] .headerLinks a:hover{color:var(--cat-primary)}
+.root[data-catalog-tone="dark"] .hero{
+ background:linear-gradient(116deg,#171716 5%,var(--cat-support) 59%,color-mix(in srgb,var(--cat-primary) 19%,#171716)) !important;
+ border:1px solid rgba(212,175,55,.37);
+ box-shadow:0 25px 60px -35px rgba(0,0,0,.85)
+}
+.root[data-catalog-tone="dark"] .hero:before{background:linear-gradient(110deg,rgba(0,0,0,.28),transparent 78%)}
+.root[data-catalog-tone="dark"] .heroCopy>span,
+.root[data-catalog-tone="dark"] .heroBrandLetter{color:#dfc68d}
+.root[data-catalog-tone="dark"] .hero h1{color:#fff9ed}
+.root[data-catalog-tone="dark"] .hero p{color:#ddcfb5}
+.root[data-catalog-tone="dark"] .hero a{
+ background:#ebd6a2;
+ color:#161510;
+ box-shadow:0 8px 22px rgba(0,0,0,.26)
+}
+.root[data-catalog-tone="dark"] .hero a:hover{background:#fff0c7}
+.root[data-catalog-tone="dark"] .heroSignature{border-color:rgba(212,175,55,.28)}
+.root[data-catalog-tone="dark"] .heroSignature>span{color:rgba(238,211,151,.31)}
+.root[data-catalog-tone="dark"] .heroVisual:before,
+.root[data-catalog-tone="dark"] .heroVisual:after{border-color:rgba(212,175,55,.22)}
+.root[data-catalog-tone="dark"] .heroBackground{filter:saturate(.7) contrast(1.03)}
+.root[data-catalog-tone="dark"] .heroBackground:after{background:linear-gradient(90deg,rgba(7,8,8,.91),rgba(10,11,10,.75) 54%,rgba(16,14,10,.48))}
+.root[data-catalog-tone="dark"] .heroProgress{background:rgba(212,175,55,.12)}
+.root[data-catalog-tone="dark"] .heroProgress>span{background:var(--cat-primary)}
+.root[data-catalog-tone="dark"] .showcaseHeading>span,
+.root[data-catalog-tone="dark"] .promoTitle span,
+.root[data-catalog-tone="dark"] .sectionTop span,
+.root[data-catalog-tone="dark"] .filterLabel{color:#dcc083}
+.root[data-catalog-tone="dark"] .showcaseHeading h2,
+.root[data-catalog-tone="dark"] .promoTitle h2,
+.root[data-catalog-tone="dark"] .sectionTop h2{color:#fff4e4}
+.root[data-catalog-tone="dark"] .showcaseHeading p,
+.root[data-catalog-tone="dark"] .sectionTop>small,
+.root[data-catalog-tone="dark"] .activeFilters,
+.root[data-catalog-tone="dark"] .empty{color:#bab2a6}
+.root[data-catalog-tone="dark"] .showcaseViewport:before{background:linear-gradient(90deg,var(--cat-background),transparent)}
+.root[data-catalog-tone="dark"] .showcaseViewport:after{background:linear-gradient(270deg,var(--cat-background),transparent)}
+.root[data-catalog-tone="dark"] .chip{
+ background:#171819;color:#e4d7bf;border-color:#504734
+}
+.root[data-catalog-tone="dark"] .chip:hover{border-color:#d4af37}
+.root[data-catalog-tone="dark"] .chipSelected{background:#30291c;color:#fff1c8;border-color:#c9aa5e}
+.root[data-catalog-tone="dark"] .filters>input{
+ background:#151617;color:#f2ecdf;border-color:#514939
+}
+.root[data-catalog-tone="dark"] .filters>input::placeholder{color:#a5a096}
+.root[data-catalog-tone="dark"] .activeFilters button{color:#e5c67e}
+.root[data-catalog-tone="dark"] .card{
+ background:linear-gradient(148deg,#191a1a,#121313);
+ border:1px solid #504330;
+ box-shadow:0 11px 35px rgba(0,0,0,.15)
+}
+.root[data-catalog-tone="dark"] .cardBody h3,
+.root[data-catalog-tone="dark"] .cardBody strong{color:#f7efe2}
+.root[data-catalog-tone="dark"] .cardBody small{color:#c2b091}
+.root[data-catalog-tone="dark"] .productImage{background:#24221d}
+.root[data-catalog-tone="dark"] .cardBody .consultLink{color:#dfc083}
+.root[data-catalog-tone="dark"] .cardBody .addButton{background:#d4b770;border-color:#d4b770;color:#161510}
+.root[data-catalog-tone="dark"] .cardBody .addButton:hover{background:#f0dba8}
+.root[data-catalog-tone="dark"] .promoCard{background:#181918;color:#f4ede0;border-color:#564937}
+.root[data-catalog-tone="dark"] .promoCard small,
+.root[data-catalog-tone="dark"] .promoCard em{color:#e2c588}
+.root[data-catalog-tone="dark"] .promoCard strong{color:#f8f0e6}
+.root[data-catalog-tone="dark"] .modal{
+ background:#141515;color:#f8efe1;border:1px solid #635233;
+ box-shadow:0 25px 80px rgba(0,0,0,.5)
+}
+.root[data-catalog-tone="dark"] .modal h2,
+.root[data-catalog-tone="dark"] .modal h3{color:#fff8ea}
+.root[data-catalog-tone="dark"] .modal>small,
+.root[data-catalog-tone="dark"] .modal p{color:#c8bdab}
+.root[data-catalog-tone="dark"] .modalImage{background:#23211b}
+.root[data-catalog-tone="dark"] .tag{color:#e1c484}
+.root[data-catalog-tone="dark"] .variation select{background:#191a1a;color:#f8efe1;border-color:#62543b}
+.root[data-catalog-tone="dark"] .close{background:#2d2b26;color:#faf2df}
+.root[data-catalog-tone="dark"] .modalActions button{background:#d4b770;color:#171612;border-color:#d4b770}
+.root[data-catalog-tone="dark"] .modalActions .outline{background:transparent;color:#e9cf94}
+.root[data-catalog-tone="dark"] .footer{
+ background:linear-gradient(120deg,#191a19,#121313);
+ border:1px solid rgba(212,175,55,.28);
+ box-shadow:0 20px 60px rgba(0,0,0,.15)
+}
+.root[data-catalog-tone="dark"] .footer h2{color:#fff8ed;font-family:Georgia,"Times New Roman",serif}
+.root[data-catalog-tone="dark"] .footer p{color:#c8bdab}
+.root[data-catalog-tone="dark"] .footer a{background:#d4b770;color:#15140f}
+.root[data-catalog-tone="dark"] .footer a:hover{background:#f4dfa7}
+.root[data-catalog-tone="dark"] .credit{color:#a8a095}
+.root[data-catalog-tone="dark"] .credit a{color:#e3ca8e}
+@media(max-width:720px){
+ .root[data-catalog-tone="dark"] .headerLinks{border-top-color:rgba(212,175,55,.2)}
+ .root[data-catalog-tone="dark"] .card{border-color:#4c402e}
+ .root[data-catalog-tone="dark"] .hero{border-radius:15px}
+}
