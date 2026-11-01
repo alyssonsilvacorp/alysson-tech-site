@@ -203,7 +203,7 @@ export default function LimaMultilink({ business }: { business: SmartBusiness })
             {whatsapp && <Shortcut primary icon={<WhatsAppMark />} title="Falar pelo WhatsApp" detail="Dúvidas, valores e atendimento" href={whatsapp} />}
             {instagram && <Shortcut icon={<InstagramMark />} title="Instagram" detail="Acompanhe os trabalhos e novidades" href={instagram} />}
             {mapUrl && <Shortcut icon={<MapPin size={23} strokeWidth={1.6} />} title={storedMap ? "Como chegar" : "Buscar localização"} detail={storedMap ? "Abrir localização no Google Maps" : "Localizar a barbearia no Maps"} href={mapUrl} />}
-            <Shortcut icon={<Scissors size={23} strokeWidth={1.55} />} title={business.catalogUrl ? "Catálogo de produtos" : "Serviços e valores"} detail={business.catalogUrl ? "Abrir catálogo completo" : "Consulte as opções de atendimento"} href={business.catalogUrl ?? "#servicos"} external={Boolean(business.catalogUrl)} />
+            <Shortcut icon={<Scissors size={23} strokeWidth={1.55} />} title={business.catalogUrl ? "Catálogo de serviços" : "Serviços e valores"} detail={business.catalogUrl ? "Abrir catálogo completo" : "Consulte as opções de atendimento"} href={business.catalogUrl ?? "#servicos"} external={Boolean(business.catalogUrl)} />
             {review && <Shortcut icon={<Star size={23} strokeWidth={1.6} />} title="Avaliar no Google" detail="Compartilhe sua experiência" href={review} />}
             {pixValue && <Shortcut icon={<CreditCard size={23} strokeWidth={1.6} />} title="Chave Pix" detail="Ver e copiar dados de pagamento" href="#pix" external={false} />}
           </div>
