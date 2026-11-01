@@ -38,6 +38,7 @@ export type SmartBusiness = {
   actions: SmartBusinessAction[];
   services: SmartBusinessService[];
   catalogUrl: string | null;
+  catalogKind: "products" | "services" | null;
 };
 
 type BusinessRow = {
@@ -129,7 +130,7 @@ export async function getSmartBusiness(
       .order("sort_order", { ascending: true }),
     supabase
       .from("smart_catalog_settings")
-      .select("status")
+      .select("status,catalog_kind")
       .eq("business_id", business.id)
       .eq("status", "published")
       .maybeSingle(),
@@ -181,6 +182,7 @@ export async function getSmartBusiness(
       sortOrder: action.sort_order,
     })),
     catalogUrl: business.has_catalog && catalogResult.data?.status === "published" ? `/p/${business.slug}/catalogo` : null,
+    catalogKind: business.has_catalog && catalogResult.data?.status === "published" ? catalogResult.data.catalog_kind as "products" | "services" : null,
     services: serviceRows.map((service) => ({
       sku: service.sku,
       audience: service.audience,
