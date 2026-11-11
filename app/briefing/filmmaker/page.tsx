@@ -123,6 +123,7 @@ export default function FilmmakerBriefingPage() {
   const [uploadedIndices, setUploadedIndices] = useState<number[]>([]);
   const [uploadStep, setUploadStep] = useState("");
   const [submitError, setSubmitError] = useState("");
+  const [consent, setConsent] = useState(false);
   const isReview = step === sections.length;
   const current = sections[step];
   const progress = Math.round(step / sections.length * 100);
@@ -195,6 +196,7 @@ export default function FilmmakerBriefingPage() {
   }
   async function submitBriefing() {
     if (submitting || completed) return;
+    if (!consent) { setSubmitError("Confirme a autorização para envio das informações e arquivos."); return; }
     const firstIncomplete = sections.findIndex(section =>
       section.fields.some(field => field.required && visible(field, answers) && !textOf(answers[field.id]))
     );
@@ -216,7 +218,7 @@ export default function FilmmakerBriefingPage() {
           client_name: textOf(answers.name).slice(0, 180),
           client_whatsapp: textOf(answers.whatsapp).slice(0, 32),
           client_studio: textOf(answers.studio).slice(0, 180),
-          answers,
+          answers: { ...answers, consent: "Concordo com a análise da solicitação e tratamento dos anexos", consent_at: new Date().toISOString() },
           attachment_names: photos.map(file => file.name.slice(0, 220)),
         });
         if (error) throw new Error(error.message);
@@ -275,6 +277,7 @@ export default function FilmmakerBriefingPage() {
     setUploadStep("");
     setSubmitError("");
     setCompleted(false);
+    setConsent(false);
     try { localStorage.removeItem(KEY); } catch { /* Optional local storage. */ }
     setStep(0);
     setErrors([]);
@@ -320,6 +323,7 @@ export default function FilmmakerBriefingPage() {
                   ))}
                 </div>
                 {photos.length > 0 && <div className={styles.attachmentSummary}><ImagePlus size={18}/><div><strong>{photos.length} imagens {completed ? "anexadas" : "selecionadas"}</strong><span>{completed ? "Materiais salvos com acesso restrito para a equipe Alysson Tech." : "Serão enviados para armazenamento privado junto com as respostas."}</span></div></div>}
+                {!completed && <label className={styles.consent}><input type="checkbox" checked={consent} onChange={event => { setConsent(event.target.checked); setSubmitError(""); }}/><span>Autorizo a Alysson Tech a armazenar e utilizar as respostas, meus dados de contato e os materiais enviados exclusivamente para análise e elaboração da proposta deste projeto. A publicação das imagens no site definitivo dependerá de minha aprovação.</span></label>}
                 <div className={styles.reviewActions}>
                   {!completed && <button className={styles.primaryButton} type="button" onClick={() => void submitBriefing()} disabled={submitting}><Send size={17} /> {submitting ? "Enviando..." : "Enviar briefing e anexos"}</button>}
                   {completed && <div className={styles.successReceipt}><CheckCircle2 size={18}/> Recebimento confirmado · Código: {submittedId?.slice(0, 8).toUpperCase()}</div>}
