@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, Clapperboard, Copy, Film, RotateCcw, Send, ShieldCheck } from "lucide-react";
+import { useEffect, useMemo, useState, type ChangeEvent } from "react";
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, Clapperboard, Copy, Film, RotateCcw, Send, ShieldCheck, Upload, ImagePlus, X, Share2, Video } from "lucide-react";
 import styles from "./briefing.module.css";
 
 type Field = {
@@ -19,6 +19,11 @@ type Field = {
 type Answers = Record<string, string | string[]>;
 const KEY = "alysson-tech-filmmaker-briefing-v2";
 const WHATSAPP = "5582999926146";
+const MAX_PHOTOS = 8;
+const MAX_PHOTO_SIZE = 8 * 1024 * 1024;
+const MAX_TOTAL_SIZE = 30 * 1024 * 1024;
+const ALLOWED_IMAGES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
+const VIDEO_SOURCE = "https://videos.pexels.com/video-files/8089126/8089126-uhd_4096_2160_25fps.mp4";
 
 const sections: { kicker: string; name: string; description: string; fields: Field[] }[] = [
   {
@@ -86,7 +91,7 @@ function textOf(value?: string | string[]) {
 function visible(field: Field, answers: Answers) {
   return !field.showWhen || answers[field.showWhen.id] === field.showWhen.equals;
 }
-function buildBriefing(answers: Answers) {
+function buildBriefing(answers: Answers, photos: File[] = []) {
   const lines = ["BRIEFING DO SITE — FILMMAKER", "ALYSSON TECH", `Preenchido em: ${new Date().toLocaleString("pt-BR")}`, ""];
   sections.forEach(section => {
     lines.push(section.name.toUpperCase());
@@ -95,6 +100,11 @@ function buildBriefing(answers: Answers) {
     });
     lines.push("");
   });
+  if (photos.length) {
+    lines.push("FOTOS SELECIONADAS NO FORMULÁRIO (ANEXOS SÃO ENVIADOS À PARTE)");
+    photos.forEach(photo => lines.push(`• ${photo.name}`));
+    lines.push("As fotos precisam ser compartilhadas separadamente pelo cliente no WhatsApp.", "");
+  }
   return lines.join("\n");
 }
 
@@ -104,6 +114,10 @@ export default function FilmmakerBriefingPage() {
   const [errors, setErrors] = useState<string[]>([]);
   const [copied, setCopied] = useState(false);
   const [ready, setReady] = useState(false);
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<{ key: string; url: string }[]>([]);
+  const [photoNotice, setPhotoNotice] = useState("");
+  const [isSharingPhotos, setIsSharingPhotos] = useState(false);
   const isReview = step === sections.length;
   const current = sections[step];
   const progress = Math.round(step / sections.length * 100);
@@ -122,6 +136,45 @@ export default function FilmmakerBriefingPage() {
   useEffect(() => {
     if (ready) try { localStorage.setItem(KEY, JSON.stringify(answers)); } catch { /* Browser storage is optional. */ }
   }, [answers, ready]);
+
+  useEffect(() => {
+    const objects = photos.map(photo => ({ key: `${photo.name}:${photo.size}:${photo.lastModified}`, url: URL.createObjectURL(photo) }));
+    setPreviews(objects);
+    return () => objects.forEach(item => URL.revokeObjectURL(item.url));
+  }, [photos]);
+
+  function addPhotos(event: ChangeEvent<HTMLInputElement>) {
+    const incoming = Array.from(event.target.files || []);
+    event.target.value = "";
+    if (!incoming.length) return;
+    const next = [...photos];
+    const rejected: string[] = [];
+    for (const photo of incoming) {
+      if (!ALLOWED_IMAGES.includes(photo.type)) { rejected.push(`${photo.name}: formato não aceito`); continue; }
+      if (photo.size > MAX_PHOTO_SIZE) { rejected.push(`${photo.name}: ultrapassa 8 MB`); continue; }
+      if (next.some(p => p.name === photo.name && p.size === photo.size && p.lastModified === photo.lastModified)) continue;
+      if (next.length >= MAX_PHOTOS) { rejected.push("Limite de 8 fotos atingido"); break; }
+      if (next.reduce((total, item) => total + item.size, 0) + photo.size > MAX_TOTAL_SIZE) { rejected.push("Limite total de 30 MB atingido"); break; }
+      next.push(photo);
+    }
+    setPhotos(next);
+    setPhotoNotice(rejected.length ? rejected.join(" · ") : `${next.length} ${next.length === 1 ? "imagem selecionada" : "imagens selecionadas"} para compartilhar.`);
+  }
+
+  async function sharePhotos() {
+    if (!photos.length) { setPhotoNotice("Selecione suas fotos na etapa Portfólio."); return; }
+    if (!navigator.share || !navigator.canShare?.({ files: photos })) {
+      setPhotoNotice("Este navegador não permite compartilhar arquivos diretamente. Abra a conversa no WhatsApp e anexe essas fotos manualmente pelo celular ou computador.");
+      return;
+    }
+    setIsSharingPhotos(true);
+    try {
+      await navigator.share({ files: photos, title: "Fotos do briefing — Alysson Tech", text: "Fotos e materiais para o briefing de site filmmaker da Alysson Tech. Selecione o WhatsApp e o contato comercial da Alysson Tech." });
+      setPhotoNotice("Compartilhamento iniciado. Confira no WhatsApp se as fotos realmente foram enviadas ao contato da Alysson Tech.");
+    } catch (error) {
+      if (error instanceof Error && error.name !== "AbortError") setPhotoNotice("Não foi possível compartilhar as fotos. Você pode anexá-las manualmente na conversa do WhatsApp.");
+    } finally { setIsSharingPhotos(false); }
+  }
 
   function update(id: string, next: string | string[]) {
     setAnswers(previous => ({ ...previous, [id]: next }));
@@ -151,13 +204,18 @@ export default function FilmmakerBriefingPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function sendWhatsApp() {
-    const message = buildBriefing(answers);
+    const message = buildBriefing(answers, photos);
     const url = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`;
-    window.location.assign(url);
+    if (photos.length) {
+      setPhotoNotice("O WhatsApp foi aberto em outra aba para enviar o texto. Depois volte aqui e use Compartilhar fotos para enviar as imagens separadamente.");
+      window.open(url, "_blank", "noopener,noreferrer");
+    } else {
+      window.location.assign(url);
+    }
   }
   async function copyBrief() {
     try {
-      await navigator.clipboard.writeText(buildBriefing(answers));
+      await navigator.clipboard.writeText(buildBriefing(answers, photos));
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {
@@ -168,6 +226,9 @@ export default function FilmmakerBriefingPage() {
   function restart() {
     if (!window.confirm("Deseja começar outro briefing? As respostas salvas neste aparelho serão apagadas.")) return;
     setAnswers({});
+    setPhotos([]);
+    setPreviews([]);
+    setPhotoNotice("");
     setStep(0);
     setErrors([]);
   }
@@ -211,11 +272,14 @@ export default function FilmmakerBriefingPage() {
                     </div>
                   ))}
                 </div>
+                {photos.length > 0 && <div className={styles.attachmentSummary}><ImagePlus size={18}/><div><strong>{photos.length} fotos selecionadas</strong><span>Essas fotos não acompanham automaticamente o texto do WhatsApp. Utilize o botão de compartilhamento abaixo para enviá-las também.</span></div></div>}
                 <div className={styles.reviewActions}>
                   <button className={styles.primaryButton} type="button" onClick={sendWhatsApp}><Send size={17} /> Enviar para Alysson Tech</button>
+                  {photos.length > 0 && <button className={styles.secondaryButton} type="button" onClick={sharePhotos} disabled={isSharingPhotos}><Share2 size={17}/> {isSharingPhotos ? "Compartilhando..." : "Compartilhar fotos"}</button>}
                   <button className={styles.secondaryButton} type="button" onClick={copyBrief}>{copied ? <Check size={16}/> : <Copy size={16}/>} {copied ? "Copiado!" : "Copiar respostas"}</button>
                 </div>
-                <p className={styles.privacy}><ShieldCheck size={16}/> Suas respostas ficam salvas somente neste navegador até você decidir compartilhá-las. Não existe envio automático nem banco de dados nesta versão.</p>
+                {photoNotice && <p className={styles.photoNotice} role="status">{photoNotice}</p>}
+                <p className={styles.privacy}><ShieldCheck size={16}/> Respostas de texto ficam salvas neste navegador. As imagens não são armazenadas no servidor nem preservadas ao fechar/recarregar a página. O envio ocorre somente quando você compartilha e confirma no WhatsApp.</p>
               </div>
             ) : (
               <form className={styles.body} onSubmit={event => { event.preventDefault(); goNext(); }} noValidate>
@@ -242,6 +306,21 @@ export default function FilmmakerBriefingPage() {
                     </div>
                   ))}
                 </div>
+                {step === 3 && <div className={styles.uploadSection}>
+                  <div className={styles.uploadHeading}><ImagePlus size={18}/><div><strong>Anexar fotos e materiais visuais</strong><span>Envie fotos de bastidores, retratos, capas e logotipo.</span></div></div>
+                  <label className={styles.uploadDrop} htmlFor="filmmaker-photo-upload"><Upload size={22}/><strong>Escolher imagens</strong><small>JPG, PNG, WebP ou HEIC · até 8 imagens · 8 MB por arquivo</small></label>
+                  <input id="filmmaker-photo-upload" className={styles.visuallyHidden} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple onChange={addPhotos}/>
+                  {photos.length > 0 && <div className={styles.photosGrid}>{photos.map((photo, i) => {
+                    const thumb = previews.find(p => p.key === `${photo.name}:${photo.size}:${photo.lastModified}`)?.url;
+                    return <div className={styles.photoItem} key={`${photo.name}-${photo.lastModified}`}>
+                      {thumb && <Image src={thumb} alt={`Imagem anexada: ${photo.name}`} fill unoptimized sizes="120px" className={styles.photoThumb}/>}
+                      <button type="button" className={styles.removePhoto} title={`Remover ${photo.name}`} aria-label={`Remover ${photo.name}`} onClick={() => { setPhotos(prev => prev.filter((_, index) => index !== i)); setPhotoNotice(""); }}><X size={15}/></button>
+                      <span className={styles.photoName} title={photo.name}>{photo.name}</span>
+                    </div>;
+                  })}</div>}
+                  {photoNotice && <p className={styles.photoNotice} role="status">{photoNotice}</p>}
+                  <p className={styles.uploadHint}>As imagens ficam apenas nesta sessão. No final, você poderá compartilhá-las pelo menu do celular; não são enviadas automaticamente.</p>
+                </div>}
                 <div className={styles.navigation}>
                   <button type="button" className={styles.secondaryButton} onClick={goBack} disabled={step === 0}><ArrowLeft size={16}/> Voltar</button>
                   <button type="submit" className={styles.primaryButton}>{step === sections.length - 1 ? "Revisar briefing" : "Continuar"} <ArrowRight size={17}/></button>
@@ -255,12 +334,16 @@ export default function FilmmakerBriefingPage() {
             <div className={styles.previewPanel}>
               <div className={styles.previewTop}><span>PRÉVIA CONCEITUAL</span><Clapperboard size={17}/></div>
               <div className={styles.previewVisual}>
-                <div className={styles.play} aria-hidden="true">▶</div>
+                <video className={styles.previewVideo} autoPlay loop muted playsInline preload="metadata" aria-hidden="true" poster="https://images.pexels.com/photos/2608517/pexels-photo-2608517.jpeg?auto=compress&cs=tinysrgb&w=900"><source src={VIDEO_SOURCE} type="video/mp4"/></video>
+                <div className={styles.previewGradient} aria-hidden="true"/>
+                <div className={styles.previewIndicator}><span className={styles.recDot}/> LIVE PREVIEW <Video size={13}/></div>
                 <span className={styles.previewLabel}>CREATIVE / PORTFOLIO</span>
                 <strong>{brand}</strong>
                 <small>{tagline.toUpperCase()}</small>
+                <div className={styles.videoControls}><span>◉ EM EXIBIÇÃO</span><span>4K / CINEMA</span></div>
+                <div className={styles.videoTimeline}><span/></div>
               </div>
-              <p>Uma ideia de apresentação do seu trabalho. O visual definitivo será criado para a identidade da sua marca.</p>
+              <p>Referência cinematográfica em movimento. O site definitivo será construído com seus próprios vídeos e a identidade da sua marca. <small>Vídeo demonstrativo: Pexels / Ron Lach.</small></p>
             </div>
             <div className={styles.stepsPanel}>
               <h3>SUA JORNADA</h3>
