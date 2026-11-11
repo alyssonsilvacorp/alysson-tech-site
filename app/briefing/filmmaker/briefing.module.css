@@ -79,3 +79,9 @@ textarea.input,textarea.inputError{resize:vertical;min-height:106px;line-height:
 .attachmentSummary span{font-size:11px;line-height:1.65;color:#a5b8a0}
 @media(max-width:650px){.photosGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.uploadSection{padding:14px}.previewVisual{min-height:260px}.previewVisual strong{font-size:27px}}
 @media(prefers-reduced-motion:reduce){.recDot,.videoTimeline span{animation:none}.previewVideo{display:none}}
+
+/* Confirmation and network feedback */
+.successReceipt{display:flex;align-items:center;gap:9px;padding:12px 15px;border-radius:11px;background:rgba(113,255,65,.08);border:1px solid rgba(113,255,65,.28);font-size:12px;color:#bcf7b2;line-height:1.5}
+.successReceipt svg{flex:none;color:var(--green)}
+.submitError{border:1px solid rgba(242,117,117,.35);background:rgba(121,20,20,.16);color:#ffb4b4;padding:12px;border-radius:10px;font-size:12px;line-height:1.6;margin:14px 0}
+.primaryButton:disabled{opacity:.65;cursor:progress;transform:none;box-shadow:none}
