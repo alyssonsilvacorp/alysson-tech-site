@@ -3,8 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, Clapperboard, Copy, Film, RotateCcw, Send, ShieldCheck, Upload, ImagePlus, X, Share2, Video } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, Clapperboard, Copy, Film, RotateCcw, Send, ShieldCheck, Upload, ImagePlus, X, Video } from "lucide-react";
 import styles from "./briefing.module.css";
+import { supabaseBrowser } from "../../../lib/supabase-browser";
 
 type Field = {
   id: string;
@@ -18,7 +19,6 @@ type Field = {
 };
 type Answers = Record<string, string | string[]>;
 const KEY = "alysson-tech-filmmaker-briefing-v2";
-const WHATSAPP = "5582999926146";
 const MAX_PHOTOS = 8;
 const MAX_PHOTO_SIZE = 8 * 1024 * 1024;
 const MAX_TOTAL_SIZE = 30 * 1024 * 1024;
@@ -101,9 +101,9 @@ function buildBriefing(answers: Answers, photos: File[] = []) {
     lines.push("");
   });
   if (photos.length) {
-    lines.push("FOTOS SELECIONADAS NO FORMULÁRIO (ANEXOS SÃO ENVIADOS À PARTE)");
+    lines.push("ARQUIVOS DE IMAGEM ANEXADOS AO BRIEFING");
     photos.forEach(photo => lines.push(`• ${photo.name}`));
-    lines.push("As fotos precisam ser compartilhadas separadamente pelo cliente no WhatsApp.", "");
+    lines.push("Arquivos associados ao projeto no portal Alysson Tech.", "");
   }
   return lines.join("\n");
 }
@@ -117,7 +117,13 @@ export default function FilmmakerBriefingPage() {
   const [photos, setPhotos] = useState<File[]>([]);
   const [previews, setPreviews] = useState<{ key: string; url: string }[]>([]);
   const [photoNotice, setPhotoNotice] = useState("");
-  const [isSharingPhotos, setIsSharingPhotos] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submittedId, setSubmittedId] = useState<string | null>(null);
+  const [completed, setCompleted] = useState(false);
+  const [uploadedIndices, setUploadedIndices] = useState<number[]>([]);
+  const [uploadStep, setUploadStep] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [consent, setConsent] = useState(false);
   const isReview = step === sections.length;
   const current = sections[step];
   const progress = Math.round(step / sections.length * 100);
@@ -161,21 +167,6 @@ export default function FilmmakerBriefingPage() {
     setPhotoNotice(rejected.length ? rejected.join(" · ") : `${next.length} ${next.length === 1 ? "imagem selecionada" : "imagens selecionadas"} para compartilhar.`);
   }
 
-  async function sharePhotos() {
-    if (!photos.length) { setPhotoNotice("Selecione suas fotos na etapa Portfólio."); return; }
-    if (!navigator.share || !navigator.canShare?.({ files: photos })) {
-      setPhotoNotice("Este navegador não permite compartilhar arquivos diretamente. Abra a conversa no WhatsApp e anexe essas fotos manualmente pelo celular ou computador.");
-      return;
-    }
-    setIsSharingPhotos(true);
-    try {
-      await navigator.share({ files: photos, title: "Fotos do briefing — Alysson Tech", text: "Fotos e materiais para o briefing de site filmmaker da Alysson Tech. Selecione o WhatsApp e o contato comercial da Alysson Tech." });
-      setPhotoNotice("Compartilhamento iniciado. Confira no WhatsApp se as fotos realmente foram enviadas ao contato da Alysson Tech.");
-    } catch (error) {
-      if (error instanceof Error && error.name !== "AbortError") setPhotoNotice("Não foi possível compartilhar as fotos. Você pode anexá-las manualmente na conversa do WhatsApp.");
-    } finally { setIsSharingPhotos(false); }
-  }
-
   function update(id: string, next: string | string[]) {
     setAnswers(previous => ({ ...previous, [id]: next }));
     setErrors(previous => previous.filter(e => e !== id));
@@ -203,16 +194,67 @@ export default function FilmmakerBriefingPage() {
     setStep(previous => Math.max(previous - 1, 0));
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
-  function sendWhatsApp() {
-    const message = buildBriefing(answers, photos);
-    const url = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`;
-    if (photos.length) {
-      setPhotoNotice("O WhatsApp foi aberto em outra aba para enviar o texto. Depois volte aqui e use Compartilhar fotos para enviar as imagens separadamente.");
-      window.open(url, "_blank", "noopener,noreferrer");
-    } else {
-      window.location.assign(url);
+  async function submitBriefing() {
+    if (submitting || completed) return;
+    if (!consent) { setSubmitError("Confirme a autorização para envio das informações e arquivos."); return; }
+    const firstIncomplete = sections.findIndex(section =>
+      section.fields.some(field => field.required && visible(field, answers) && !textOf(answers[field.id]))
+    );
+    if (firstIncomplete !== -1) {
+      setStep(firstIncomplete);
+      setSubmitError("Preencha os campos obrigatórios antes de enviar.");
+      return;
+    }
+    setSubmitting(true);
+    setSubmitError("");
+    let recordId = submittedId;
+    try {
+      if (!recordId) {
+        setUploadStep("Salvando respostas com segurança...");
+        const newId = crypto.randomUUID();
+        const { error } = await supabaseBrowser.from("at_client_briefings").insert({
+          id: newId,
+          briefing_type: "filmmaker",
+          client_name: textOf(answers.name).slice(0, 180),
+          client_whatsapp: textOf(answers.whatsapp).slice(0, 32),
+          client_studio: textOf(answers.studio).slice(0, 180),
+          answers: { ...answers, consent: "Concordo com a análise da solicitação e tratamento dos anexos", consent_at: new Date().toISOString() },
+          attachment_names: photos.map(file => file.name.slice(0, 220)),
+        });
+        if (error) throw new Error(error.message);
+        recordId = newId;
+        setSubmittedId(newId);
+      }
+      for (let i = 0; i < photos.length; i += 1) {
+        if (uploadedIndices.includes(i)) continue;
+        const photo = photos[i];
+        setUploadStep(`Enviando imagem ${i + 1} de ${photos.length}...`);
+        const byType: Record<string, string> = {
+          "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp",
+          "image/heic": "heic", "image/heif": "heif",
+        };
+        const ext = byType[photo.type];
+        if (!ext) throw new Error("Uma das imagens possui formato não permitido.");
+        const filePath = `${recordId}/${crypto.randomUUID()}.${ext}`;
+        const { error: uploadError } = await supabaseBrowser.storage
+          .from("at-client-briefings")
+          .upload(filePath, photo, { contentType: photo.type, upsert: false, cacheControl: "3600" });
+        if (uploadError) throw new Error(uploadError.message);
+        setUploadedIndices(previous => [...previous, i]);
+      }
+      setUploadStep("");
+      setSubmitError("");
+      setCompleted(true);
+      setPhotoNotice("Seus dados e arquivos foram enviados e estão disponíveis para análise pela Alysson Tech.");
+      try { localStorage.removeItem(KEY); } catch { /* Optional local storage. */ }
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Não foi possível concluir o envio. Tente novamente.");
+      setUploadStep("");
+    } finally {
+      setSubmitting(false);
     }
   }
+
   async function copyBrief() {
     try {
       await navigator.clipboard.writeText(buildBriefing(answers, photos));
@@ -220,7 +262,7 @@ export default function FilmmakerBriefingPage() {
       setTimeout(() => setCopied(false), 2500);
     } catch {
       setCopied(false);
-      alert("Não foi possível copiar automaticamente. Use o botão de enviar pelo WhatsApp.");
+      alert("Não foi possível copiar automaticamente. Você pode consultar as respostas preenchidas nesta tela.");
     }
   }
   function restart() {
@@ -229,6 +271,14 @@ export default function FilmmakerBriefingPage() {
     setPhotos([]);
     setPreviews([]);
     setPhotoNotice("");
+    setSubmitting(false);
+    setSubmittedId(null);
+    setUploadedIndices([]);
+    setUploadStep("");
+    setSubmitError("");
+    setCompleted(false);
+    setConsent(false);
+    try { localStorage.removeItem(KEY); } catch { /* Optional local storage. */ }
     setStep(0);
     setErrors([]);
   }
@@ -260,8 +310,8 @@ export default function FilmmakerBriefingPage() {
             {isReview ? (
               <div className={styles.body}>
                 <div className={styles.sectionKicker}><CheckCircle2 size={16}/> 06 / REVISÃO</div>
-                <h2>Seu briefing está pronto.</h2>
-                <p className={styles.sectionLead}>Confira as informações abaixo. Ao clicar em enviar, o WhatsApp da Alysson Tech será aberto com suas respostas preenchidas. É necessário confirmar o envio na conversa.</p>
+                <h2>{completed ? "Briefing recebido com sucesso!" : "Seu briefing está pronto."}</h2>
+                <p className={styles.sectionLead}>{completed ? "As respostas e as imagens foram salvas no sistema da Alysson Tech. Você não precisa enviá-las novamente pelo WhatsApp." : "Confira as informações. Ao enviar, as respostas e imagens selecionadas serão armazenadas com segurança no portal da Alysson Tech, sem depender de WhatsApp."}</p>
                 <div className={styles.review}>
                   {sections.map(section => (
                     <div key={section.name}>
@@ -272,14 +322,17 @@ export default function FilmmakerBriefingPage() {
                     </div>
                   ))}
                 </div>
-                {photos.length > 0 && <div className={styles.attachmentSummary}><ImagePlus size={18}/><div><strong>{photos.length} fotos selecionadas</strong><span>Essas fotos não acompanham automaticamente o texto do WhatsApp. Utilize o botão de compartilhamento abaixo para enviá-las também.</span></div></div>}
+                {photos.length > 0 && <div className={styles.attachmentSummary}><ImagePlus size={18}/><div><strong>{photos.length} imagens {completed ? "anexadas" : "selecionadas"}</strong><span>{completed ? "Materiais salvos com acesso restrito para a equipe Alysson Tech." : "Serão enviados para armazenamento privado junto com as respostas."}</span></div></div>}
+                {!completed && <label className={styles.consent}><input type="checkbox" checked={consent} onChange={event => { setConsent(event.target.checked); setSubmitError(""); }}/><span>Autorizo a Alysson Tech a armazenar e utilizar as respostas, meus dados de contato e os materiais enviados exclusivamente para análise e elaboração da proposta deste projeto. A publicação das imagens no site definitivo dependerá de minha aprovação.</span></label>}
                 <div className={styles.reviewActions}>
-                  <button className={styles.primaryButton} type="button" onClick={sendWhatsApp}><Send size={17} /> Enviar para Alysson Tech</button>
-                  {photos.length > 0 && <button className={styles.secondaryButton} type="button" onClick={sharePhotos} disabled={isSharingPhotos}><Share2 size={17}/> {isSharingPhotos ? "Compartilhando..." : "Compartilhar fotos"}</button>}
+                  {!completed && <button className={styles.primaryButton} type="button" onClick={() => void submitBriefing()} disabled={submitting}><Send size={17} /> {submitting ? "Enviando..." : "Enviar briefing e anexos"}</button>}
+                  {completed && <div className={styles.successReceipt}><CheckCircle2 size={18}/> Recebimento confirmado · Código: {submittedId?.slice(0, 8).toUpperCase()}</div>}
                   <button className={styles.secondaryButton} type="button" onClick={copyBrief}>{copied ? <Check size={16}/> : <Copy size={16}/>} {copied ? "Copiado!" : "Copiar respostas"}</button>
                 </div>
+                {uploadStep && <p className={styles.photoNotice} role="status">{uploadStep}</p>}
+                {submitError && <p className={styles.submitError} role="alert">Não foi possível concluir: {submitError}. {submittedId ? "O texto já está salvo; clique novamente para tentar enviar os arquivos restantes." : "Suas respostas permanecem preenchidas para tentar novamente."}</p>}
                 {photoNotice && <p className={styles.photoNotice} role="status">{photoNotice}</p>}
-                <p className={styles.privacy}><ShieldCheck size={16}/> Respostas de texto ficam salvas neste navegador. As imagens não são armazenadas no servidor nem preservadas ao fechar/recarregar a página. O envio ocorre somente quando você compartilha e confirma no WhatsApp.</p>
+                <p className={styles.privacy}><ShieldCheck size={16}/> Seus dados e arquivos ficam acessíveis apenas aos administradores autorizados da Alysson Tech. As respostas não ficam disponíveis publicamente.</p>
               </div>
             ) : (
               <form className={styles.body} onSubmit={event => { event.preventDefault(); goNext(); }} noValidate>
@@ -319,7 +372,7 @@ export default function FilmmakerBriefingPage() {
                     </div>;
                   })}</div>}
                   {photoNotice && <p className={styles.photoNotice} role="status">{photoNotice}</p>}
-                  <p className={styles.uploadHint}>As imagens ficam apenas nesta sessão. No final, você poderá compartilhá-las pelo menu do celular; não são enviadas automaticamente.</p>
+                  <p className={styles.uploadHint}>Ao finalizar e confirmar o envio do briefing, seus arquivos serão carregados para uma área privada, vinculados à sua solicitação.</p>
                 </div>}
                 <div className={styles.navigation}>
                   <button type="button" className={styles.secondaryButton} onClick={goBack} disabled={step === 0}><ArrowLeft size={16}/> Voltar</button>
@@ -327,7 +380,7 @@ export default function FilmmakerBriefingPage() {
                 </div>
               </form>
             )}
-            {isReview && <div className={styles.bottomActions}><button className={styles.textButton} type="button" onClick={goBack}><ArrowLeft size={14}/> Corrigir respostas</button><button className={styles.textButton} type="button" onClick={restart}><RotateCcw size={14}/> Novo briefing</button></div>}
+            {isReview && <div className={styles.bottomActions}>{!submittedId && <button className={styles.textButton} type="button" onClick={goBack}><ArrowLeft size={14}/> Corrigir respostas</button>}{completed && <button className={styles.textButton} type="button" onClick={restart}><RotateCcw size={14}/> Novo briefing</button>}</div>}
           </section>
 
           <aside className={styles.aside}>
