@@ -153,8 +153,7 @@ export default function FilmmakerBriefingPage() {
   function sendWhatsApp() {
     const message = buildBriefing(answers);
     const url = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`;
-    const popup = window.open(url, "_blank", "noopener,noreferrer");
-    if (!popup) window.location.assign(url);
+    window.location.assign(url);
   }
   async function copyBrief() {
     try {
