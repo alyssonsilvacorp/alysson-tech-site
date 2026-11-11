@@ -85,3 +85,5 @@ textarea.input,textarea.inputError{resize:vertical;min-height:106px;line-height:
 .successReceipt svg{flex:none;color:var(--green)}
 .submitError{border:1px solid rgba(242,117,117,.35);background:rgba(121,20,20,.16);color:#ffb4b4;padding:12px;border-radius:10px;font-size:12px;line-height:1.6;margin:14px 0}
 .primaryButton:disabled{opacity:.65;cursor:progress;transform:none;box-shadow:none}
+
+.consent{display:flex;align-items:flex-start;gap:11px;margin:24px 0 16px;padding:16px;border:1px solid #40583b;border-radius:12px;background:#0b150a;color:#bbcdb6;font-size:12px;line-height:1.65;cursor:pointer}.consent input{width:18px;height:18px;accent-color:var(--green);flex:none;margin-top:3px}.consent span{display:block}
