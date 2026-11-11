@@ -86,7 +86,7 @@ function createDocument(brief: Briefing, includePrompt = false): string {
   for (const stage of displaySections(brief)) {
     lines.push(`## ${stage.name}`);
     for (const field of stage.fields) {
-      lines.push(`${field.label}: ${valueOf(brief.answers[field.id])}`);
+      lines.push(`${field.label}: ${field.id === "niche" ? siteSegment(brief) : valueOf(brief.answers[field.id])}`);
     }
     lines.push("");
   }
