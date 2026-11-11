@@ -6,10 +6,11 @@ import { ArrowUpRight, Check, ClipboardList, Copy, Download, FileImage, RefreshC
 import AdminShell from "../../../components/admin/AdminShell";
 import { supabaseBrowser } from "../../../lib/supabase-browser";
 import styles from "./briefings.module.css";
+import { getSiteSteps, siteNicheLabel } from "../../../lib/site-briefing-config";
 
 type Briefing = {
   id: string;
-  briefing_type: "filmmaker";
+  briefing_type: "filmmaker" | "website";
   client_name: string;
   client_studio: string;
   client_whatsapp: string;
@@ -48,6 +49,23 @@ const FIELD_LABELS: Record<string, string> = {
   admin: "Painel para atualização", adminFeatures: "Itens gerenciáveis",
   deadline: "Prazo desejado", notes: "Observações",
 };
+function siteSegment(brief: Briefing): string {
+  if (brief.briefing_type === "filmmaker") return "Filmmaker / Portfólio";
+  const niche = typeof brief.answers.niche === "string" ? brief.answers.niche : "other";
+  return niche === "other" && typeof brief.answers.custom_niche === "string" && brief.answers.custom_niche.trim()
+    ? brief.answers.custom_niche : siteNicheLabel(niche);
+}
+function displaySections(brief: Briefing): { name: string; fields: { id: string; label: string }[] }[] {
+  if (brief.briefing_type === "website") {
+    const niche = typeof brief.answers.niche === "string" ? brief.answers.niche : "other";
+    return getSiteSteps(niche).map(section => ({
+      name: section.title,
+      fields: section.fields.filter(field => !field.showWhen || brief.answers[field.showWhen.id] === field.showWhen.equals)
+        .map(field => ({ id: field.id, label: field.label })),
+    }));
+  }
+  return STAGES.map(stage => ({ name: stage.name, fields: stage.fields.map(id => ({ id, label: FIELD_LABELS[id] || id })) }));
+}
 function valueOf(value: unknown): string {
   return Array.isArray(value) ? value.map(String).join(", ") : typeof value === "string" ? value.trim() : "Não informado";
 }
@@ -58,16 +76,17 @@ function createDocument(brief: Briefing, includePrompt = false): string {
   const lines = [
     "ALYSSON TECH — BRIEFING DO CLIENTE",
     `Projeto: ${brief.client_studio || brief.client_name}`,
-    `Tipo: ${brief.briefing_type}`,
+    `Tipo: ${brief.briefing_type === "website" ? "Site para qualquer nicho" : "Site de filmmaker"}`,
+    `Segmento: ${siteSegment(brief)}`,
     `Recebido: ${dateOf(brief.created_at)}`,
     `Status: ${STATUSES.find(s => s.value === brief.status)?.label || brief.status}`,
     `Identificador: ${brief.id}`,
     "",
   ];
-  for (const stage of STAGES) {
+  for (const stage of displaySections(brief)) {
     lines.push(`## ${stage.name}`);
     for (const field of stage.fields) {
-      lines.push(`${FIELD_LABELS[field]}: ${valueOf(brief.answers[field])}`);
+      lines.push(`${field.label}: ${valueOf(brief.answers[field.id])}`);
     }
     lines.push("");
   }
@@ -93,6 +112,7 @@ export default function AdminBriefingsPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"all" | Briefing["briefing_type"]>("all");
   const [draftStatus, setDraftStatus] = useState<Briefing["status"]>("received");
   const [draftNotes, setDraftNotes] = useState("");
 
@@ -132,8 +152,9 @@ export default function AdminBriefingsPage() {
 
   const current = briefings.find(item => item.id === selectedId) || null;
   const filtered = useMemo(() => briefings.filter(item =>
-    [item.client_name, item.client_studio, item.client_whatsapp, item.status].join(" ").toLowerCase()
-      .includes(search.trim().toLowerCase())), [briefings, search]);
+    (typeFilter === "all" || item.briefing_type === typeFilter) &&
+    [item.client_name, item.client_studio, item.client_whatsapp, item.status, siteSegment(item)].join(" ").toLowerCase()
+      .includes(search.trim().toLowerCase())), [briefings, search, typeFilter]);
 
   useEffect(() => {
     setDraftStatus(current?.status || "received");
@@ -203,7 +224,7 @@ export default function AdminBriefingsPage() {
         <h1>Briefings recebidos<span>.</span></h1>
         <p>Solicitações, respostas e materiais dos clientes reunidos para elaborar propostas e iniciar projetos.</p>
       </div>
-      <button className={styles.refresh} type="button" onClick={() => void fetchBriefings()} disabled={loading}><RefreshCw size={16}/> Atualizar</button>
+      <div className={styles.topActions}><a className={styles.newBriefing} href="/briefing/site" target="_blank" rel="noopener noreferrer">Novo briefing de site <ArrowUpRight size={15}/></a><button className={styles.refresh} type="button" onClick={() => void fetchBriefings()} disabled={loading}><RefreshCw size={16}/> Atualizar</button></div>
     </header>
     <div className={styles.stats}>
       <div><small>TOTAL RECEBIDO</small><strong>{briefings.length}</strong></div>
@@ -216,12 +237,14 @@ export default function AdminBriefingsPage() {
       <section className={styles.inbox} aria-label="Lista de briefings">
         <div className={styles.inboxTitle}><ClipboardList size={19}/><h2>Solicitações</h2></div>
         <div className={styles.search}><Search size={17}/><input aria-label="Buscar cliente" placeholder="Buscar nome, marca ou WhatsApp" value={search} onChange={e => setSearch(e.target.value)}/></div>
+        <div className={styles.filters} role="group" aria-label="Tipo de briefing">{([{ value: "all", label: "Todos" }, { value: "website", label: "Sites" }, { value: "filmmaker", label: "Filmmaker" }] as const).map(item => <button type="button" key={item.value} aria-pressed={typeFilter === item.value} className={typeFilter === item.value ? styles.filterActive : styles.filter} onClick={() => setTypeFilter(item.value)}>{item.label}</button>)}</div>
         {loading && <p className={styles.empty}>Carregando solicitações...</p>}
         {!loading && !filtered.length && <p className={styles.empty}>Nenhum briefing encontrado. Os novos envios aparecerão aqui.</p>}
         {filtered.map(item => <button key={item.id} type="button" className={item.id === selectedId ? styles.itemActive : styles.item}
           onClick={() => setSelectedId(item.id)}>
           <span className={styles.itemFirst}><strong>{item.client_studio || item.client_name}</strong><span>{STATUSES.find(s => s.value === item.status)?.label}</span></span>
           <small>{item.client_name} · {dateOf(item.created_at)}</small>
+          <small>{siteSegment(item)}</small>
           <span className={styles.itemMeta}><FileImage size={13}/> {item.attachment_names.length} imagens declaradas</span>
         </button>)}
       </section>
@@ -229,7 +252,7 @@ export default function AdminBriefingsPage() {
       <section className={styles.detail} aria-label="Detalhamento do briefing">
         {!current ? <div className={styles.emptyDetails}><ClipboardList size={26}/><h2>Selecione um briefing</h2><p>Quando os clientes enviarem o formulário, suas respostas aparecerão aqui.</p></div> :
         <>
-          <div className={styles.detailHeader}><div><p className={styles.eyebrow}>FILMMAKER / PORTFÓLIO</p><h2>{current.client_studio || current.client_name}</h2><small>Recebido em {dateOf(current.created_at)} · {current.id.slice(0, 8).toUpperCase()}</small></div>
+          <div className={styles.detailHeader}><div><p className={styles.eyebrow}>{siteSegment(current).toUpperCase()}</p><h2>{current.client_studio || current.client_name}</h2><small>Recebido em {dateOf(current.created_at)} · {current.id.slice(0, 8).toUpperCase()}</small></div>
             <a className={styles.contact} href={`https://wa.me/${current.client_whatsapp.replace(/\D/g, "").startsWith("55") ? current.client_whatsapp.replace(/\D/g, "") : "55" + current.client_whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer">WhatsApp <ArrowUpRight size={15}/></a>
           </div>
           <div className={styles.actions}>
@@ -242,8 +265,8 @@ export default function AdminBriefingsPage() {
             <div><label htmlFor="notes">Observações internas</label><textarea id="notes" rows={3} maxLength={12000} value={draftNotes} onChange={e => setDraftNotes(e.target.value)} placeholder="Análise, pendências, proposta ou decisões internas..." /></div>
             <button className={styles.save} disabled={saving} onClick={() => void saveChanges()}><Save size={16}/> {saving ? "Salvando..." : "Salvar acompanhamento"}</button>
           </div>
-          {STAGES.map(stage => <section className={styles.section} key={stage.name}><h3>{stage.name}</h3>
-            {stage.fields.map(key => <div key={key} className={styles.answer}><span>{FIELD_LABELS[key]}</span><p>{valueOf(current.answers?.[key])}</p></div>)}
+          {displaySections(current).map(stage => <section className={styles.section} key={stage.name}><h3>{stage.name}</h3>
+            {stage.fields.map(field => <div key={field.id} className={styles.answer}><span>{field.label}</span><p>{field.id === "niche" ? siteSegment(current) : valueOf(current.answers?.[field.id])}</p></div>)}
           </section>)}
           <section className={styles.section}><h3>Imagens e materiais privados</h3>
             <p className={styles.mediaHint}>Apenas administradores autorizados podem abrir os arquivos. Os links expiram automaticamente.</p>
