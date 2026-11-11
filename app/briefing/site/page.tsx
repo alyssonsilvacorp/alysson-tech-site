@@ -71,7 +71,11 @@ export default function SiteBriefingPage() {
   }, [images]);
 
   function setAnswer(id: string, answer: string | string[]) {
-    setAnswers(prev => ({ ...prev, [id]: answer }));
+    setAnswers(prev => {
+      if (id !== "niche" || prev.niche === answer) return { ...prev, [id]: answer };
+      const clean = Object.fromEntries(Object.entries(prev).filter(([key]) => !key.startsWith("niche_") && key !== "custom_niche")) as Answers;
+      return { ...clean, [id]: answer };
+    });
     setErrors(prev => prev.filter(k => k !== id));
     setSendError("");
   }
