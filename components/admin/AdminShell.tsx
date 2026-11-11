@@ -5,12 +5,12 @@ import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import {
   LayoutDashboard, ScanLine, Building2, BookOpen, Users, CreditCard,
-  BriefcaseBusiness, Settings, LogOut, Menu, X, ExternalLink, ShieldCheck, Bot,
+  BriefcaseBusiness, Settings, LogOut, Menu, X, ExternalLink, ShieldCheck, Bot, ClipboardList,
 } from "lucide-react";
 import styles from "./AdminShell.module.css";
 import { AI_OFFICE_URL } from "../../lib/ai-office-link";
 
-type Module = "dashboard" | "plates" | "companies" | "catalogs" | "users" | "subscriptions" | "products" | "settings";
+type Module = "dashboard" | "plates" | "companies" | "catalogs" | "users" | "subscriptions" | "products" | "settings" | "briefings";
 type AdminShellProps = { children: ReactNode; current?: Module; onSignOut: () => void | Promise<void> };
 
 const groups = [
@@ -22,6 +22,7 @@ const groups = [
   ] },
   { title: "COMERCIAL", items: [
     { key: "products", label: "Produtos e serviços", href: "/admin/produtos", Icon: BriefcaseBusiness },
+    { key: "briefings", label: "Briefings recebidos", href: "/admin/briefings", Icon: ClipboardList },
     { key: "subscriptions", label: "Assinaturas", href: "/admin/assinaturas", Icon: CreditCard },
     { key: "users", label: "Usuários e acessos", href: "/admin/usuarios", Icon: Users },
   ] },
@@ -38,6 +39,7 @@ const titles: Record<Module, string> = {
   users: "Usuários e acessos",
   subscriptions: "Assinaturas",
   products: "Produtos e serviços",
+  briefings: "Briefings recebidos",
   settings: "Configurações",
 };
 
