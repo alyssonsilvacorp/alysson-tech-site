@@ -4,14 +4,21 @@ export const izalyPlatform = {
   name: "IZALY Platform",
   eyebrow: "Ecossistema criado pela Alysson Tech",
   description:
-    "Ecossistema digital da Alysson Tech com soluções comerciais para restaurantes, atendimento e gestão, contratadas conforme a necessidade da empresa.",
-  status: "Soluções disponíveis",
+    "A IZALY Platform é o ecossistema de produtos digitais criado pela Alysson Tech. O IZALY Food atende operações de alimentação e o IZALY CRM AI oferece uma experiência própria de atendimento e relacionamento, com páginas independentes e uma marca-mãe em comum.",
+  status: "Ecossistema em evolução",
   href: "https://izaly-platform.vercel.app/",
   linkLabel: "Conhecer o ecossistema",
   modules: [
-    { name: "IZALY Food", status: "Disponível" },
-    { name: "IZALY CRM IA", status: "Disponível" },
+    { name: "IZALY Food", status: "Piloto ativo" },
+    { name: "IZALY CRM AI", status: "Em evolução" },
   ],
+} as const;
+
+export const izalyCrmAi = {
+  name: "IZALY CRM AI",
+  href: "https://izaly-crm-ai-piloto.vercel.app/",
+  linkLabel: "Conhecer o IZALY CRM AI",
+  status: "Piloto em evolução",
 } as const;
 
 export const clientProjects = [

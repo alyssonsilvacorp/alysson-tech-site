@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import DiagnosisForm from "../components/DiagnosisForm";
-import { clientProjects, izalyPlatform } from "../data/projects";
+import { clientProjects, izalyCrmAi, izalyPlatform } from "../data/projects";
 import PortfolioExplorer from "../components/home/PortfolioExplorer";
 
 const capabilities = [
@@ -326,15 +326,26 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <a
-              className="technology-feature__link"
-              href={izalyPlatform.href}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {izalyPlatform.linkLabel}
-              <ExternalIcon />
-            </a>
+            <div className="technology-feature__actions" aria-label="Acessar as soluções IZALY">
+              <a
+                className="technology-feature__link"
+                href={izalyPlatform.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {izalyPlatform.linkLabel}
+                <ExternalIcon />
+              </a>
+              <a
+                className="technology-feature__link technology-feature__link--secondary"
+                href={izalyCrmAi.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {izalyCrmAi.linkLabel}
+                <ExternalIcon />
+              </a>
+            </div>
           </div>
           <div className="technology-feature__media">
             <div className="media-glow" />
