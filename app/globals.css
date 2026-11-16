@@ -2807,3 +2807,42 @@ a {
 .client-case-link:hover{background:rgba(137,229,128,.09)}
 
 .client-case-brand__official{height:92px;width:138px;max-width:80%;background:url("https://llslog.com.br/lslog-mark-premium.png") center/contain no-repeat;filter:drop-shadow(0 8px 18px rgba(0,0,0,.2))}
+
+
+/* IZALY Platform (marca-mãe) e CRM AI (produto do ecossistema):
+   links institucionais independentes, sem afetar os projetos dos clientes. */
+.technology-feature__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.technology-feature__actions .technology-feature__link {
+  margin-top: 0;
+}
+
+.technology-feature__link--secondary {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--white);
+}
+
+.technology-feature__link--secondary:hover {
+  border-color: rgba(113, 255, 65, 0.42);
+  background: rgba(113, 255, 65, 0.06);
+}
+
+@media (max-width: 540px) {
+  .technology-feature__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .technology-feature__actions .technology-feature__link {
+    justify-content: space-between;
+    width: 100%;
+    white-space: normal;
+  }
+}

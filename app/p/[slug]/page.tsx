@@ -10,6 +10,7 @@ import {
 import PixCopy from "../../../components/smart/PixCopy";
 import FenniMultilink from "../../../components/smart/FenniMultilink";
 import LimaMultilink from "../../../components/smart/LimaMultilink";
+import { izalyCrmAi, izalyPlatform } from "../../../data/projects";
 import styles from "./portal.module.css";
 
 export const dynamic = "force-dynamic";
@@ -455,6 +456,30 @@ export default async function SmartBusinessPage({ params }: PageProps) {
                     href={href}
                   />
                 ))}
+            </div>
+          </section>
+        )}
+
+        {business.slug === "alysson-tech" && (
+          <section className={styles.section} aria-label="Soluções IZALY da Alysson Tech">
+            {sectionHeading(
+              "IZALY / ECOSSISTEMA",
+              "Conheça nossas plataformas",
+              "A IZALY Platform reúne as soluções. O IZALY CRM AI tem sua própria apresentação como produto do ecossistema.",
+            )}
+            <div className={styles.secondaryActions}>
+              <ActionLink
+                icon="↗"
+                label="IZALY Platform"
+                detail="Conhecer o ecossistema IZALY"
+                href={izalyPlatform.href}
+              />
+              <ActionLink
+                icon="↗"
+                label="IZALY CRM AI"
+                detail="Conhecer a solução de atendimento inteligente"
+                href={izalyCrmAi.href}
+              />
             </div>
           </section>
         )}
