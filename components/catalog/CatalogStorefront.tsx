@@ -30,7 +30,7 @@ const variationList=(v:unknown):{name:string;options:string[]}[]=>{
 };
 const priceText=(p:CatalogProduct)=>p.price===null?(p.price_label&&p.price_label!=="0"&&p.price_label!=="R$ 0,00"?p.price_label:"Sob consulta"):brl(p.price);
 
-export default function CatalogStorefront({brand,products,zones,adminPreview=false}:{brand:CatalogBrand;products:CatalogProduct[];zones:DeliveryZone[];adminPreview?:boolean}) {
+export default function CatalogStorefront({brand,products,zones,adminPreview=false,persistCartKey,initialCartOpen=false}:{brand:CatalogBrand;products:CatalogProduct[];zones:DeliveryZone[];adminPreview?:boolean;persistCartKey?:string;initialCartOpen?:boolean}) {
  const [search,setSearch]=useState("");
  const [category,setCategory]=useState("Todos");
  const [frameType,setFrameType]=useState("Todos");
@@ -39,7 +39,8 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
  const [detail,setDetail]=useState<CatalogProduct|null>(null);
  const [selection,setSelection]=useState<Record<string,string>>({});
  const [cart,setCart]=useState<CartLine[]>([]);
- const [showCart,setShowCart]=useState(false);
+ const [cartLoaded,setCartLoaded]=useState(false);
+ const [showCart,setShowCart]=useState(initialCartOpen);
  const [step,setStep]=useState<1|2|3>(1);
  const [fulfilment,setFulfilment]=useState<"delivery"|"pickup">(brand.deliveryEnabled&&zones.length>0?"delivery":"pickup");
  const [zone,setZone]=useState("");
@@ -82,6 +83,45 @@ export default function CatalogStorefront({brand,products,zones,adminPreview=fal
  const showcase=brand.galleryImages?.length?brand.galleryImages:brand.slug==="barbearia-lima"?
   Array.from({length:11},(_,i)=>"/lima/trabalhos/trabalho-"+String(i+1).padStart(2,"0")+".webp"):[];
  useEffect(()=>{const interval=window.setInterval(()=>setSlide(x=>(x+1)%3),6500);return()=>window.clearInterval(interval);},[]);
+ useEffect(()=>{
+  let active=true;
+  if(!persistCartKey){void Promise.resolve().then(()=>{if(active)setCartLoaded(true);});return()=>{active=false};}
+  void Promise.resolve().then(()=>{
+   if(!active)return;
+   let restored:CartLine[]=[];
+   try {
+    const raw=window.localStorage.getItem(persistCartKey);
+    const data=raw?JSON.parse(raw):[];
+    if(Array.isArray(data)){
+     const byId=new Map(products.map(p=>[p.id,p]));
+     restored=data.slice(0,50).flatMap(item=>{
+      if(!item||typeof item.id!=="string")return [];
+      const product=byId.get(item.id);
+      const qty=Number(item.quantity);
+      if(!product||!Number.isInteger(qty)||qty<1||qty>99)return [];
+      const incoming=item.selection&&typeof item.selection==="object"&&!Array.isArray(item.selection)?item.selection:{};
+      const choices=variationList(product.catalog_variants);
+      const selection:Record<string,string>={};
+      for(const choice of choices){
+       const selected=incoming[choice.name];
+       if(typeof selected!=="string"||!choice.options.includes(selected))return [];
+       selection[choice.name]=selected;
+      }
+      const key=product.id+":"+JSON.stringify(Object.entries(selection).sort());
+      return [{key,product,quantity:qty,selection}];
+     });
+    }
+   }catch{/* Conteúdo local inválido: não carregar. */}
+   setCart(restored);
+   setCartLoaded(true);
+  });
+  return()=>{active=false};
+ },[persistCartKey,products]);
+ useEffect(()=>{
+  if(!persistCartKey||!cartLoaded)return;
+  const safe=cart.slice(0,50).map(x=>({id:x.product.id,quantity:x.quantity,selection:x.selection}));
+  try{window.localStorage.setItem(persistCartKey,JSON.stringify(safe));}catch{/* Storage bloqueado: usar carrinho em memória. */}
+ },[persistCartKey,cart,cartLoaded]);
  useEffect(()=>{
    if(!adminPreview)return;
    const previousTitle=document.title;
