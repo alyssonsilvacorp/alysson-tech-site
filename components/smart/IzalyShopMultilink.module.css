@@ -1,0 +1,61 @@
+.page {
+  --accent: #b58b61;
+  --muted: #816d68;
+  --ink: #44312d;
+  --border: rgba(132, 93, 84, .21);
+  --panel: #fff9f5;
+  --canvas: #f3e8e5;
+  min-height: 100vh;
+  padding: 20px 16px 44px;
+  background: radial-gradient(ellipse at 50% -8%, #fff9f5 0%, transparent 57%), var(--canvas);
+  color: var(--ink);
+}
+.page[data-brand="izaly-tech"] {
+  --accent: #0a84ff;
+  --muted: #a1abc0;
+  --ink: #edf4ff;
+  --border: rgba(33, 119, 255, .25);
+  --panel: #121b2c;
+  --canvas: #060a13;
+  background: radial-gradient(ellipse at 58% -10%, #143773 0%, transparent 56%), var(--canvas);
+}
+.shell { max-width: 520px; margin: 0 auto; }
+.topBar { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:8px 2px 19px; font-size:10px; font-weight:750; letter-spacing:.15em; color:var(--muted); }
+.topBar span:first-child { display:flex; align-items:center; gap:8px; }
+.statusDot { width:6px; height:6px; display:inline-block; border-radius:50%; background:var(--accent); box-shadow:0 0 14px var(--accent); }
+.hero { position:relative; isolation:isolate; min-height:430px; overflow:hidden; border:1px solid var(--border); border-radius:27px; background:linear-gradient(142deg,#fffaf6,#e8d5cd); box-shadow:0 22px 72px rgba(67,40,38,.12); }
+.page[data-brand="izaly-tech"] .hero { background:linear-gradient(145deg,#172e57,#09101e 75%); box-shadow:0 23px 70px rgba(0,0,0,.35); }
+.hero::before { content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(circle at 91% 6%,color-mix(in srgb,var(--accent),transparent 68%),transparent 42%); }
+.heroOrnament {position:absolute; right:-5%; top:3%; font-size:240px; line-height:1; font-weight:900; letter-spacing:-.16em; opacity:.055; color:var(--accent); transform:rotate(-10deg); pointer-events:none; user-select:none; z-index:-1;}
+.heroContent { padding:33px 28px 24px; min-height:430px; display:flex; flex-direction:column; }
+.eyebrow { color:var(--accent); font-size:10px; font-weight:800; letter-spacing:.17em; }
+.identity { display:flex; gap:16px; align-items:center; margin:52px 0 29px; }
+.monogram { height:72px; width:72px; flex:0 0 72px; display:grid; place-items:center; border:1px solid var(--border); border-radius:18px; background:color-mix(in srgb,var(--panel),transparent 11%); color:var(--accent); font-family:Georgia,serif; font-size:32px; letter-spacing:-.09em; box-shadow:0 12px 32px #0001; }
+.page[data-brand="izaly-tech"] .monogram {font-family:Arial,sans-serif; font-weight:900; text-shadow:0 0 18px rgba(10,132,255,.35);}
+.brandText { min-width:0; }
+.category {color:var(--muted); font-size:10px; font-weight:750; letter-spacing:.11em;}
+.brandText h1 { font-size:clamp(1.52rem,6vw,2.15rem); margin:6px 0 0; line-height:1.09; letter-spacing:-.052em; }
+.premium { display:block; padding-top:6px; color:#a9b4c9; font-size:10px; font-weight:850; letter-spacing:.24em; }
+.hero h2 { margin:0 0 17px; font-family:Georgia,"Times New Roman",serif; font-size:clamp(2.4rem,8.5vw,3.5rem); font-weight:500; letter-spacing:-.06em; line-height:1.03; max-width:400px; }
+.page[data-brand="izaly-tech"] .hero h2 {font-family:Arial,Helvetica,sans-serif; font-weight:850;}
+.hero p { margin:0; color:var(--muted); max-width:390px; font-size:.92rem; line-height:1.64; }
+.heroFoot { margin-top:auto; padding-top:26px; display:flex; gap:12px; justify-content:space-between; align-items:center; color:var(--accent); font-size:10px; font-weight:800; letter-spacing:.12em;}
+.heroFoot span {display:flex; align-items:center; gap:8px;}
+.contactSection {padding-top:35px;}
+.sectionHeading h2 {margin:9px 0 7px; font-size:clamp(1.65rem,6vw,2.05rem); letter-spacing:-.055em; line-height:1.12;}
+.sectionHeading p {margin:0 0 23px; color:var(--muted); font-size:.88rem; line-height:1.5;}
+.shortcutGrid {display:grid; gap:12px;}
+.shortcut {display:flex; gap:13px; align-items:center; min-height:81px; padding:14px 15px; border:1px solid var(--border); border-radius:18px; background:var(--panel); color:var(--ink); text-decoration:none; transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;}
+.shortcut:hover,.shortcut:focus-visible {transform:translateY(-2px); border-color:var(--accent); box-shadow:0 8px 25px #0002; outline:none;}
+.shortcutIcon {width:48px; height:48px; flex:0 0 48px; display:grid; place-items:center; border-radius:14px; color:var(--accent); background:color-mix(in srgb,var(--accent),transparent 89%);}
+.shortcutLabel {flex:1; min-width:0; display:flex; flex-direction:column; gap:4px;}
+.shortcutLabel strong {font-size:.96rem; letter-spacing:-.015em;}
+.shortcutLabel small {font-size:.75rem; line-height:1.35; color:var(--muted);}
+.shortcut>svg {color:var(--accent); flex-shrink:0;}
+.featured { background:color-mix(in srgb,var(--accent),var(--panel) 86%); border-color:color-mix(in srgb,var(--accent),transparent 52%); }
+.footer {display:flex; flex-direction:column; align-items:center; text-align:center; gap:7px; border-top:1px solid var(--border); margin-top:31px; padding:21px 4px 0; color:var(--muted);}
+.footer>span {font-size:9px; font-weight:800; letter-spacing:.14em;}
+.footer small {font-size:.8rem;}
+.footer a {color:var(--accent); font-weight:800; text-decoration:none;}
+@media(max-width:380px) {.heroContent{padding:28px 21px 21px}.identity{gap:11px}.monogram{width:62px;height:62px;flex-basis:62px}.topBar{font-size:9px}}
+@media(prefers-reduced-motion:reduce) {.shortcut{transition:none}}
