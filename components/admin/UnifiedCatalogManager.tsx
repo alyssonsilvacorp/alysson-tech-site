@@ -36,7 +36,7 @@ async function prepareImage(file:File):Promise<File>{
  if(blob.size>3*1024*1024)throw Error("Imagem comprimida ainda maior que 3 MB");
  return new File([blob],file.name.replace(/\.[^.]+$/,"")+".jpg",{type:"image/jpeg"});
 }
-export default function UnifiedCatalogManager(){
+export default function UnifiedCatalogManager({fixedSlug}:{fixedSlug?:string}={}){
  const [companies,setCompanies]=useState<Company[]>([]);
  const [businessId,setBusinessId]=useState("");
  const [settings,setSettings]=useState<Settings>(defaultSettings);
@@ -63,13 +63,17 @@ export default function UnifiedCatalogManager(){
  const [search,setSearch]=useState("");
  const [uploading,setUploading]=useState(false);
  const [verifiedPublication,setVerifiedPublication]=useState(false);
- const company=companies.find(c=>c.id===businessId);
+ const company=companies.find(c=>c.id===businessId&&(fixedSlug?c.slug===fixedSlug:true));
  const loadCompanies=useCallback(async()=>{
   const r=await supabaseBrowser.from("smart_businesses").select("id,slug,name,category,whatsapp_number,logo_url,logo_initials,accent_color,brand_support_color,brand_background_color,brand_highlight_color,has_catalog").order("name");
   if(r.error){setError(r.error.message);return;}
-  const list=(r.data??[]) as Company[];setCompanies(list);const intended=new URLSearchParams(window.location.search).get("business");
-  const available=list.filter(c=>c.has_catalog);setBusinessId(x=>x||available.find(c=>c.id===intended)?.id||available[0]?.id||"");
- },[]);
+  const list=(r.data??[]) as Company[];
+  const scoped=fixedSlug?list.filter(c=>c.slug===fixedSlug):list;
+  setCompanies(scoped);
+  const intended=new URLSearchParams(window.location.search).get("business");
+  const available=scoped.filter(c=>c.has_catalog);
+  setBusinessId(previous=>previous&&available.some(c=>c.id===previous)?previous:available.find(c=>c.id===intended)?.id||available[0]?.id||"");
+ },[fixedSlug]);
  const load=useCallback(async(id:string)=>{
   if(!id)return;setLoading(true);setError("");
   const [s,p,z,a]=await Promise.all([
@@ -245,9 +249,9 @@ export default function UnifiedCatalogManager(){
  const published=settings.status==="published";
  return <div style={{display:"grid",gap:16}}>
   <div style={panel}>
-   <h2 style={{fontSize:19,margin:"0 0 7px"}}>Catálogos integrados</h2><p style={muted}>A mesma empresa, identidade e produtos alimentam o catálogo e o Multilink. Não há HTML individual para publicar.</p>
-   <label style={{display:"grid",gap:7,fontSize:12,maxWidth:550}}>Empresa selecionada<select style={field} value={businessId} onChange={e=>{setBusinessId(e.target.value);setShowForm(false);setSearch("");setVerifiedPublication(false);}}><option value="">Selecione uma empresa</option>{companies.filter(c=>c.has_catalog).map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
-   {!companies.some(c=>c.has_catalog)&&<p style={muted}>Nenhuma empresa está habilitada para catálogo. Acesse <Link href="/admin/empresas" style={{color:"#b0ff94"}}>Empresas</Link>, marque &ldquo;Sim, criar catálogo&rdquo; e salve para continuar.</p>}
+   <h2 style={{fontSize:19,margin:"0 0 7px"}}>{fixedSlug==="izaly-tech"?"IZALY Tech · Gestão da loja":"Catálogos integrados"}</h2><p style={muted}>A mesma empresa, identidade e produtos alimentam o catálogo e o Multilink. Não há HTML individual para publicar.</p>
+   {fixedSlug?<p style={{...muted,marginTop:12}}>Loja vinculada: <strong style={{color:"#82bdff"}}>{company?.name??"IZALY Tech (cadastro pendente)"}</strong>. Esta tela limita a gestão aos produtos desta empresa.</p>:<label style={{display:"grid",gap:7,fontSize:12,maxWidth:550}}>Empresa selecionada<select style={field} value={businessId} onChange={e=>{setBusinessId(e.target.value);setShowForm(false);setSearch("");setVerifiedPublication(false);}}><option value="">Selecione uma empresa</option>{companies.filter(c=>c.has_catalog).map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>}
+   {!companies.some(c=>c.has_catalog)&&<p style={muted}>{fixedSlug?"A IZALY Tech ainda não possui cadastro com catálogo habilitado neste banco. Não foram importados produtos antigos de demonstração.":"Nenhuma empresa está habilitada para catálogo."} Acesse <Link href="/admin/empresas" style={{color:"#b0ff94"}}>Empresas</Link>, marque &ldquo;Sim, criar catálogo&rdquo; e salve para continuar.</p>}
    {company&&<div style={{display:"flex",gap:9,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",marginTop:15}}>
     <span style={{fontSize:12,color:published?"#a5f49a":"#cfcb9a"}}>Situação: {published?"PUBLICADO":settings.status==="paused"?"PAUSADO":"RASCUNHO"} · {items.length} produtos</span>
     <div style={{display:"flex",gap:9,flexWrap:"wrap"}}>
