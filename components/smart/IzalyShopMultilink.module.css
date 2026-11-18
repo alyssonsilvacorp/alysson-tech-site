@@ -151,3 +151,19 @@
 }
 @media(max-width:390px){.heroActions{flex-direction:column}.primaryButton,.secondaryButton{width:100%}.hero h1{font-size:3.1rem}.heroArt{height:300px;min-height:300px}}
 @media(prefers-reduced-motion:reduce){.page *,.page *::before,.page *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+
+/* Elementos de marca derivados das referências originais já aprovadas. */
+.brandEmblem{overflow:hidden;padding:0;flex-shrink:0}
+.brandImage{display:block;width:100%;height:100%;object-fit:contain}
+.page[data-brand="izaly-tech"] .brandEmblem{width:132px;height:46px;border:0;border-radius:0;box-shadow:none}
+.page[data-brand="izaly-tech"] .brandName{display:none}
+.officialBadge{position:absolute;right:32px;top:36px;width:112px;height:112px;border:1px solid rgba(151,102,66,.22);border-radius:50%;box-shadow:0 14px 34px rgba(100,63,42,.17);overflow:hidden;z-index:5;animation:float 8s ease-in-out infinite}
+.officialBadge img{width:100%;height:100%;object-fit:cover;display:block}
+.page[data-brand="izaly-tech"] .officialBadge{width:150px;height:56px;border-radius:11px;right:25px;top:28px;border-color:rgba(95,155,255,.23);box-shadow:0 12px 30px #0005;background:#081021}
+.page[data-brand="izaly-tech"] .officialBadge img{object-fit:contain}
+@media(max-width:690px){
+  .page[data-brand="izaly-tech"] .brandEmblem{width:113px;height:40px}
+  .officialBadge{width:73px;height:73px;top:78px;right:21px}
+  .page[data-brand="izaly-tech"] .officialBadge{width:111px;height:44px;top:65px;right:9px}
+}
