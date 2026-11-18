@@ -24,11 +24,11 @@ const shops = {
     title: "O futuro está na",
     highlight: "sua mão.",
     description: "Conecte-se ao que importa. Explore smartphones, eletrônicos e acessórios em um só lugar.",
-    store: "https://izalytech.netlify.app/",
+    store: "/p/izaly-tech/catalogo",
     instagram: null,
     whatsapp: "5582999926146",
     message: "Olá! Vim pelo espaço digital da IZALY Tech e gostaria de saber mais sobre os produtos.",
-    cta: "Explorar a loja",
+    cta: "Ver catálogo",
   },
 } as const;
 
@@ -99,7 +99,7 @@ function TechArtwork() {
 function ActionCard({ number, title, description, icon, href, featured = false }: {
   number: string; title: string; description: string; icon: ReactNode; href: string; featured?: boolean;
 }) {
-  return <a className={styles.actionCard + (featured ? " " + styles.actionFeatured : "")} href={href} target="_blank" rel="noopener noreferrer">
+  return <a className={styles.actionCard + (featured ? " " + styles.actionFeatured : "")} href={href} target={href.startsWith("https://") ? "_blank" : undefined} rel={href.startsWith("https://") ? "noopener noreferrer" : undefined}>
     <span className={styles.actionNumber}>{number} / 03</span>
     <span className={styles.actionIcon}>{icon}</span>
     <span className={styles.actionText}><strong>{title}</strong><small>{description}</small></span>
@@ -120,7 +120,7 @@ export default function IzalyShopMultilink({ slug }: { slug: ShopSlug }) {
             <span className={styles.brandEmblem}><Image className={styles.brandImage} src={jewelry ? "/izaly/joias-logo.webp" : "/izaly/izaly-tech-logo-v2.webp"} alt="" width={jewelry ? 45 : 163} height={jewelry ? 45 : 56} priority /></span>
             <span className={styles.brandName}><strong>IZALY</strong><small>{jewelry ? "JOIAS" : "TECH PREMIUM"}</small></span>
           </a>
-          <a className={styles.navAction} href={shop.store} target="_blank" rel="noopener noreferrer">LOJA ONLINE <ArrowUpRight size={15} aria-hidden="true" /></a>
+          <a className={styles.navAction} href={shop.store} target={jewelry ? "_blank" : undefined} rel={jewelry ? "noopener noreferrer" : undefined}>LOJA ONLINE <ArrowUpRight size={15} aria-hidden="true" /></a>
         </nav>
         <header id="inicio" className={styles.hero}>
           <div className={styles.heroCopy}>
@@ -129,7 +129,7 @@ export default function IzalyShopMultilink({ slug }: { slug: ShopSlug }) {
             <h1>{shop.title} <em>{shop.highlight}</em></h1>
             <p>{shop.description}</p>
             <div className={styles.heroActions}>
-              <a className={styles.primaryButton} href={shop.store} target="_blank" rel="noopener noreferrer">{shop.cta}<ArrowUpRight size={18} /></a>
+              <a className={styles.primaryButton} href={shop.store} target={jewelry ? "_blank" : undefined} rel={jewelry ? "noopener noreferrer" : undefined}>{shop.cta}<ArrowUpRight size={18} /></a>
               <a className={styles.secondaryButton} href={wa} target="_blank" rel="noopener noreferrer"><MessageCircle size={17} /> Falar no WhatsApp</a>
             </div>
             <a href="#universo" className={styles.scrollHint}>EXPLORE A EXPERIÊNCIA <ArrowDown size={17}/></a>
@@ -149,7 +149,7 @@ export default function IzalyShopMultilink({ slug }: { slug: ShopSlug }) {
             <p>{jewelry ? "A coleção IZALY Joias reúne estilos para quem valoriza o significado de cada detalhe." : "Encontre suas categorias preferidas e consulte os produtos disponíveis na loja."}</p>
           </div>
           <div className={styles.categoryGrid}>
-            {categories.map((item,index)=><a key={item.title} href={shop.store} target="_blank" rel="noopener noreferrer" className={styles.categoryCard}>
+            {categories.map((item,index)=><a key={item.title} href={shop.store} target={jewelry ? "_blank" : undefined} rel={jewelry ? "noopener noreferrer" : undefined} className={styles.categoryCard}>
               <div className={styles.categoryTop}><span>0{index+1} / 03</span><span className={styles.categoryIcon}>{item.icon}</span></div>
               <div><h3>{item.title}</h3><p>{item.detail}</p></div>
               <ArrowUpRight className={styles.categoryArrow} size={20} strokeWidth={1.5} />
@@ -161,7 +161,7 @@ export default function IzalyShopMultilink({ slug }: { slug: ShopSlug }) {
           <span className={styles.statementEyebrow}>{jewelry ? "MAIS QUE UM ACESSÓRIO" : "MAIS QUE TECNOLOGIA"}</span>
           <h2>{jewelry ? <>Detalhes que deixam <em>marcas.</em></> : <>Sua próxima descoberta <em>começa aqui.</em></>}</h2>
           <p>{jewelry ? "Seu estilo, sua história, seu brilho." : "Escolha com praticidade e fale direto com nossa equipe."}</p>
-          <a href={shop.store} target="_blank" rel="noopener noreferrer">ENTRAR NA LOJA <ArrowUpRight size={17}/></a>
+          <a href={shop.store} target={jewelry ? "_blank" : undefined} rel={jewelry ? "noopener noreferrer" : undefined}>ENTRAR NA LOJA <ArrowUpRight size={17}/></a>
         </section>
         <section className={styles.section} id="contato">
           <div className={styles.sectionTop}><span>02 / CONEXÕES</span><span>ACESSO DIRETO</span></div>
