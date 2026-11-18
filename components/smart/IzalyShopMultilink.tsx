@@ -117,7 +117,7 @@ export default function IzalyShopMultilink({ slug }: { slug: ShopSlug }) {
       <div className={styles.shell}>
         <nav className={styles.nav} aria-label="Navegação da loja">
           <a className={styles.brand} href="#inicio" aria-label={shop.name + ", voltar ao início"}>
-            <span className={styles.brandEmblem}><Image className={styles.brandImage} src={jewelry ? "/izaly/joias-logo.webp" : "/izaly/tech-logo.webp"} alt="" width={jewelry ? 45 : 163} height={jewelry ? 45 : 56} priority /></span>
+            <span className={styles.brandEmblem}><Image className={styles.brandImage} src={jewelry ? "/izaly/joias-logo.webp" : "/izaly/izaly-tech-logo-v2.webp"} alt="" width={jewelry ? 45 : 163} height={jewelry ? 45 : 56} priority /></span>
             <span className={styles.brandName}><strong>IZALY</strong><small>{jewelry ? "JOIAS" : "TECH PREMIUM"}</small></span>
           </a>
           <a className={styles.navAction} href={shop.store} target="_blank" rel="noopener noreferrer">LOJA ONLINE <ArrowUpRight size={15} aria-hidden="true" /></a>
@@ -134,7 +134,7 @@ export default function IzalyShopMultilink({ slug }: { slug: ShopSlug }) {
             </div>
             <a href="#universo" className={styles.scrollHint}>EXPLORE A EXPERIÊNCIA <ArrowDown size={17}/></a>
           </div>
-          <div className={styles.heroArt}>{jewelry ? <JewelArtwork/> : <TechArtwork/>}<div className={styles.officialBadge} aria-hidden="true"><Image src={jewelry ? "/izaly/joias-logo.webp" : "/izaly/tech-logo.webp"} alt="" width={jewelry ? 120 : 163} height={jewelry ? 120 : 56} /></div></div>
+          <div className={styles.heroArt}>{jewelry ? <JewelArtwork/> : <TechArtwork/>}<div className={styles.officialBadge} aria-hidden="true"><Image src={jewelry ? "/izaly/joias-logo.webp" : "/izaly/izaly-tech-logo-v2.webp"} alt="" width={jewelry ? 120 : 163} height={jewelry ? 120 : 56} /></div></div>
           <span className={styles.heroCounter}>01 — 03</span>
         </header>
         <div className={styles.marquee} aria-label={jewelry ? "Elegância em cada detalhe. Prata 925 e folheados a ouro 18K." : "Tecnologia Premium. Smartphones, eletrônicos e acessórios."}>
