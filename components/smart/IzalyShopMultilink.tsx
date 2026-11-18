@@ -1,4 +1,4 @@
-import { ArrowUpRight, Gem, Instagram, MessageCircle, ShoppingBag, Smartphone, Sparkles } from "lucide-react";
+import { ArrowUpRight, Gem, MessageCircle, ShoppingBag, Smartphone, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
 import styles from "./IzalyShopMultilink.module.css";
 
@@ -101,7 +101,7 @@ export default function IzalyShopMultilink({ slug }: { slug: ShopSlug }) {
           <div className={styles.shortcutGrid}>
             <Shortcut featured icon={<ShoppingBag size={22} strokeWidth={1.7} />} title={shop.catalogLabel} detail={shop.catalogDetail} href={shop.site} />
             <Shortcut icon={<MessageCircle size={22} strokeWidth={1.7} />} title="Atendimento pelo WhatsApp" detail="Tire dúvidas e consulte disponibilidade" href={whatsappUrl} />
-            {shop.instagram && <Shortcut icon={<Instagram size={22} strokeWidth={1.7} />} title="Nosso Instagram" detail="Acompanhe as novidades" href={shop.instagram} />}
+            {shop.instagram && <Shortcut icon={<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.9" fill="currentColor" stroke="none" /></svg>} title="Nosso Instagram" detail="Acompanhe as novidades" href={shop.instagram} />}
           </div>
         </section>
 
