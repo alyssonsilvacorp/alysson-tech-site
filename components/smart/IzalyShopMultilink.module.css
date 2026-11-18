@@ -1,61 +1,153 @@
 .page {
-  --accent: #b58b61;
-  --muted: #816d68;
-  --ink: #44312d;
-  --border: rgba(132, 93, 84, .21);
-  --panel: #fff9f5;
-  --canvas: #f3e8e5;
-  min-height: 100vh;
-  padding: 20px 16px 44px;
-  background: radial-gradient(ellipse at 50% -8%, #fff9f5 0%, transparent 57%), var(--canvas);
-  color: var(--ink);
+  --ink:#412b27;--muted:#856f66;--accent:#a87545;--bright:#d7ac7c;--line:rgba(115,72,52,.2);
+  --panel:#fff8f3;--canvas:#f5ebe3;min-height:100vh;position:relative;overflow:hidden;
+  background:radial-gradient(ellipse at 76% 0%,#f4dacc 0%,transparent 32%),var(--canvas);color:var(--ink);
 }
 .page[data-brand="izaly-tech"] {
-  --accent: #0a84ff;
-  --muted: #a1abc0;
-  --ink: #edf4ff;
-  --border: rgba(33, 119, 255, .25);
-  --panel: #121b2c;
-  --canvas: #060a13;
-  background: radial-gradient(ellipse at 58% -10%, #143773 0%, transparent 56%), var(--canvas);
+  --ink:#f1f6ff;--muted:#a0aec8;--accent:#389aff;--bright:#8bc6ff;--line:rgba(78,140,227,.24);
+  --panel:#101b30;--canvas:#040915;
+  background:radial-gradient(ellipse at 78% 0%,rgba(15,68,151,.36),transparent 39%),var(--canvas);
 }
-.shell { max-width: 520px; margin: 0 auto; }
-.topBar { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:8px 2px 19px; font-size:10px; font-weight:750; letter-spacing:.15em; color:var(--muted); }
-.topBar span:first-child { display:flex; align-items:center; gap:8px; }
-.statusDot { width:6px; height:6px; display:inline-block; border-radius:50%; background:var(--accent); box-shadow:0 0 14px var(--accent); }
-.hero { position:relative; isolation:isolate; min-height:430px; overflow:hidden; border:1px solid var(--border); border-radius:27px; background:linear-gradient(142deg,#fffaf6,#e8d5cd); box-shadow:0 22px 72px rgba(67,40,38,.12); }
-.page[data-brand="izaly-tech"] .hero { background:linear-gradient(145deg,#172e57,#09101e 75%); box-shadow:0 23px 70px rgba(0,0,0,.35); }
-.hero::before { content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(circle at 91% 6%,color-mix(in srgb,var(--accent),transparent 68%),transparent 42%); }
-.heroOrnament {position:absolute; right:-5%; top:3%; font-size:240px; line-height:1; font-weight:900; letter-spacing:-.16em; opacity:.055; color:var(--accent); transform:rotate(-10deg); pointer-events:none; user-select:none; z-index:-1;}
-.heroContent { padding:33px 28px 24px; min-height:430px; display:flex; flex-direction:column; }
-.eyebrow { color:var(--accent); font-size:10px; font-weight:800; letter-spacing:.17em; }
-.identity { display:flex; gap:16px; align-items:center; margin:52px 0 29px; }
-.monogram { height:72px; width:72px; flex:0 0 72px; display:grid; place-items:center; border:1px solid var(--border); border-radius:18px; background:color-mix(in srgb,var(--panel),transparent 11%); color:var(--accent); font-family:Georgia,serif; font-size:32px; letter-spacing:-.09em; box-shadow:0 12px 32px #0001; }
-.page[data-brand="izaly-tech"] .monogram {font-family:Arial,sans-serif; font-weight:900; text-shadow:0 0 18px rgba(10,132,255,.35);}
-.brandText { min-width:0; }
-.category {color:var(--muted); font-size:10px; font-weight:750; letter-spacing:.11em;}
-.brandText h1 { font-size:clamp(1.52rem,6vw,2.15rem); margin:6px 0 0; line-height:1.09; letter-spacing:-.052em; }
-.premium { display:block; padding-top:6px; color:#a9b4c9; font-size:10px; font-weight:850; letter-spacing:.24em; }
-.hero h2 { margin:0 0 17px; font-family:Georgia,"Times New Roman",serif; font-size:clamp(2.4rem,8.5vw,3.5rem); font-weight:500; letter-spacing:-.06em; line-height:1.03; max-width:400px; }
-.page[data-brand="izaly-tech"] .hero h2 {font-family:Arial,Helvetica,sans-serif; font-weight:850;}
-.hero p { margin:0; color:var(--muted); max-width:390px; font-size:.92rem; line-height:1.64; }
-.heroFoot { margin-top:auto; padding-top:26px; display:flex; gap:12px; justify-content:space-between; align-items:center; color:var(--accent); font-size:10px; font-weight:800; letter-spacing:.12em;}
-.heroFoot span {display:flex; align-items:center; gap:8px;}
-.contactSection {padding-top:35px;}
-.sectionHeading h2 {margin:9px 0 7px; font-size:clamp(1.65rem,6vw,2.05rem); letter-spacing:-.055em; line-height:1.12;}
-.sectionHeading p {margin:0 0 23px; color:var(--muted); font-size:.88rem; line-height:1.5;}
-.shortcutGrid {display:grid; gap:12px;}
-.shortcut {display:flex; gap:13px; align-items:center; min-height:81px; padding:14px 15px; border:1px solid var(--border); border-radius:18px; background:var(--panel); color:var(--ink); text-decoration:none; transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;}
-.shortcut:hover,.shortcut:focus-visible {transform:translateY(-2px); border-color:var(--accent); box-shadow:0 8px 25px #0002; outline:none;}
-.shortcutIcon {width:48px; height:48px; flex:0 0 48px; display:grid; place-items:center; border-radius:14px; color:var(--accent); background:color-mix(in srgb,var(--accent),transparent 89%);}
-.shortcutLabel {flex:1; min-width:0; display:flex; flex-direction:column; gap:4px;}
-.shortcutLabel strong {font-size:.96rem; letter-spacing:-.015em;}
-.shortcutLabel small {font-size:.75rem; line-height:1.35; color:var(--muted);}
-.shortcut>svg {color:var(--accent); flex-shrink:0;}
-.featured { background:color-mix(in srgb,var(--accent),var(--panel) 86%); border-color:color-mix(in srgb,var(--accent),transparent 52%); }
-.footer {display:flex; flex-direction:column; align-items:center; text-align:center; gap:7px; border-top:1px solid var(--border); margin-top:31px; padding:21px 4px 0; color:var(--muted);}
-.footer>span {font-size:9px; font-weight:800; letter-spacing:.14em;}
-.footer small {font-size:.8rem;}
-.footer a {color:var(--accent); font-weight:800; text-decoration:none;}
-@media(max-width:380px) {.heroContent{padding:28px 21px 21px}.identity{gap:11px}.monogram{width:62px;height:62px;flex-basis:62px}.topBar{font-size:9px}}
-@media(prefers-reduced-motion:reduce) {.shortcut{transition:none}}
+.page::before{content:"";position:absolute;inset:0 0 auto;height:850px;pointer-events:none;opacity:.27;background:repeating-linear-gradient(90deg,transparent 0,transparent 215px,var(--line) 216px);mask-image:linear-gradient(#000,transparent)}
+.page[data-brand="izaly-tech"]::before{opacity:.13;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:75px 75px}
+.shell{width:min(100% - 38px,1120px);margin:0 auto;position:relative;z-index:1}
+.nav{height:94px;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.brand{display:flex;align-items:center;gap:11px;color:var(--ink);text-decoration:none}
+.brandEmblem{height:45px;width:45px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--accent);font:italic 27px Georgia,serif;letter-spacing:-.13em;padding-right:5px;color:var(--accent);box-shadow:inset 0 0 0 4px rgba(214,166,117,.08)}
+.page[data-brand="izaly-tech"] .brandEmblem{border-radius:12px;font:900 20px Arial,sans-serif;letter-spacing:-.1em;padding-right:3px;box-shadow:0 0 28px rgba(0,117,255,.19)}
+.brandName{display:flex;flex-direction:column;gap:2px}
+.brandName strong{font-size:18px;font-weight:600;letter-spacing:.28em;line-height:1}
+.brandName small{color:var(--accent);font-size:8px;font-weight:850;letter-spacing:.36em}
+.navAction{display:flex;align-items:center;gap:9px;padding:8px 0;color:var(--ink);font-size:10px;letter-spacing:.17em;font-weight:850;text-decoration:none;border-bottom:1px solid var(--accent);transition:gap .2s}
+.navAction:hover{gap:15px}
+.hero{min-height:608px;display:grid;grid-template-columns:1.06fr .94fr;overflow:hidden;position:relative;border:1px solid var(--line);border-radius:28px;background:radial-gradient(ellipse at 82% 45%,rgba(250,222,198,.8),transparent 65%),linear-gradient(125deg,#fffdfb,#efddcf);box-shadow:0 30px 100px rgba(108,69,47,.11)}
+.page[data-brand="izaly-tech"] .hero{background:radial-gradient(ellipse at 77% 44%,rgba(10,89,192,.48),transparent 69%),linear-gradient(122deg,#111d32,#060d1e 79%);box-shadow:0 35px 120px rgba(0,0,0,.34)}
+.hero::before{content:"";position:absolute;inset:12px;border:1px solid var(--line);border-radius:19px;opacity:.45;pointer-events:none}
+.heroCopy{padding:54px clamp(26px,5.2vw,72px) 33px;display:flex;align-items:flex-start;flex-direction:column;position:relative;z-index:2}
+.heroEyebrow{color:var(--accent);font-size:10px;font-weight:850;letter-spacing:.17em}
+.heroIndex{font-size:10px;letter-spacing:.16em;color:var(--muted);margin-top:60px}
+.hero h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(3.25rem,5.7vw,5.5rem);line-height:1.01;font-weight:400;letter-spacing:-.07em;margin:13px 0 22px;max-width:555px}
+.hero h1 em{display:block;color:var(--accent);font-weight:400;font-style:italic}
+.page[data-brand="izaly-tech"] .hero h1{font-family:Arial,Helvetica,sans-serif;font-size:clamp(3.25rem,5.1vw,5rem);font-weight:850;letter-spacing:-.075em}
+.page[data-brand="izaly-tech"] .hero h1 em{font-style:normal;font-weight:850;color:#70b7ff;text-shadow:0 0 45px rgba(0,119,255,.29)}
+.heroCopy>p{font-size:15px;line-height:1.8;color:var(--muted);max-width:430px;margin:0 0 27px}
+.heroActions{display:flex;align-items:center;flex-wrap:wrap;gap:11px;width:100%}
+.primaryButton,.secondaryButton{min-height:54px;display:inline-flex;align-items:center;justify-content:center;gap:13px;padding:13px 17px;border-radius:11px;font-size:12px;font-weight:800;white-space:nowrap;text-decoration:none;transition:transform .25s,box-shadow .25s,border-color .25s}
+.primaryButton{color:white;background:#81573a;box-shadow:0 12px 25px rgba(130,82,49,.2)}
+.page[data-brand="izaly-tech"] .primaryButton{background:linear-gradient(110deg,#1164d9,#4b9bff);box-shadow:0 15px 30px rgba(17,97,229,.26)}
+.secondaryButton{color:var(--ink);border:1px solid var(--line);background:rgba(255,255,255,.04)}
+.primaryButton:hover,.secondaryButton:hover{transform:translateY(-3px);box-shadow:0 12px 26px #0002}
+.scrollHint{margin-top:auto;padding-top:37px;display:flex;align-items:center;gap:12px;color:var(--muted);font-size:9px;font-weight:850;letter-spacing:.18em;text-decoration:none}
+.scrollHint svg{color:var(--accent);animation:nudge 2.5s ease-in-out infinite}
+.heroArt{min-height:608px;position:relative}
+.heroCounter{position:absolute;bottom:21px;right:24px;font-size:10px;font-weight:850;letter-spacing:.17em;color:var(--muted)}
+.jewelScene,.techScene{position:absolute;inset:0;display:grid;place-items:center;perspective:1100px}
+.jewelScene::before{content:"";width:420px;height:420px;position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.75),rgba(255,216,184,.28) 55%,transparent 73%);filter:blur(18px)}
+.jewelHalo{position:absolute;width:390px;height:390px;border-radius:50%;border:1px solid rgba(185,120,70,.23);box-shadow:0 0 0 47px rgba(234,185,141,.07),0 0 0 120px rgba(234,185,141,.05)}
+.jewelOrbit,.jewelOrbitAlt{position:absolute;width:360px;height:360px;border:1px solid rgba(152,93,52,.19);border-radius:50%;transform:rotateX(67deg) rotate(-25deg);animation:orbit 20s linear infinite}
+.jewelOrbitAlt{width:440px;height:440px;transform:rotateX(62deg) rotate(35deg);animation-duration:28s;animation-direction:reverse}
+.jewelPiece{width:min(100%,415px);filter:drop-shadow(0 26px 22px rgba(150,82,35,.25));animation:float 7s ease-in-out infinite}
+.jewelSparkOne,.jewelSparkTwo{position:absolute;color:#b7824e;font-size:34px;animation:spark 4s ease-in-out infinite}
+.jewelSparkOne{left:12%;top:19%}.jewelSparkTwo{right:10%;bottom:24%;font-size:50px;animation-delay:1.3s}
+.artworkCaption{position:absolute;bottom:42px;left:50%;transform:translateX(-50%);white-space:nowrap;color:var(--muted);font-size:9px;letter-spacing:.24em;font-weight:850}
+.techScene{background:radial-gradient(ellipse at 58% 52%,rgba(26,100,210,.14),transparent 64%)}
+.techScene::before{content:"";position:absolute;inset:0;opacity:.35;background:repeating-linear-gradient(90deg,transparent 0,transparent 32px,rgba(65,143,245,.09) 33px);mask-image:radial-gradient(ellipse at center,#000,transparent 75%)}
+.techHalo{width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(14,121,255,.27),rgba(8,62,160,.09) 58%,transparent 71%);filter:blur(10px);animation:pulse 6s ease-in-out infinite}
+.techOrbit,.techOrbitAlt{position:absolute;width:370px;height:370px;border:1px solid rgba(84,159,255,.28);border-radius:50%;transform:rotateX(63deg) rotate(-20deg);box-shadow:0 0 25px rgba(0,122,255,.1);animation:orbit 22s linear infinite}
+.techOrbitAlt{width:450px;height:450px;transform:rotateX(70deg) rotate(30deg);animation-direction:reverse;animation-duration:29s}
+.device{position:absolute;width:215px;height:420px;border:5px solid #637e9d;border-radius:38px;background:#000;transform:rotate(-13deg) rotateY(-19deg) rotateX(5deg);box-shadow:13px 15px 0 #0e2442,30px 44px 95px #0009,0 0 44px rgba(14,123,255,.3);animation:phoneFloat 8s ease-in-out infinite;z-index:2}
+.device::before{content:"";position:absolute;inset:-3px;border:2px solid rgba(212,234,255,.55);border-radius:36px;pointer-events:none}
+.deviceCamera{position:absolute;z-index:5;width:71px;height:17px;border-radius:30px;background:#01040c;top:9px;left:50%;transform:translateX(-50%)}
+.deviceScreen{position:absolute;inset:6px;border-radius:29px;overflow:hidden;background:linear-gradient(145deg,#06112b,#092f78 43%,#0a77c6 70%,#041026);display:flex;flex-direction:column;justify-content:center;align-items:center}
+.deviceScreen::before{content:"";position:absolute;inset:-60%;background:conic-gradient(from 35deg at center,transparent,#007eff 18%,#34d4ff 27%,transparent 42%,#005ed9 61%,#1dabff 75%,transparent 90%);filter:blur(33px);animation:rotate 17s linear infinite}
+.screenWave,.screenWaveTwo{position:absolute;width:380px;height:135px;border:25px solid rgba(82,207,255,.2);border-radius:50%;transform:rotate(-48deg);filter:blur(6px)}
+.screenWave{left:-176px;top:105px}.screenWaveTwo{right:-236px;bottom:58px;border-color:rgba(49,108,243,.38)}
+.screenBrand{position:relative;font:900 97px Arial,sans-serif;letter-spacing:-.15em;padding-right:.1em;color:#fff;text-shadow:0 6px 24px #0005}
+.screenSubtitle{position:relative;color:#d6f0ff;font-size:10px;font-weight:750;letter-spacing:.28em}
+.techGlass{position:absolute;z-index:3;right:0;top:28%;padding:15px 18px;border:1px solid rgba(119,175,255,.33);border-radius:12px;background:rgba(7,20,46,.73);backdrop-filter:blur(16px);box-shadow:0 15px 38px #0005;color:#d7eaff;font-size:9px;font-weight:850;letter-spacing:.11em;transform:rotate(6deg)}
+.marquee{margin-top:25px;padding:17px 0;border-bottom:1px solid var(--line);border-top:1px solid var(--line);overflow:hidden;color:var(--accent);font-size:11px;font-weight:850;letter-spacing:.19em}
+.marqueeTrack{width:max-content;display:flex;white-space:nowrap;animation:marquee 32s linear infinite}
+.marqueeGroup{display:flex;align-items:center;gap:35px;padding-right:35px}
+.marqueeGroup>span:nth-child(even){font-size:17px}
+.section{padding:105px 3px 0;scroll-margin-top:18px}
+.sectionTop{border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;gap:15px;color:var(--muted);font-size:10px;font-weight:850;letter-spacing:.16em}
+.sectionTop span:last-child{color:var(--accent)}
+.sectionHeading{display:grid;grid-template-columns:1.4fr .6fr;align-items:end;gap:28px;margin:37px 0 34px}
+.sectionHeading h2{font:400 clamp(2.85rem,5.2vw,4.9rem)/1.07 Georgia,serif;letter-spacing:-.058em;margin:0;max-width:700px}
+.sectionHeading h2 em{font-weight:400;color:var(--accent)}
+.page[data-brand="izaly-tech"] .sectionHeading h2{font-family:Arial,sans-serif;font-weight:760}
+.page[data-brand="izaly-tech"] .sectionHeading h2 em{font-style:normal}
+.sectionHeading p{margin:0;color:var(--muted);font-size:14px;line-height:1.7}
+.categoryGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.categoryCard{position:relative;min-height:258px;border:1px solid var(--line);border-radius:19px;padding:23px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;color:var(--ink);text-decoration:none;background:radial-gradient(circle at 90% 8%,rgba(199,150,102,.12),transparent 43%),var(--panel);transition:transform .32s,border-color .32s,box-shadow .32s}
+.page[data-brand="izaly-tech"] .categoryCard{background:radial-gradient(circle at 90% 8%,rgba(22,128,255,.17),transparent 50%),var(--panel)}
+.categoryCard::before{content:"";position:absolute;width:260px;height:260px;border:1px solid var(--line);border-radius:50%;right:-120px;bottom:-180px;transition:transform .4s}
+.categoryCard:hover{transform:translateY(-7px);border-color:var(--accent);box-shadow:0 20px 42px #0002}
+.categoryCard:hover::before{transform:scale(1.4)}
+.categoryTop{display:flex;justify-content:space-between;align-items:flex-start;color:var(--accent);font-size:10px;letter-spacing:.13em;font-weight:850}
+.categoryIcon{width:49px;height:49px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%}
+.categoryCard h3{font:400 clamp(1.5rem,2.65vw,2rem)/1.08 Georgia,serif;letter-spacing:-.045em;margin:0 0 8px;max-width:280px}
+.page[data-brand="izaly-tech"] .categoryCard h3{font-family:Arial,sans-serif;font-weight:750}
+.categoryCard p{margin:0;font-size:12px;color:var(--muted);line-height:1.6;max-width:225px}
+.categoryArrow{position:absolute;bottom:23px;right:23px;color:var(--accent)}
+.availabilityNote{font-size:11px;color:var(--muted);margin:16px 4px 0}
+.statement{min-height:360px;margin:100px 0 0;border:1px solid var(--line);border-radius:24px;padding:60px 26px;position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(ellipse at 50% 50%,rgba(255,246,236,.75),rgba(227,185,155,.35) 67%,transparent 100%),#edd8ca}
+.page[data-brand="izaly-tech"] .statement{background:radial-gradient(ellipse at 50% 50%,rgba(14,91,191,.35),rgba(8,30,70,.5) 68%,transparent 95%),#060d1e}
+.statement::before,.statement::after{content:"";position:absolute;width:420px;height:420px;border:1px solid var(--line);border-radius:50%;z-index:-1;transform:rotateX(69deg) translateY(65px)}
+.statement::after{width:640px;height:640px;transform:rotateX(79deg) translateY(100px)}
+.statementEyebrow{font-size:10px;letter-spacing:.24em;font-weight:850;color:var(--accent)}
+.statement h2{font:400 clamp(3rem,5.6vw,5.4rem)/1.07 Georgia,serif;letter-spacing:-.065em;margin:20px 0 14px;max-width:760px}
+.statement h2 em{color:var(--accent);font-weight:400}
+.page[data-brand="izaly-tech"] .statement h2{font-family:Arial,sans-serif;font-weight:800}
+.page[data-brand="izaly-tech"] .statement h2 em{font-style:normal}
+.statement p{margin:0 0 27px;color:var(--muted);font-size:14px}
+.statement a{color:var(--ink);display:flex;align-items:center;gap:11px;text-decoration:none;font-size:11px;font-weight:850;letter-spacing:.15em;border-bottom:1px solid var(--accent);padding-bottom:8px}
+.actionGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.actionCard{display:flex;flex-direction:column;align-items:flex-start;gap:13px;position:relative;min-height:185px;padding:22px;border:1px solid var(--line);border-radius:19px;color:var(--ink);background:var(--panel);text-decoration:none;transition:transform .25s,border-color .25s,box-shadow .25s}
+.actionCard:hover{transform:translateY(-5px);border-color:var(--accent);box-shadow:0 16px 40px #0002}
+.actionFeatured{border-color:var(--accent);background:linear-gradient(135deg,rgba(183,118,75,.14),transparent),var(--panel)}
+.page[data-brand="izaly-tech"] .actionFeatured{background:linear-gradient(130deg,rgba(23,117,255,.19),transparent),var(--panel)}
+.actionNumber{position:absolute;right:19px;top:19px;color:var(--muted);font-size:10px;letter-spacing:.1em}
+.actionIcon{width:47px;height:47px;display:grid;place-items:center;border-radius:14px;border:1px solid var(--line);color:var(--accent)}
+.actionText{display:flex;flex-direction:column;gap:6px;margin-top:auto}
+.actionText strong{font-size:16px;letter-spacing:-.02em}
+.actionText small{font-size:12px;color:var(--muted)}
+.actionArrow{position:absolute;right:19px;bottom:20px;color:var(--accent)}
+.footer{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:28px 0 42px;margin-top:77px;border-top:1px solid var(--line);color:var(--muted);font-size:9px;letter-spacing:.14em}
+.footerBrand{display:flex;flex-direction:column;gap:2px;font-size:17px;font-weight:700;letter-spacing:.23em;color:var(--ink)}
+.footerBrand small{font-size:9px;color:var(--accent);letter-spacing:.3em}
+.footer a{color:var(--accent);text-decoration:none;font-weight:850}
+@keyframes float{50%{transform:translateY(-17px) rotate(2deg)}}
+@keyframes orbit{50%{rotate:180deg}to{rotate:360deg}}
+@keyframes spark{50%{opacity:.3;transform:scale(.75)}}
+@keyframes phoneFloat{50%{transform:translateY(-16px) rotate(-12deg) rotateY(-18deg) rotateX(4deg)}}
+@keyframes pulse{50%{opacity:.55;transform:scale(1.09)}}
+@keyframes rotate{to{transform:rotate(360deg)}}
+@keyframes marquee{to{transform:translateX(-50%)}}
+@keyframes nudge{50%{transform:translateY(7px)}}
+@media(max-width:950px){
+  .hero{grid-template-columns:1fr 1fr;min-height:560px}.heroCopy{padding:42px 25px 25px}.heroArt{min-height:560px}.heroIndex{margin-top:40px}
+  .hero h1{font-size:clamp(3rem,5.5vw,4.5rem)}.heroActions{align-items:stretch}.primaryButton,.secondaryButton{font-size:11px}
+  .techGlass{right:-18px}.jewelPiece{width:110%}
+}
+@media(max-width:690px){
+  .shell{width:min(100% - 26px,520px)}.nav{height:77px}.brandEmblem{width:39px;height:39px;font-size:23px}.brandName strong{font-size:16px}.navAction{font-size:9px}
+  .hero{grid-template-columns:1fr;min-height:auto;border-radius:22px}.heroCopy{padding:32px 23px 16px}.heroEyebrow{font-size:9px;letter-spacing:.1em}.heroIndex{margin-top:35px}
+  .hero h1{font-size:clamp(3.2rem,12vw,4.7rem);margin:16px 0}.page[data-brand="izaly-tech"] .hero h1{font-size:clamp(3rem,11vw,4.5rem)}
+  .heroCopy>p{font-size:13px;line-height:1.65;margin-bottom:23px}.heroActions{gap:9px}
+  .primaryButton,.secondaryButton{padding:11px;min-height:52px;flex:1;font-size:11px;gap:8px;white-space:normal}
+  .scrollHint{padding-top:24px;font-size:8px}.heroArt{height:325px;min-height:325px}
+  .jewelScene{inset:-115px 0 -78px}.jewelPiece{width:min(100%,355px)}.jewelHalo{width:290px;height:290px}.jewelOrbit{width:275px;height:275px}.jewelOrbitAlt{width:335px;height:335px}
+  .artworkCaption{bottom:84px;font-size:8px}.jewelSparkOne{left:10%;top:27%}.jewelSparkTwo{right:9%;bottom:29%}
+  .techScene{inset:-55px 0 -83px}.device{width:150px;height:290px;border-width:4px;border-radius:27px}.deviceScreen{inset:4px;border-radius:20px}.deviceCamera{width:50px;height:12px;top:7px}
+  .screenBrand{font-size:69px}.screenSubtitle{font-size:8px}.techHalo{width:295px;height:295px}.techOrbit{width:280px;height:280px}.techOrbitAlt{width:350px;height:350px}
+  .techGlass{right:0;top:31%;padding:10px;font-size:7px}.heroCounter{font-size:8px}
+  .marquee{margin-top:15px;padding:13px 0;font-size:9px}
+  .section{padding:70px 0 0}.sectionTop{font-size:9px}.sectionHeading{display:block;margin:26px 0}.sectionHeading h2{font-size:clamp(2.6rem,9vw,4rem)}.sectionHeading p{margin-top:16px;font-size:13px}
+  .categoryGrid{grid-template-columns:1fr;gap:11px}.categoryCard{min-height:158px;padding:20px}.categoryCard h3{font-size:26px}.categoryCard p{font-size:12px}.categoryArrow{right:21px;bottom:21px}
+  .statement{min-height:310px;margin-top:67px;padding:45px 19px}.statement h2{font-size:clamp(2.65rem,9vw,4rem)}.statement p{font-size:12px}
+  .actionGrid{grid-template-columns:1fr;gap:10px}.actionCard{min-height:97px;flex-direction:row;align-items:center;padding:16px}.actionIcon{flex:0 0 46px}.actionText{margin:0}.actionText strong{font-size:14px}.actionNumber{display:none}.actionArrow{right:17px;bottom:50%;transform:translateY(50%)}
+  .footer{margin-top:50px;padding-bottom:30px;flex-wrap:wrap}.footer>span:nth-child(2){display:none}
+}
+@media(max-width:390px){.heroActions{flex-direction:column}.primaryButton,.secondaryButton{width:100%}.hero h1{font-size:3.1rem}.heroArt{height:300px;min-height:300px}}
+@media(prefers-reduced-motion:reduce){.page *,.page *::before,.page *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
