@@ -10,6 +10,7 @@ import {
 import PixCopy from "../../../components/smart/PixCopy";
 import FenniMultilink from "../../../components/smart/FenniMultilink";
 import LimaMultilink from "../../../components/smart/LimaMultilink";
+import AlyssonTechMultilink from "../../../components/smart/AlyssonTechMultilink";
 import { izalyCrmAi, izalyPlatform } from "../../../data/projects";
 import styles from "./portal.module.css";
 
@@ -21,6 +22,19 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
+  if (slug === "alysson-tech") {
+    return {
+      title: "Alysson Tech | Tecnologia prática para negócios reais",
+      description: "Sites profissionais, multilinks, sistemas, automações e placas inteligentes QR/NFC em Maceió. Solicite um orçamento à Alysson Tech.",
+      alternates: { canonical: "/p/alysson-tech" },
+      openGraph: {
+        title: "Alysson Tech | Soluções digitais",
+        description: "Tecnologia prática para negócios reais.",
+        locale: "pt_BR",
+        type: "website",
+      },
+    };
+  }
   if (slug === "otica-fenni") {
     return {
       title: "Ótica Fenni | Um novo olhar começa aqui",
@@ -236,6 +250,9 @@ export default async function SmartBusinessPage({ params }: PageProps) {
 
   if (business.slug === "otica-fenni") {
     return <FenniMultilink business={business} />;
+  }
+  if (business.slug === "alysson-tech") {
+    return <AlyssonTechMultilink business={business} />;
   }
   if (business.slug === "barbearia-lima") {
     return <LimaMultilink business={business} />;
